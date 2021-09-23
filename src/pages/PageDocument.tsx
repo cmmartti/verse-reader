@@ -108,7 +108,6 @@ export function PageDocument({id}: {id: string}) {
                     </summary>
                     <DisplayOptionsDialog />
                 </details>
-                {/* <button className="Button" onClick={() => setIsFullscreen(val => !val)}>Hide</button> */}
             </div>
 
             {isMobile && (
@@ -117,6 +116,7 @@ export function PageDocument({id}: {id: string}) {
                     {numberInput}
                 </div>
             )}
+
             <DocumentView id={id} />
         </main>
     );

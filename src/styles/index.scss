@@ -9,6 +9,7 @@
 
 :root {
     font-size: calc(16px * var(--ui-scale-factor, 1));
+    transition: font-size 0.05s ease-out;
 
     --background: white;
     --color: black;
@@ -39,8 +40,6 @@
 
     --dialog-inline-block: var(--toolbar-height);
 
-    transition: font-size 0.05s ease-out;
-
     &[data-color-scheme="dark"] {
         --background: black;
         --color: white;
@@ -66,7 +65,7 @@
 html,
 body,
 #root {
-    height: 100%;
+    min-height: 100%;
 }
 
 body {
@@ -79,7 +78,7 @@ body {
     background-color: var(--background);
     box-sizing: border-box;
     & * {
-        box-sizing: inherit;
+        box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
     }
 }
@@ -134,24 +133,6 @@ details {
         background: var(--control-active-background);
     }
 }
-
-.typography {
-    & > * {
-        margin-top: 1em;
-    }
-    & > h1,
-    & > h2,
-    & > h3,
-    & > h4,
-    & > h5,
-    & > h6 {
-        font-weight: bold;
-    }
-    & > p {
-    }
-}
-
-
 
 /* Arrow */
 // .popover::before {

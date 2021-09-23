@@ -45,11 +45,9 @@ export function PageHome() {
             <div className="PageHome-aboveFold">
                 <h1 className="PageHome-title">Hymnal Reader</h1>
                 <div className="PageHome-documentsList">
-                    {bookList.length === 0 && (
-                        <div className="document">No books have been installed.</div>
-                    )}
+                    {bookList.length === 0 && <div>No books have been installed.</div>}
                     {bookList.map(hymnal => (
-                        <div key={hymnal.id} className="document">
+                        <div key={hymnal.id}>
                             <Link to={"/" + hymnal.id}>{hymnal.title}</Link>
                             <button className="Button" onClick={handleDelete(hymnal)}>
                                 <DeleteIcon /> Delete
