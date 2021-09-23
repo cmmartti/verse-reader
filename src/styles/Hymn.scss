@@ -1,0 +1,49 @@
+.Hymn {
+    background: var(--background);
+    padding: 0.75rem;
+    // box-shadow: 0 2px 4px rgba(34, 31, 28, 0.37);
+
+    & > * {
+        margin: 0;
+    }
+    & > * + * {
+        margin-top: 0.5rem;
+    }
+}
+
+.Hymn-chorus,
+.Hymn-refrain {
+    margin-left: 1rem;
+}
+.Hymn-details {
+    font-size: 0.8em;
+    // font-style: italic;
+    line-height: 1.5;
+}
+.Hymn-highlight {
+    background: blue;
+}
+.Hymn-number {
+    font-size: 1.625rem;
+    line-height: 1;
+    font-weight: bold;
+    scroll-margin-top: 5rem;
+}
+.Hymn-verseNumber {
+    margin-left: 0.5rem;
+    margin-right: 0.25rem;
+}
+.Hymn-repeat {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+.Hymn-repeatMarker {
+    // margin-left: -0.5rem;
+}
+.Hymn-line {
+    margin-right: 0.5rem;
+    break-after: always;
+}
+.Hymn-line--nospaceafter {
+    margin-right: 0;
+}

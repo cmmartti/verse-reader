@@ -1,0 +1,22 @@
+.PageDocument {
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    .Toolbar--top {
+        position: sticky;
+        max-width: 100%;
+        top: 0;
+        order: 1;
+    }
+    .Document {
+        order: 2;
+        flex: 1;
+    }
+    .Toolbar--bottom {
+        position: sticky;
+        bottom: 0;
+        order: 3;
+    }
+}

@@ -1,0 +1,43 @@
+.Toolbar {
+    padding: var(--toolbar-padding);
+    background: var(--toolbar-background);
+    @media (max-width: 37rem) {
+        overflow-x: auto;
+    }
+    &.Toolbar--top {
+        border-bottom: var(--toolbar-border);
+        z-index: 2;
+    }
+    &.Toolbar--bottom {
+        border-top: var(--toolbar-border);
+    }
+
+    display: flex;
+    align-items: flex-end;
+    gap: var(--toolbar-padding);
+
+    & > * {
+        box-shadow: var(--toolbar-item-box-shadow);
+    }
+}
+
+.Toolbar-grow {
+    flex: 1;
+    max-width: 22rem;
+}
+
+.Toolbar-group {
+    display: flex;
+    // align-items: stretch;
+    align-items: flex-end;
+
+    & > * {
+        // Force .group's min-width of "auto" to use the child element's
+        // min-width, instead of its default width.
+        width: 0;
+    }
+
+    & > * + * {
+        border-left: none;
+    }
+}
