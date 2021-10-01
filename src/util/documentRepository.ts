@@ -1,6 +1,6 @@
 import {Result} from "@badrap/result";
 
-import * as ls from "./util/localstorage";
+import * as ls from "./localstorage";
 
 export type Options = {
     highlight: string | null;

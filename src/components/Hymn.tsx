@@ -1,260 +1,258 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
+import {useDisplayOptions} from "./ContextDisplayOptions";
 
-import {useDisplayOptions} from "../context/ContextDisplayOptions";
-import {useDocumentLocation} from "../context/ContextDocumentLocation";
+const EM_DASH = "—";
+const ZERO_WIDTH_SPACE = "\u200B";
 
 export const Hymn = React.memo(_Hymn);
 
-type HymnProps = {
-    node: Element;
-};
+type HymnProps = {node: Element; isAboveTheFold?: boolean};
 
-export function _Hymn({node}: HymnProps) {
-    const [{repeatRefrain, repeatChorus}] = useDisplayOptions();
-    const {setPage} = useDocumentLocation();
+function _Hymn({node, isAboveTheFold = true}: HymnProps) {
+    const [{repeatChorus, repeatRefrain}] = useDisplayOptions();
+
+    const [firstRender, setIsFirstRender] = React.useState(true);
+    React.useEffect(() => {
+        setIsFirstRender(false);
+    }, []);
 
     const id = node.getAttribute("id")!;
-    const chorus = node.querySelector(":scope > verses > chorus");
-    const refrain = node.querySelector(":scope > verses > refrain");
+
     const refrainLines = [
         ...node.querySelectorAll(
             ":scope > verses > refrain > line, :scope > verses > refrain > repeat"
         ),
     ];
+    const chorusLines = [
+        ...node.querySelectorAll(
+            ":scope > verses > chorus > line, :scope > verses > chorus > repeat"
+        ),
+    ];
     const verses = [...node.querySelectorAll(":scope > verses > verse")];
 
-    const setCurrent = React.useCallback(() => setPage(id, false), [id, setPage]);
+    const location = useLocation();
+    const fragment = location.hash.substring(1);
+    const page = /[0-9]+/.test(fragment) ? fragment : null;
+
+    const tunes = [...node.querySelectorAll(":scope > tune[ref]")!].map(
+        tuneRef =>
+            node.ownerDocument.querySelector(
+                `hymnal > tunes tune[id="${tuneRef.getAttribute("ref")}"]`
+            )!
+    );
+    const topics = [...node.querySelectorAll(":scope > topic[ref]")!].map(
+        topicRef =>
+            node.ownerDocument.querySelector(
+                `hymnal > topics > topic[id="${topicRef.getAttribute("ref")}"]`
+            )!
+    );
+    const authors = [...node.querySelectorAll(":scope > author")];
+    const translators = [...node.querySelectorAll(":scope > translator")];
+    const days = [...node.querySelectorAll(":scope > day[ref]")!].map(
+        dayRef =>
+            node.ownerDocument.querySelector(
+                `hymnal > liturgical-calendar day[id="${dayRef.getAttribute("ref")}"]`
+            )!
+    );
+
+    if (firstRender && !isAboveTheFold) {
+        return (
+            <div className="hymn">
+                <div className="hymn-number">{id}</div>
+            </div>
+        );
+    }
 
     return (
-        <div className="hymn" id={id}>
-            {!verses.length && (
-                <a
-                    className="hymn-number"
-                    href={"#" + id}
-                    onClick={e => {
-                        e.preventDefault();
-                        setCurrent();
-                    }}
-                >
-                    {id}.
-                </a>
-            )}
+        <div className="Hymn" id={id}>
             {verses.map((verse, i) => {
-                const lines = [
+                const verseLines = [
                     ...verse.querySelectorAll(":scope > line, :scope > repeat"),
                 ];
 
                 return (
                     <React.Fragment key={i}>
-                        {i === 0 ? (
-                            <>
-                                <p className="verse">
-                                    <a
-                                        className="hymn-number"
-                                        id={id}
-                                        href={"#" + id}
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            setCurrent();
-                                        }}
-                                    >
-                                        {id}.
-                                    </a>{" "}
-                                    <Lines lines={lines} />
-                                    {repeatRefrain && <Lines lines={refrainLines} />}
-                                </p>
+                        <p className="Hymn-verse">
+                            {i === 0 && (
+                                <a className="Hymn-number" id={id} href={"#" + id}>
+                                    {id}.
+                                </a>
+                            )}
+                            {i !== 0 && (
+                                <span className="Hymn-verseNumber">{i + 1}.</span>
+                            )}{" "}
+                            <Lines lines={verseLines} />
+                            {refrainLines.length > 0 &&
+                                (repeatRefrain ? (
+                                    <Lines lines={refrainLines} />
+                                ) : (
+                                    i !== 0 && <i>Refrain:</i>
+                                ))}
+                            {chorusLines.length > 0 && !repeatChorus && <i>Chorus:</i>}
+                        </p>
 
-                                {chorus && <Chorus node={chorus} />}
-                                {!repeatRefrain && refrain && <Refrain node={refrain} />}
-                            </>
-                        ) : (
-                            <>
-                                <p className="verse">
-                                    <span className="verse-number">{i + 1}.</span>{" "}
-                                    <Lines lines={lines} />
-                                    {!repeatChorus && chorus && <i>Chorus:</i>}
-                                    {refrain &&
-                                        (repeatRefrain ? (
-                                            <Lines lines={refrainLines} />
-                                        ) : (
-                                            <i>Refrain:</i>
-                                        ))}
-                                </p>
+                        {refrainLines.length > 0 && !repeatRefrain && i === 0 && (
+                            <p className="Hymn-refrain">
+                                <i>Refrain:</i> <Lines lines={refrainLines} />
+                            </p>
+                        )}
 
-                                {repeatChorus && chorus && <Chorus node={chorus} />}
-                            </>
+                        {chorusLines.length > 0 && !repeatChorus && i === 0 && (
+                            <p className="Hymn-chorus">
+                                <i>Chorus:</i> <Lines lines={chorusLines} />
+                            </p>
+                        )}
+
+                        {chorusLines.length > 0 && repeatChorus && (
+                            <p className="Hymn-chorus">
+                                <Lines lines={chorusLines} />
+                            </p>
                         )}
                     </React.Fragment>
                 );
             })}
-            <Details node={node} />
+            <div className="Hymn-details">
+                {tunes.length > 0 && (
+                    <div>
+                        {tunes.length === 1 && "Tune: "}
+                        {tunes.length > 1 && "Tunes: "}
+                        {tunes.map(tune => {
+                            const name = tune.getAttribute("name");
+                            const tuneId = tune.getAttribute("id");
+                            return (
+                                <React.Fragment key={tuneId}>
+                                    <Link to={`?q=tune:${id}#${page}`}>
+                                        {name || tuneId}
+                                    </Link>{" "}
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                )}
+                {topics.length > 0 && (
+                    <div>
+                        {topics.length === 1 && "Topic: "}
+                        {topics.length > 1 && "Topics: "}
+                        {topics.map(topic => {
+                            const name = topic.getAttribute("name");
+                            const topicId = topic.getAttribute("id");
+                            return (
+                                <React.Fragment key={topicId}>
+                                    <Link to={`?q=topic:${topicId}#${page}`}>
+                                        {name}
+                                    </Link>{" "}
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                )}
+                {days.length > 0 && (
+                    <div>
+                        {days.length === 1 && "Day: "}
+                        {days.length > 1 && "Days: "}
+                        <ul>
+                            {days.map(day => {
+                                const name = day.getAttribute("name");
+                                const dayId = day.getAttribute("id");
+                                return (
+                                    <li key={dayId}>
+                                        <Link to={`?q=day:${dayId}#${page}`}>
+                                            {name}
+                                        </Link>{" "}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                )}
+                {authors.length > 0 &&
+                    authors.map(author => (
+                        <div>
+                            Author: {author.textContent}
+                            {author.getAttribute("year") &&
+                                ` (${author.getAttribute("year")})`}
+                            {author.getAttribute("country") &&
+                                ` (${author.getAttribute("country")})`}
+                        </div>
+                    ))}
+                {translators.length > 0 &&
+                    translators.map(translator => (
+                        <div>
+                            Transl: {translator.textContent}
+                            {translator.getAttribute("year") &&
+                                ` (${translator.getAttribute("year")})`}
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 }
 
-function Details({node}: {node: Element}) {
-    const {getSearchURL} = useDocumentLocation();
+function Lines({lines}: {lines: Element[]}) {
+    const [{highlight, expandRepeatedLines}] = useDisplayOptions();
 
-    const number = node.getAttribute("id")!;
-
-    const tunes = [...node.querySelectorAll(":scope > tune[ref]")].map(tuneRef =>
-        node.ownerDocument.querySelector(
-            `hymnal > tunes tune[id="${tuneRef.getAttribute("ref")!}"]`
-        )
-    );
-    const topics = [...node.querySelectorAll(":scope > topic[ref]")].map(topicRef =>
-        node.ownerDocument.querySelector(
-            `hymnal > topics > topic[id="${topicRef.getAttribute("ref")!}"]`
-        )
-    );
-    const author = node.querySelector(":scope > author");
-    const translator = node.querySelector(":scope > translator");
-    const days = [...node.querySelectorAll(":scope > day[ref]")].map(dayRef =>
-        node.ownerDocument.querySelector(
-            `hymnal > liturgical-calendar day[id="${dayRef.getAttribute("ref")!}"]`
-        )
-    );
-
-    return (
-        <div className="details">
-            {tunes.length > 0 && (
-                <div>
-                    {tunes.length === 1 && "Tune: "}
-                    {tunes.length > 1 && "Tunes: "}
-                    {tunes.map(tune => {
-                        const name = tune!.getAttribute("name");
-                        const id = tune!.getAttribute("id");
-                        return (
-                            <React.Fragment key={id}>
-                                <Link to={getSearchURL(`tune:${number}`)}>
-                                    {name || id}
-                                </Link>{" "}
-                            </React.Fragment>
-                        );
-                    })}
-                </div>
-            )}
-            {topics.length > 0 && (
-                <div>
-                    {topics.length === 1 && "Topic: "}
-                    {topics.length > 1 && "Topics: "}
-                    {topics.map(topic => {
-                        const name = topic!.getAttribute("name");
-                        const id = topic!.getAttribute("id");
-                        return (
-                            <React.Fragment key={id}>
-                                <Link to={getSearchURL(`topic:${id}`)}>{name}</Link>{" "}
-                            </React.Fragment>
-                        );
-                    })}
-                </div>
-            )}
-            {days.length > 0 && (
-                <div>
-                    {days.length === 1 && "Day: "}
-                    {days.length > 1 && "Days: "}
-                    {days.map(day => {
-                        if (!day) return null;
-                        const name = day.getAttribute("name");
-                        const id = day.getAttribute("id");
-                        const isAlternate = day.getAttribute("alternate") ?? false;
-                        return (
-                            <React.Fragment key={id}>
-                                <Link to={getSearchURL(`day:${id}`)}>
-                                    {isAlternate && "("}
-                                    {name || id}
-                                    {isAlternate && ")"}
-                                </Link>{" "}
-                            </React.Fragment>
-                        );
-                    })}
-                </div>
-            )}
-            {author && (
-                <div>
-                    Author: {author.textContent}
-                    {author.getAttribute("year") && ` (${author.getAttribute("year")})`}
-                    {author.getAttribute("country") &&
-                        ` (${author.getAttribute("country")})`}
-                </div>
-            )}
-            {translator && (
-                <div>
-                    Transl: {translator.textContent}
-                    {translator.getAttribute("year") &&
-                        ` (${translator.getAttribute("year")})`}
-                </div>
-            )}
-        </div>
-    );
-}
-
-const Chorus = React.memo(function Chorus({node}: {node: Element}) {
-    const [{repeatChorus}] = useDisplayOptions();
-    const lines = [...node.querySelectorAll(":scope > line, :scope > repeat")];
-    return (
-        <p className="chorus">
-            {!repeatChorus && <i>Chorus:</i>} <Lines lines={lines} />
-        </p>
-    );
-});
-
-const Refrain = React.memo(function Refrain({node}: {node: Element}) {
-    const lines = [...node.querySelectorAll(":scope > line, :scope > repeat")];
-    return (
-        <p className="refrain">
-            <i>Refrain:</i> <Lines lines={lines} />
-        </p>
-    );
-});
-
-const Lines = React.memo(function Lines({lines}: {lines: Element[]}) {
     return (
         <React.Fragment>
             {lines.map((line, i) => {
                 switch (line.localName) {
-                    case "repeat":
+                    case "repeat": {
+                        const times = parseInt(line.getAttribute("times") || "2", 10);
+                        const lines = [...line.querySelectorAll(":scope > line")];
+                        if (expandRepeatedLines) {
+                            return (
+                                <span>
+                                    {[...Array(times)].map((_, i) => (
+                                        <Lines key={i} lines={lines} />
+                                    ))}
+                                </span>
+                            );
+                        }
+                        return (
+                            <span key={i} className="Hymn-repeat">
+                                <Lines lines={lines} />
+                                &nbsp;
+                                <span className="Hymn-repeatMarker">
+                                    {/* {[...Array(times)].map(() => ":").join(",")} */}
+                                    (x{times})
+                                </span>
+                            </span>
+                        );
+                    }
+
+                    case "line": {
+                        let renderedText: React.ReactNode = line.textContent;
+                        if (highlight) {
+                            renderedText = replaceAll(
+                                line.textContent ?? "",
+                                new RegExp(highlight, "gi"),
+                                substr => <span className="highlight">{substr}</span>
+                            );
+                        }
+                        const noSpaceAfter = line.textContent!.slice(-1) === EM_DASH;
                         return (
                             <React.Fragment key={i}>
-                                {/* {" "} */}
-                                <Repeat node={line} />
+                                <span
+                                    className={
+                                        "Hymn-line" +
+                                        (noSpaceAfter ? " Hymn-line--nospaceafter" : "")
+                                    }
+                                >
+                                    {renderedText}
+                                </span>
+                                {/* Allow for line-breaks after em dashes */}
+                                {noSpaceAfter ? ZERO_WIDTH_SPACE : " "}
                             </React.Fragment>
                         );
-                    case "line":
-                        return <Line key={i} text={line.textContent!} />;
+                    }
+
                     default:
                         return null;
                 }
             })}
         </React.Fragment>
     );
-});
-
-const Repeat = React.memo(function Repeat({node}: {node: Element}) {
-    const [{expandRepeatedLines}] = useDisplayOptions();
-    const times = parseInt(node.getAttribute("times")!, 10);
-    const lines = [...node.querySelectorAll(":scope > line")];
-
-    if (expandRepeatedLines)
-        return (
-            <span>
-                {[...Array(times)].map((_, i) => (
-                    <Lines key={i} lines={lines} />
-                ))}
-            </span>
-        );
-    return (
-        <span className="repeat">
-            <Lines lines={lines} />
-            &nbsp;
-            <span className="repeat-marker">
-                {/* {[...Array(times)].map(() => ":").join(",")} */}
-                [x{times}]
-            </span>
-        </span>
-    );
-});
+}
 
 function replaceAll(
     text: string,
@@ -273,28 +271,3 @@ function replaceAll(
         </React.Fragment>
     ));
 }
-
-const Line = React.memo(function Line({text}: {text: string}) {
-    const [{highlight}] = useDisplayOptions();
-
-    let renderedText: React.ReactNode = text;
-    if (highlight) {
-        renderedText = replaceAll(text, new RegExp(highlight, "gi"), substr => (
-            <span className="highlight">{substr}</span>
-        ));
-    }
-
-    const EM_DASH = "—";
-    const ZERO_WIDTH_SPACE = "\u200B";
-    const noSpaceAfter = text.slice(-1) === EM_DASH;
-
-    return (
-        <>
-            <span className={"line" + (noSpaceAfter ? " line--nospaceafter" : "")}>
-                {renderedText}
-            </span>
-            {/* Allow for line-breaks after em dashes */}
-            {noSpaceAfter ? ZERO_WIDTH_SPACE : " "}
-        </>
-    );
-});

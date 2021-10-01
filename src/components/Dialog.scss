@@ -4,9 +4,7 @@
     background: var(--control-background);
     box-shadow: var(--toolbar-item-box-shadow);
     border: var(--control-border);
-
     z-index: 99;
-
     @media (max-width: 37rem) {
         position: fixed;
         margin: var(--dialog-inline-block) auto;

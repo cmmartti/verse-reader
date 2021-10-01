@@ -2,16 +2,35 @@ import React from "react";
 import {Link} from "react-router-dom";
 
 import {ReactComponent as DeleteIcon} from "../assets/delete_black_24dp.svg";
-import {useBooks} from "../context/ContextBook";
-import {DocumentMetadata} from "../documentRepository";
 import {useAddToHomeScreenPrompt} from "../util/useAddToHomeScreenPrompt";
 import {useIsInstalled} from "../util/useIsInstalled";
 import {useFilePicker} from "../util/useFilePicker";
 import {useColorScheme} from "../util/useColorScheme";
 import {useDisplayZoom} from "../util/useDisplayZoom";
+import {
+    DocumentMetadata,
+    getDocuments,
+    addDocument,
+    deleteDocument,
+} from "../util/documentRepository";
 
 export function PageHome() {
-    const {bookList, deleteBook, addBook} = useBooks();
+    const [bookList, setBookList] = React.useState<DocumentMetadata[]>(
+        getDocuments().unwrap()
+    );
+
+    const addBook = React.useCallback((newBook: XMLDocument) => {
+        const res = addDocument(newBook);
+        if (res.isOk) setBookList(getDocuments().unwrap());
+        return res.unwrap();
+    }, []);
+
+    const deleteBook = React.useCallback((id: string) => {
+        const res = deleteDocument(id);
+        if (res.isOk) setBookList(getDocuments().unwrap());
+        return res.unwrap();
+    }, []);
+
     const {isPromptable, promptToInstall} = useAddToHomeScreenPrompt();
     const isInstalled = useIsInstalled();
 
@@ -24,7 +43,7 @@ export function PageHome() {
                         xmlString,
                         "text/xml"
                     );
-                    addBook(hymnal).unwrap();
+                    addBook(hymnal);
                 });
             },
             {accept: "text/xml", multiple: true}

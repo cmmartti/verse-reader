@@ -8,6 +8,13 @@ export type Action =
     | ["repeat_chorus", boolean]
     | ["highlight", string];
 
+const DEFAULT_OPTIONS = {
+    highlight: null,
+    expandRepeatedLines: false,
+    repeatRefrain: false,
+    repeatChorus: false,
+};
+
 export type DisplayOptions = {
     highlight: string | null;
     expandRepeatedLines: boolean;
@@ -39,28 +46,18 @@ function saveOptions(documentId: string, displayOptions: DisplayOptions) {
     if (res.isErr) console.error(res.error);
 }
 
-function loadOptions(
-    documentId: string,
-    defaultOptions: DisplayOptions = DEFAULT_OPTIONS
-) {
+function loadOptions(documentId: string) {
     return ls.getItem(`options:${documentId}`).unwrap(
         json => JSON.parse(json),
         err => {
             if (err instanceof ls.NotFoundError) {
-                return defaultOptions;
+                return DEFAULT_OPTIONS;
             }
             console.error(err);
             return {};
         }
     );
 }
-
-const DEFAULT_OPTIONS = {
-    highlight: null,
-    expandRepeatedLines: false,
-    repeatRefrain: false,
-    repeatChorus: false,
-};
 
 const DisplayOptionsContext = React.createContext<
     [DisplayOptions, Dispatch] | undefined

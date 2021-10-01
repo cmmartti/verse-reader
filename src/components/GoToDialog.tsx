@@ -34,6 +34,7 @@ export function GoToDialog({
                 <input
                     // React thinks autoFocus is the only correct capitalization, but
                     // DetailsDialogElement requires autofocus to be all lower-case.
+                    // eslint-disable-next-line
                     // @ts-ignore
                     autofocus=""
                     type="number"

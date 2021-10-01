@@ -1,7 +1,7 @@
 import React from "react";
 
 import {ReactComponent as CloseIcon} from "../assets/close_black_24dp.svg";
-import {useDisplayOptions} from "../context/ContextDisplayOptions";
+import {useDisplayOptions} from "./ContextDisplayOptions";
 
 export function DisplayOptionsDialog() {
     const [displayOptions, setDisplayOption] = useDisplayOptions();

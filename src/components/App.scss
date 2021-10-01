@@ -6,6 +6,7 @@
 @import "Document.scss";
 @import "PageHome.scss";
 @import "PageDocument.scss";
+@import "ScrollbarsCustom.scss";
 
 :root {
     font-size: calc(16px * var(--ui-scale-factor, 1));
@@ -40,6 +41,8 @@
 
     --dialog-inline-block: var(--toolbar-height);
 
+    --scrollbar-width: 1rem;
+
     &[data-color-scheme="dark"] {
         --background: black;
         --color: white;
@@ -65,7 +68,7 @@
 html,
 body,
 #root {
-    min-height: 100%;
+    height: 100%;
 }
 
 body {

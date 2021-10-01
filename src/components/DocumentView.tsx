@@ -1,15 +1,13 @@
 import React from "react";
 
-import {useBooks} from "../context/ContextBook";
-import {Hymn} from "../components/HymnFast";
+import {Hymn} from "./Hymn";
 // import {useDisplayOptions} from "../context/ContextDisplayOptions";
-import {Search, useDocumentLocation} from "../context/ContextDocumentLocation";
+import {getDocument} from "../util/documentRepository";
+import {Search} from "./PageDocument";
 
-export function DocumentView({id}: {id: string}) {
+export function DocumentView({id, search}: {id: string; search: Search}) {
     // const [, setDisplayOption] = useDisplayOptions();
-    const {search} = useDocumentLocation();
-    const {getBook} = useBooks();
-    const xmlDocument = React.useMemo(() => getBook(id), [getBook, id]);
+    const xmlDocument = React.useMemo(() => getDocument(id).unwrap(), [id]);
 
     // React.useEffect(() => {
     //     setDisplayOption("highlight", search.text);
@@ -83,6 +81,17 @@ function getHymns(xmlDocument: XMLDocument, search: Search) {
             case "day":
                 predicates.push(`[hr:day/@ref = "${value}"]`);
                 break;
+            case "has":
+                switch (value) {
+                    case "refrain":
+                    case "chorus":
+                    case "repeat":
+                        predicates.push(`[.//hr:${value}]`);
+                }
+                break;
+            // case "author":
+            //     predicates.push(`[hr:author="${value}"]`);
+            //     break;
         }
     }
 
@@ -101,8 +110,10 @@ function getHymns(xmlDocument: XMLDocument, search: Search) {
             ]]`);
     }
 
+    const expression = `/hr:hymnal/hr:hymns/hr:hymn${predicates.join("")}/@id`;
+    console.log(expression);
     const result = xmlDocument.evaluate(
-        `/hr:hymnal/hr:hymns/hr:hymn${predicates.join("")}/@id`,
+        expression,
         xmlDocument,
         nsResolver,
         XPathResult.ORDERED_NODE_ITERATOR_TYPE
