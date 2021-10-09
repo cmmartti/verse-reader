@@ -1,12 +1,14 @@
 @import "form.scss";
 @import "menu.scss";
+
 @import "Dialog.scss";
-@import "Toolbar.scss";
-@import "Hymn.scss";
 @import "Document.scss";
-@import "PageHome.scss";
-@import "PageDocument.scss";
+@import "DocumentPage.scss";
+@import "HomePage.scss";
+@import "Hymn.scss";
+@import "IndexDialog.scss";
 @import "ScrollbarsCustom.scss";
+@import "Toolbar.scss";
 
 :root {
     font-size: calc(16px * var(--ui-scale-factor, 1));
@@ -17,7 +19,7 @@
     --hover-color: #008cff;
     --focus-color: orange;
     --disabled-color: hsl(0, 0%, 50%);
-    --link-color: #006eff;
+    --link-color: #025cd3;
     --border-radius: 6px;
     --outline-width: 2px;
 
@@ -103,7 +105,7 @@ h6 {
 }
 
 a {
-    // text-decoration: none;
+    text-decoration: none;
     color: var(--link-color);
 }
 a:focus {

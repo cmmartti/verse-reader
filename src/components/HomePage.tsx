@@ -14,7 +14,7 @@ import {
     deleteDocument,
 } from "../util/documentRepository";
 
-export function PageHome() {
+export function HomePage() {
     const [bookList, setBookList] = React.useState<DocumentMetadata[]>(
         getDocuments().unwrap()
     );

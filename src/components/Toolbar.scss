@@ -3,6 +3,10 @@
     background: var(--toolbar-background);
     // margin-right: var(--scrollbar-width);
     // border-right: var(--toolbar-border);
+    pointer-events: none;
+    & * {
+        pointer-events: all;
+    }
     @media (max-width: 37rem) {
         overflow-x: auto;
     }

@@ -1,33 +1,58 @@
 .Hymn {
-    background: var(--background);
-    padding: 0.75rem;
+    // background: var(--background);
+    // padding: 0.75rem;
     // box-shadow: 0 2px 4px rgba(34, 31, 28, 0.37);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 
     & > * {
-        margin: 0;
+        margin-top: 0;
     }
     & > * + * {
         margin-top: 0.5rem;
     }
 }
 
-.Hymn-chorus,
-.Hymn-refrain {
-    margin-left: 1rem;
-}
-.Hymn-details {
-    font-size: 0.8em;
-    // font-style: italic;
-    line-height: 1.5;
-}
-.Hymn-highlight {
-    background: blue;
+.Hymn-header {
+    text-align: center;
+    top: 0;
+
+    & > * {
+        margin-top: 0;
+    }
+    & > * + * {
+        margin-top: 0.5rem;
+    }
 }
 .Hymn-number {
     font-size: 1.625rem;
     line-height: 1;
     font-weight: bold;
     scroll-margin-top: 5rem;
+}
+.Hymn-tunes {
+    font-style: italic;
+}
+
+.Hymn-chorus,
+.Hymn-refrain {
+    margin-left: 1rem;
+}
+
+.Hymn-highlight {
+    background: blue;
+}
+
+.Hymn-verses {
+    flex: 1;
+
+    & > * {
+        margin-top: 0;
+    }
+    & > * + * {
+        margin-top: 0.5rem;
+    }
 }
 .Hymn-verseNumber {
     margin-left: 0.5rem;
@@ -43,7 +68,29 @@
 .Hymn-line {
     margin-right: 0.5rem;
     break-after: always;
+    // display: block;
+    // text-indent: -1rem;
+    // margin-left: 1rem;
 }
 .Hymn-line--nospaceafter {
     margin-right: 0;
+}
+
+.Hymn-details {
+    border-top: 1px solid;
+    padding-top: 0.5rem;
+    font-size: 0.8em;
+    line-height: 1.5;
+}
+.Hymn-topics, .Hymn-days {
+    display: flex;
+    flex-wrap: wrap;
+    // gap: 0.5rem;
+    font-size: 0.85rem;
+    // justify-content: center;
+
+    & > * + *::before {
+        content: "•";
+        padding: 0 0.25rem;
+    }
 }

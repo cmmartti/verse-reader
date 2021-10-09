@@ -11,7 +11,17 @@ export function GoToDialog({
     value: string | null;
 }) {
     const dialogRef = React.useRef<DetailsDialogElement>(null!);
+    const inputRef = React.useRef<HTMLInputElement>(null!);
     const [inputValue, setInputValue] = React.useState(value ?? "");
+
+    // React will eat "autoFocus" attributes and complain if all lowercase "autofocus"
+    // is set. Bypass React's custom behaviour around autofocus by manually setting
+    // it after the input is rendered.
+    // The custom element DetailsDialogElement requires the "autofocus" attribute to
+    // be set in order for its own autofocus functionality to work
+    React.useEffect(() => {
+        inputRef.current.setAttribute("autofocus", "true");
+    });
 
     return (
         <details-dialog ref={dialogRef} class="Dialog Dialog--bottomRight">
@@ -32,11 +42,7 @@ export function GoToDialog({
                 }}
             >
                 <input
-                    // React thinks autoFocus is the only correct capitalization, but
-                    // DetailsDialogElement requires autofocus to be all lower-case.
-                    // eslint-disable-next-line
-                    // @ts-ignore
-                    autofocus=""
+                    ref={inputRef}
                     type="number"
                     value={inputValue}
                     onChange={event => setInputValue(event.target.value)}

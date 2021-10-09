@@ -1,8 +1,8 @@
 import React from "react";
 import {BrowserRouter, Switch, Route} from "react-router-dom";
 
-import {PageHome} from "./PageHome";
-import {PageDocument} from "./PageDocument";
+import {HomePage} from "./HomePage";
+import {DocumentPage} from "./DocumentPage";
 
 import {ColorSchemeProvider} from "../util/useColorScheme";
 import {DisplayZoomProvider} from "../util/useDisplayZoom";
@@ -28,10 +28,10 @@ export default function App() {
                     <Switch>
                         <Route
                             path="/:id"
-                            render={({match}) => <PageDocument id={match.params.id} />}
+                            render={({match}) => <DocumentPage id={match.params.id} />}
                         />
 
-                        <Route path="/" exact component={PageHome}></Route>
+                        <Route path="/" exact component={HomePage}></Route>
                     </Switch>
                 </ColorSchemeProvider>
             </DisplayZoomProvider>
