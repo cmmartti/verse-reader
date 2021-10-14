@@ -24,9 +24,11 @@
         scroll-snap-align: center;
         scroll-stop-snap: always;
         overflow-y: auto;
-        // scrollbar-width: thin;
         padding: 0.75rem;
         padding-top: calc(var(--toolbar-height) + 0.75rem); // top toolbar
+        @media (min-width: 37rem) {
+            scrollbar-width: thin;
+        }
         @media (max-width: 37rem) {
             padding-bottom: calc(var(--toolbar-height) + 0.75rem); // bottom toolbar
         }

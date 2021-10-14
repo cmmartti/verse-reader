@@ -63,7 +63,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }
 
     return (
-        <div className="Hymn" id={id}>
+        <article className="Hymn" id={id}>
             <header className="Hymn-header">
                 <div className="Hymn-number" id={id}>
                     {id}.
@@ -189,7 +189,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                         </div>
                     ))}
             </div>
-        </div>
+        </article>
     );
 }
 
