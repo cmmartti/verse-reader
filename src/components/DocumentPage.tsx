@@ -79,8 +79,8 @@ export function DocumentPage({id}: {id: string}) {
                             `[data-id="${newPage}"]`
                         ) as HTMLButtonElement;
                         target?.scrollIntoView({inline: "start", behavior: "auto"});
-                        target?.focus({preventScroll: true});
-                        // setPage(newPage);
+                        target?.focus();
+                        setPage(newPage);
                     }}
                     document={hymnalDocument}
                 />
