@@ -32,6 +32,7 @@
     --control-background: #ececec;
     --control-border-color: black;
     --control-border: 1px solid var(--control-border-color);
+    --control-border-radius: 0.15rem;
     --control-height: 2.25rem;
     --control-outline-offset: -5px;
 
@@ -56,9 +57,9 @@
         --control-background: hsl(220, 13%, 18%);
         --control-active-background: rgb(39, 99, 122);
 
-        --toolbar-background: black;
-        --toolbar-border: 1px solid #7a828e;
-        --toolbar-item-box-shadow: none;
+        // --toolbar-background: black;
+        // --toolbar-border: 1px solid #7a828e;
+        // --toolbar-item-box-shadow: none;
 
         --dialog-inline-block: calc(var(--toolbar-height) + var(--toolbar-padding));
     }

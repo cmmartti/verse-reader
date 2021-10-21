@@ -90,31 +90,6 @@ export function HomePage() {
                     {hiddenFileInput}
                 </div>
 
-                <h2>Offline Use</h2>
-                <p>
-                    This Web application works offline. You can also install it to your
-                    home screen just like a normal app.
-                </p>
-                <div className="center">
-                    <button
-                        className="Button"
-                        disabled={!isPromptable}
-                        onClick={() => promptToInstall()}
-                    >
-                        Install to Home Screen
-                    </button>
-                </div>
-                {isInstalled && <p>Installed!</p>}
-                <h3>iOS/Safari Users:</h3>
-                <p>
-                    To install this app, tap the browser Share button and tap "Add to
-                    Home Screen".
-                </p>
-                <p>
-                    If you don't add this app to your home screen, Apple will delete your
-                    saved books if you don't use the app for more than two weeks.
-                </p>
-
                 <h2>Settings</h2>
                 <div className="fieldset">
                     <div className="form-field">
@@ -158,6 +133,31 @@ export function HomePage() {
                         </select>
                     </div>
                 </div>
+
+                <h2>Offline Use</h2>
+                <p>
+                    This Web application works offline. You can also install it to your
+                    home screen just like a normal app.
+                </p>
+                <div className="center">
+                    <button
+                        className="Button"
+                        disabled={!isPromptable}
+                        onClick={() => promptToInstall()}
+                    >
+                        Install to Home Screen
+                    </button>
+                </div>
+                {isInstalled && <p>Installed!</p>}
+                <h3>iOS/Safari Users:</h3>
+                <p>
+                    To install this app, tap the browser Share button and tap "Add to
+                    Home Screen".
+                </p>
+                <p>
+                    If you don't add this app to your home screen, Apple will delete your
+                    saved books if you don't use the app for more than two weeks.
+                </p>
             </div>
         </div>
     );

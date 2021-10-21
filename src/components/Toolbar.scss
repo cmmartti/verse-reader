@@ -24,6 +24,7 @@
 
     & > * {
         box-shadow: var(--toolbar-item-box-shadow);
+        border-radius: var(--control-border-radius);
     }
 }
 
@@ -35,6 +36,14 @@
 .Toolbar-group {
     display: flex;
 
+    & > *:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    & > *:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
     & > * {
         // Force the group's min-width of "auto" to use the child element's
         // min-width, instead of its default width.

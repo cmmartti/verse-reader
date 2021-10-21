@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 
 import {DisplayOptionsDialog} from "./DisplayOptionsDialog";
 import {useMatchMedia} from "../util/useMatchMedia";
+import {HymnalDocument} from "../HymnalDocument";
 // import {useIsInstalled} from "../util/useIsInstalled";
 
 // import {ReactComponent as MenuIcon} from "../assets/menu-24px.svg";
@@ -16,13 +17,15 @@ export function Toolbar({
     setSearch,
     page,
     setPage,
+    document,
 }: {
     search: string;
     setSearch: (search: string) => void;
     page: string;
     setPage: (page: string) => void;
+    document: HymnalDocument;
 }) {
-    const isMobile = useMatchMedia("(max-width: 37rem)");
+    const isMobile = useMatchMedia("(max-width: 28rem)");
     // const isInstalled = useIsInstalled() && false;
 
     const searchInput = (
@@ -30,6 +33,7 @@ export function Toolbar({
             initialValue={search ?? ""}
             onSubmit={value => setSearch(value)}
             className="Toolbar-grow"
+            placeholder={`Search ${document.title}`}
         />
     );
 
@@ -114,9 +118,15 @@ type SearchInputProps = {
     onSubmit: (newValue: string) => void;
     initialValue: string;
     className?: string;
+    placeholder: string;
 };
 
-function SearchInput({onSubmit, initialValue, className}: SearchInputProps) {
+function SearchInput({
+    onSubmit,
+    initialValue,
+    className,
+    placeholder,
+}: SearchInputProps) {
     const [value, setValue] = React.useState(initialValue);
 
     React.useEffect(() => {
@@ -131,7 +141,7 @@ function SearchInput({onSubmit, initialValue, className}: SearchInputProps) {
                 onFocus={e => e.target.select()}
                 onChange={event => setValue(event.target.value)}
                 className="Toolbar-grow"
-                placeholder="Search"
+                placeholder={placeholder}
                 aria-label="search"
             />
             <button
@@ -178,6 +188,7 @@ function GoToInput({onSubmit, initialValue, className}: GoToInputProps) {
                 onClick={event => {
                     event.preventDefault();
                     onSubmit(value);
+                    // (event.target as HTMLButtonElement).focus();
                 }}
                 className="Button"
                 aria-label="go to page"

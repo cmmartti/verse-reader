@@ -5,45 +5,39 @@ export function useDebounceCallback<CallbackArgs extends any[]>(
     wait = 100,
     leading = false
 ): (...args: CallbackArgs) => void {
-    const storedCallback = useLatest(callback);
-    const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
-
-    // Clean up pending timeouts when the deps change
-    React.useEffect(
-        () => () => {
-            timeoutRef.current && clearTimeout(timeoutRef.current);
-            timeoutRef.current = void 0;
-        },
-        [wait, leading, storedCallback]
-    );
+    const storedCallback = useLatestRef(callback);
+    const timeout = React.useRef<ReturnType<typeof setTimeout>>();
 
     return React.useCallback(
-        function () {
-            const args = arguments;
-            const {current} = timeoutRef;
-
-            // Calls on leading edge
-            if (current === void 0 && leading) {
-                timeoutRef.current = setTimeout(() => {
-                    timeoutRef.current = void 0;
+        (...args) => {
+            // Call on leading edge
+            if (timeout.current === void 0 && leading) {
+                timeout.current = setTimeout(() => {
+                    timeout.current = void 0;
                 }, wait);
-                return storedCallback.current.apply(null, args as any);
+                return storedCallback.current(...args);
             }
 
             // Clear the timeout every call and start waiting again
-            current && clearTimeout(current);
+            if (timeout.current) clearTimeout(timeout.current);
 
-            // Wait before invoking the callback
-            timeoutRef.current = setTimeout(() => {
-                timeoutRef.current = void 0;
-                storedCallback.current.apply(null, args as any);
+            // Wait until the timeout has completed before invoking the callback
+            timeout.current = setTimeout(() => {
+                timeout.current = void 0;
+                storedCallback.current(...args);
             }, wait);
+
+            // Clean up pending timeouts when the deps change
+            return () => {
+                timeout.current && clearTimeout(timeout.current);
+                timeout.current = void 0;
+            };
         },
         [wait, leading, storedCallback]
     );
 }
 
-function useLatest<T extends any>(current: T) {
+function useLatestRef<T extends any>(current: T) {
     const storedValue = React.useRef(current);
     React.useEffect(() => {
         storedValue.current = current;

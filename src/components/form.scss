@@ -1,6 +1,6 @@
 %form-control {
     border: var(--control-border);
-    border-radius: 0;
+    border-radius: var(--control-border-radius);
     color: var(--color);
     outline-offset: var(--control-outline-offset);
     padding: 0.4rem;
@@ -16,7 +16,7 @@
         outline: none;
     }
     &:hover:not(:disabled):not([aria-disabled]) {
-        outline: var(--hover-outline);
+        // outline: var(--hover-outline);
     }
     &:focus {
         outline: var(--focus-outline);

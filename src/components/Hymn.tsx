@@ -1,9 +1,22 @@
 import React from "react";
 import {Link, useLocation} from "react-router-dom";
+// import * as xpath from "fontoxpath";
+
 import {useDisplayOptions} from "./ContextDisplayOptions";
 
 const EM_DASH = "—";
 const ZERO_WIDTH_SPACE = "\u200B";
+
+// const getTunes = (hymn: Node) =>
+//     xpath.evaluateXPathToStrings("tune/@ref", hymn).map(id => {
+//         const name = xpath.evaluateXPathToString(
+//             '/hymnal/tunes//tune[@id="$id"]/@name',
+//             hymn,
+//             null,
+//             {id}
+//         );
+//         return {id, name: name || id};
+//     });
 
 export const Hymn = React.memo(_Hymn);
 
@@ -22,8 +35,6 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }, []);
 
     const id = node.getAttribute("id")!;
-    // const title = node.querySelector("title")!.textContent;
-
     const refrainLines = [...node.querySelectorAll("refrain > line, refrain > repeat")];
     const chorusLines = [...node.querySelectorAll("chorus > line, chorus > repeat")];
     const verses = [...node.querySelectorAll("verse")];
@@ -34,7 +45,6 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 `hymnal > tunes tune[id="${tuneRef.getAttribute("ref")}"]`
             )!
     );
-
     let altTunes: Element[] = [];
     if (tunes[0].parentElement?.localName === "tunes-group")
         altTunes = [...tunes[0].parentElement.children].filter(t => t !== tunes[0]);
@@ -63,9 +73,9 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }
 
     return (
-        <article className="Hymn" id={id}>
+        <article className="Hymn">
             <header className="Hymn-header">
-                <div className="Hymn-number" id={id}>
+                <div className="Hymn-number">
                     {id}.
                 </div>
                 {tunes.length > 0 && (
@@ -139,6 +149,24 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                         })}
                     </div>
                 )}
+                {authors.length > 0 &&
+                    authors.map(author => (
+                        <div key={author.textContent}>
+                            Author: {author.textContent}
+                            {author.getAttribute("year") &&
+                                ` (${author.getAttribute("year")})`}
+                            {author.getAttribute("country") &&
+                                ` (${author.getAttribute("country")})`}
+                        </div>
+                    ))}
+                {translators.length > 0 &&
+                    translators.map(translator => (
+                        <div key={translator.textContent}>
+                            Transl: {translator.textContent}
+                            {translator.getAttribute("year") &&
+                                ` (${translator.getAttribute("year")})`}
+                        </div>
+                    ))}
                 {days.length > 0 && (
                     <div className="Hymn-days">
                         {days.length === 1 ? "Day: " : "Days: "}
@@ -170,24 +198,6 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                         </ul>
                     </div>
                 )}
-                {authors.length > 0 &&
-                    authors.map(author => (
-                        <div>
-                            Author: {author.textContent}
-                            {author.getAttribute("year") &&
-                                ` (${author.getAttribute("year")})`}
-                            {author.getAttribute("country") &&
-                                ` (${author.getAttribute("country")})`}
-                        </div>
-                    ))}
-                {translators.length > 0 &&
-                    translators.map(translator => (
-                        <div>
-                            Transl: {translator.textContent}
-                            {translator.getAttribute("year") &&
-                                ` (${translator.getAttribute("year")})`}
-                        </div>
-                    ))}
             </div>
         </article>
     );

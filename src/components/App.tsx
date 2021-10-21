@@ -9,7 +9,7 @@ import {DisplayZoomProvider} from "../util/useDisplayZoom";
 
 import "./App.scss";
 import "@github/details-dialog-element";
-import "@github/details-menu-element";
+// import "@github/details-menu-element";
 
 declare global {
     namespace JSX {

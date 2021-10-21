@@ -5,8 +5,10 @@ import {DisplayOptionsProvider} from "./ContextDisplayOptions";
 import {Toolbar} from "./Toolbar";
 import {Document} from "./Document";
 import {useDebounceCallback} from "../util/useDebounceCallback";
+import {getDocument} from "../util/documentRepository";
+import {HymnalDocument} from "../HymnalDocument";
 
-export function useSearch() {
+function useSearch() {
     const history = useHistory();
     const location = useLocation();
 
@@ -20,36 +22,50 @@ export function useSearch() {
                 urlQuery.delete("q");
             }
             history.push({...history.location, search: urlQuery.toString()});
-            window.scrollTo(1, 1);
         }
 
         return [search, setSearch] as const;
     }, [history, location]);
 }
 
-export function usePage() {
-    const history = useHistory();
-    const location = useLocation();
-    const fragment = location.hash.substring(1); // remove leading #
-
-    const [page, _setPage] = React.useState(/[0-9]+/.test(fragment) ? fragment : null);
-
-    const updateURL = useDebounceCallback(newPage => {
-        if (newPage) history.replace({...history.location, hash: "#" + newPage});
-        else history.replace({...history.location, hash: undefined});
-    }, 300);
-
-    function setPage(newPage: typeof page) {
-        _setPage(newPage);
-        updateURL(newPage);
-    }
-
-    return [page, setPage] as const;
-}
-
 export function DocumentPage({id}: {id: string}) {
     const [search, setSearch] = useSearch();
-    const [page, setPage] = usePage();
+
+    const initialPage = useLocation().hash.substring(1) || null; // remove leading #
+    const [page, _setPage] = React.useState(initialPage);
+
+    React.useEffect(() => {
+        if (initialPage)
+            document
+                .querySelector(`[data-id="${initialPage}"]`)
+                ?.scrollIntoView({inline: "start", behavior: "auto"});
+    }, [initialPage]);
+
+    const _syncURL = React.useCallback(
+        (newPage: typeof page) => {
+            if (newPage) {
+                window.history.replaceState(
+                    null,
+                    "",
+                    "/" + id + (search ? "?q=" + search : "") + (page ? "#" + page : "")
+                );
+            }
+        },
+        [id, page, search]
+    );
+    const syncURL = useDebounceCallback(_syncURL, 200);
+    const setPage = React.useCallback(
+        (newPage: typeof page) => {
+            _setPage(newPage);
+            syncURL(newPage);
+        },
+        [syncURL]
+    );
+
+    const hymnalDocument = React.useMemo(
+        () => new HymnalDocument(getDocument(id).unwrap()),
+        [id]
+    );
 
     return (
         <DisplayOptionsProvider id={id}>
@@ -59,19 +75,16 @@ export function DocumentPage({id}: {id: string}) {
                     setSearch={setSearch}
                     page={page ?? "1"}
                     setPage={(newPage: string) => {
-                        document
-                            .getElementById(newPage)
-                            ?.scrollIntoView({inline: "start"});
-                        setPage(newPage);
+                        const target = document.querySelector(
+                            `[data-id="${newPage}"]`
+                        ) as HTMLButtonElement;
+                        target?.scrollIntoView({inline: "start", behavior: "auto"});
+                        target?.focus({preventScroll: true});
+                        // setPage(newPage);
                     }}
+                    document={hymnalDocument}
                 />
-                <Document
-                    id={id}
-                    search={search}
-                    setSearch={setSearch}
-                    page={page ?? "1"}
-                    setPage={setPage}
-                />
+                <Document document={hymnalDocument} search={search} setPage={setPage} />
             </main>
         </DisplayOptionsProvider>
     );
