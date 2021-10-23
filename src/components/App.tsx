@@ -13,10 +13,11 @@ import "@github/details-dialog-element";
 declare global {
     namespace JSX {
         interface IntrinsicElements {
-            "details-dialog": React.DetailedHTMLProps<
-                React.HTMLAttributes<HTMLElement>,
-                HTMLElement
-            >;
+            // "details-dialog": React.DetailedHTMLProps<
+            //     React.HTMLAttributes<HTMLElement>,
+            //     HTMLElement
+            // >;
+            "details-dialog": any;
         }
     }
 }
