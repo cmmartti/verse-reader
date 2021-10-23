@@ -114,7 +114,7 @@ export function getDocument(id: string): Result<XMLDocument> {
         try {
             xmlDocument = domParser.parseFromString(xmlString, "text/xml");
         } catch (e) {
-            return Result.err(e);
+            return Result.err(e as Error);
         }
         return Result.ok(xmlDocument);
     });

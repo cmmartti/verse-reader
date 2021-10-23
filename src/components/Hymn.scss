@@ -39,6 +39,9 @@
 .Hymn-refrain {
     margin-left: 1rem;
 }
+.Hymn-inlineRefrain {
+    font-style: italic;
+}
 
 .Hymn-highlight {
     background: blue;
@@ -82,15 +85,7 @@
     font-size: 0.8em;
     line-height: 1.5;
 }
-.Hymn-topics, .Hymn-days {
-    display: flex;
-    flex-wrap: wrap;
-    // gap: 0.5rem;
+.Hymn-topics,
+.Hymn-days {
     font-size: 0.85rem;
-    // justify-content: center;
-
-    & > * + *::before {
-        content: "•";
-        padding: 0 0.25rem;
-    }
 }

@@ -55,6 +55,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 `hymnal > topics > topic[id="${topicRef.getAttribute("ref")}"]`
             )!
     );
+    const origin = node.querySelector("origin")?.textContent ?? null;
     const authors = [...node.querySelectorAll("author")];
     const translators = [...node.querySelectorAll("translator")];
     const days = [...node.querySelectorAll("day[ref]")!].map(
@@ -63,6 +64,11 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 `hymnal > calendar > day[id="${dayRef.getAttribute("ref")}"]`
             )!
     );
+    const links = [...node.querySelectorAll("link")].map(link => ({
+        book: link.getAttribute("book"),
+        edition: link.getAttribute("edition"),
+        id: link.getAttribute("id"),
+    }));
 
     if (firstRender && !isAboveTheFold) {
         return (
@@ -75,18 +81,19 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     return (
         <article className="Hymn">
             <header className="Hymn-header">
-                <div className="Hymn-number">
-                    {id}.
-                </div>
+                <div className="Hymn-number">{id}</div>
                 {tunes.length > 0 && (
                     <div className="Hymn-tunes">
                         Tune:{" "}
-                        {tunes.map(tune => {
+                        {tunes.map((tune, index) => {
                             const tuneId = tune.getAttribute("id");
                             return (
-                                <Link key={tuneId} to={`?q=tune:${id}#${page}`}>
-                                    {tune.getAttribute("name") || tuneId}
-                                </Link>
+                                <React.Fragment key={tuneId}>
+                                    <Link key={tuneId} to={`?q=tune:${id}#${page}`}>
+                                        {tune.getAttribute("name") || tuneId}
+                                    </Link>
+                                    {index < tunes.length - 1 && ", "}
+                                </React.Fragment>
                             );
                         })}
                     </div>
@@ -105,11 +112,13 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                                 <Lines lines={verseLines} />
                                 {refrainLines.length > 0 &&
                                     (repeatRefrain ? (
-                                        <Lines lines={refrainLines} />
+                                        <span className="Hymn-inlineRefrain">
+                                            <Lines lines={refrainLines} />
+                                        </span>
                                     ) : (
-                                        i !== 0 && <i>Refrain:</i>
+                                        i > 0 && <i>Refrain:</i>
                                     ))}
-                                {chorusLines.length > 0 && !repeatChorus && (
+                                {i > 0 && chorusLines.length > 0 && !repeatChorus && (
                                     <i>Chorus:</i>
                                 )}
                             </p>
@@ -139,44 +148,66 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 {topics.length > 0 && (
                     <div className="Hymn-topics">
                         {topics.length === 1 ? "Topic: " : "Topics: "}
-                        {topics.map(topic => {
+                        {topics.map((topic, index) => {
                             const topicId = topic.getAttribute("id");
                             return (
-                                <Link key={topicId} to={`?q=topic:${topicId}#${page}`}>
-                                    {topic.getAttribute("name")}
-                                </Link>
+                                <React.Fragment key={topicId}>
+                                    <Link to={`?q=topic:${topicId}#${page}`}>
+                                        {topic.getAttribute("name")}
+                                    </Link>
+                                    {index < topics.length - 1 && ", "}
+                                </React.Fragment>
                             );
                         })}
                     </div>
                 )}
-                {authors.length > 0 &&
-                    authors.map(author => (
-                        <div key={author.textContent}>
-                            Author: {author.textContent}
-                            {author.getAttribute("year") &&
-                                ` (${author.getAttribute("year")})`}
-                            {author.getAttribute("country") &&
-                                ` (${author.getAttribute("country")})`}
-                        </div>
-                    ))}
-                {translators.length > 0 &&
-                    translators.map(translator => (
-                        <div key={translator.textContent}>
-                            Transl: {translator.textContent}
-                            {translator.getAttribute("year") &&
-                                ` (${translator.getAttribute("year")})`}
-                        </div>
-                    ))}
+                {authors.length > 0 && (
+                    <div>
+                        {authors.length === 1 ? "Author: " : "Authors: "}
+                        {authors
+                            .map(
+                                author =>
+                                    author.textContent +
+                                    (author.getAttribute("year")
+                                        ? ` (${author.getAttribute("year")})`
+                                        : "")
+                            )
+                            .join(", ")}
+                        {origin && ` [${origin}]`}
+                    </div>
+                )}
+                {translators.length > 0 && (
+                    <div>
+                        Transl:{" "}
+                        {translators
+                            .map(
+                                translator =>
+                                    translator.textContent +
+                                    (translator.getAttribute("year")
+                                        ? ` (${translator.getAttribute("year")})`
+                                        : "")
+                            )
+                            .join(", ")}
+                    </div>
+                )}
+                {links.length > 0 && (
+                    <div>
+                        {links
+                            .map(link => `${link.book}-${link.edition} #${link.id}`)
+                            .join(" / ")}
+                    </div>
+                )}
                 {days.length > 0 && (
                     <div className="Hymn-days">
                         {days.length === 1 ? "Day: " : "Days: "}
-                        {days.map(day => {
+                        {days.map((day, index) => {
                             const name = day.getAttribute("shortName");
                             const dayId = day.getAttribute("id");
                             return (
-                                <Link key={dayId} to={`?q=day:${dayId}#${page}`}>
-                                    {name}
-                                </Link>
+                                <React.Fragment key={dayId}>
+                                    <Link to={`?q=day:${dayId}#${page}`}>{name}</Link>
+                                    {index < days.length - 1 && ", "}
+                                </React.Fragment>
                             );
                         })}
                     </div>
@@ -225,10 +256,9 @@ function Lines({lines}: {lines: Element[]}) {
                         return (
                             <span key={i} className="Hymn-repeat">
                                 <Lines lines={lines} />
-                                &nbsp;
                                 <span className="Hymn-repeatMarker">
                                     {/* {[...Array(times)].map(() => ":").join(",")} */}
-                                    (x{times})
+                                    (x{times}){" "}
                                 </span>
                             </span>
                         );

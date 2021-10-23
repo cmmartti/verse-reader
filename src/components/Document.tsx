@@ -40,7 +40,7 @@ export function Document({
             },
             {
                 root: documentRef.current,
-                threshold: [0, 1],
+                threshold: [0, 0.5, 1],
             }
         );
 
@@ -90,7 +90,6 @@ export function Document({
                     data-id={hymn.getAttribute("id")}
                     hidden={!matchingHymns.includes(hymn)}
                     tabIndex={-1}
-                    className="Document-hymnWrapper"
                 >
                     <Hymn
                         node={hymn}

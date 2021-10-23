@@ -9,13 +9,14 @@ import {DisplayZoomProvider} from "../util/useDisplayZoom";
 
 import "./App.scss";
 import "@github/details-dialog-element";
-// import "@github/details-menu-element";
 
 declare global {
     namespace JSX {
         interface IntrinsicElements {
-            "details-dialog": any;
-            "details-menu": any;
+            "details-dialog": React.DetailedHTMLProps<
+                React.HTMLAttributes<HTMLElement>,
+                HTMLElement
+            >;
         }
     }
 }

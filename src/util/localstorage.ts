@@ -9,7 +9,7 @@ export function getItem(key: string): Result<string, Error | NotFoundError> {
     try {
         res = localStorage.getItem(key);
     } catch (e) {
-        return Result.err(e);
+        return Result.err(e as Error);
     }
     if (res === null) {
         return Result.err(
@@ -23,7 +23,7 @@ export function setItem(key: string, value: string): Result<void> {
     try {
         localStorage.setItem(key, value);
     } catch (e) {
-        return Result.err(e);
+        return Result.err(e as Error);
     }
     return Result.ok(undefined);
 }
@@ -32,7 +32,7 @@ export function removeItem(key: string): Result<void> {
     try {
         localStorage.removeItem(key);
     } catch (e) {
-        return Result.err(e);
+        return Result.err(e as Error);
     }
     return Result.ok(undefined);
 }
