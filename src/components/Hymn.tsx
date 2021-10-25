@@ -35,6 +35,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }, []);
 
     const id = node.getAttribute("id")!;
+    const isDeleted = node.getAttribute("deleted") === "true";
     const refrainLines = [...node.querySelectorAll("refrain > line, refrain > repeat")];
     const chorusLines = [...node.querySelectorAll("chorus > line, chorus > repeat")];
     const verses = [...node.querySelectorAll("verse")];
@@ -79,7 +80,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }
 
     return (
-        <article className="Hymn">
+        <article className={"Hymn" + (isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
                 <div className="Hymn-number">{id}</div>
                 {tunes.length > 0 && (
@@ -178,7 +179,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 )}
                 {translators.length > 0 && (
                     <div>
-                        Transl:{" "}
+                        {translators.length === 1 ? "Translator: " : "Translators: "}
                         {translators
                             .map(
                                 translator =>

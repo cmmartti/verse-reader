@@ -31,6 +31,9 @@
     font-weight: bold;
     scroll-margin-top: 5rem;
 }
+.Hymn.isDeleted .Hymn-number {
+    text-decoration: line-through;
+}
 .Hymn-tunes {
     font-style: italic;
 }

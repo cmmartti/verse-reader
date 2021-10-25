@@ -143,6 +143,8 @@ export class HymnalDocument {
                             predicates.push(`[.//hr:${value}]`);
                     }
                     break;
+                case "is":
+                    if (value === "deleted") predicates.push("[@deleted]");
                 // case "author":
                 //     predicates.push(`[hr:author="${value}"]`);
                 //     break;
