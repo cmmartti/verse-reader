@@ -1,0 +1,16 @@
+.Index {
+}
+.Index-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.Index-entry {
+    &.is-deleted {
+        text-decoration: line-through;
+    }
+    &.is-otherLanguage {
+        font-style: italic;
+        padding-left: 1rem;
+    }
+}

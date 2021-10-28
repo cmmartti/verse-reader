@@ -20,9 +20,13 @@ const ZERO_WIDTH_SPACE = "\u200B";
 
 export const Hymn = React.memo(_Hymn);
 
-type HymnProps = {node: Element; isAboveTheFold?: boolean};
+type HymnProps = {
+    node: Element;
+    isAboveTheFold?: boolean;
+    documentLanguage: string;
+};
 
-function _Hymn({node, isAboveTheFold = true}: HymnProps) {
+function _Hymn({node, isAboveTheFold = true, documentLanguage}: HymnProps) {
     const location = useLocation();
     const fragment = location.hash.substring(1);
     const page = /[0-9]+/.test(fragment) ? fragment : null;
@@ -35,7 +39,10 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     }, []);
 
     const id = node.getAttribute("id")!;
-    const isDeleted = node.getAttribute("deleted") === "true";
+    const language = node.getAttribute("language") ?? documentLanguage;
+    const isDeleted = [1, "true"].includes(node.getAttribute("deleted") ?? 0);
+    const isRestricted = [1, "true"].includes(node.getAttribute("restricted") ?? 0);
+
     const refrainLines = [...node.querySelectorAll("refrain > line, refrain > repeat")];
     const chorusLines = [...node.querySelectorAll("chorus > line, chorus > repeat")];
     const verses = [...node.querySelectorAll("verse")];
@@ -46,25 +53,49 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 `hymnal > tunes tune[id="${tuneRef.getAttribute("ref")}"]`
             )!
     );
-    let altTunes: Element[] = [];
-    if (tunes[0].parentElement?.localName === "tunes-group")
-        altTunes = [...tunes[0].parentElement.children].filter(t => t !== tunes[0]);
+    // let altTunes: Element[] = [];
+    // if (tunes[0].parentElement?.localName === "tunes-group")
+    //     altTunes = [...tunes[0].parentElement.children].filter(t => t !== tunes[0]);
 
-    const topics = [...node.querySelectorAll("topic[ref]")!].map(
-        topicRef =>
-            node.ownerDocument.querySelector(
-                `hymnal > topics > topic[id="${topicRef.getAttribute("ref")}"]`
-            )!
-    );
+    const topics = [...node.querySelectorAll("topic[ref]")!]
+        .map(
+            topicRef =>
+                node.ownerDocument.querySelector(
+                    `hymnal > topics > topic[id="${topicRef.getAttribute("ref")}"]`
+                )!
+        )
+        .map(topicNode => ({
+            id: topicNode.getAttribute("id")!,
+            name: topicNode.getAttribute("name") ?? topicNode.getAttribute("id")!,
+        }));
+
     const origin = node.querySelector("origin")?.textContent ?? null;
-    const authors = [...node.querySelectorAll("author")];
-    const translators = [...node.querySelectorAll("translator")];
-    const days = [...node.querySelectorAll("day[ref]")!].map(
-        dayRef =>
-            node.ownerDocument.querySelector(
-                `hymnal > calendar > day[id="${dayRef.getAttribute("ref")}"]`
-            )!
-    );
+
+    const authors = [...node.querySelectorAll("author")].map(authorNode => ({
+        name: authorNode.textContent ?? "",
+        year: authorNode.getAttribute("year") ?? "",
+    }));
+
+    const translators = [...node.querySelectorAll("translator")].map(translatorNode => ({
+        name: translatorNode.textContent ?? "",
+        year: translatorNode.getAttribute("year") ?? "",
+    }));
+
+    const days = [...node.querySelectorAll("day[ref]")!]
+        .map(
+            dayRef =>
+                node.ownerDocument.querySelector(
+                    `hymnal > calendar > day[id="${dayRef.getAttribute("ref")}"]`
+                )!
+        )
+        .map(dayNode => ({
+            id: dayNode.getAttribute("id")!,
+            name:
+                dayNode.getAttribute("shortName") ??
+                dayNode.getAttribute("name") ??
+                dayNode.getAttribute("id")!,
+        }));
+
     const links = [...node.querySelectorAll("link")].map(link => ({
         book: link.getAttribute("book"),
         edition: link.getAttribute("edition"),
@@ -82,7 +113,10 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
     return (
         <article className={"Hymn" + (isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
-                <div className="Hymn-number">{id}</div>
+                <div className="Hymn-number">
+                    {isRestricted && "*"}
+                    {id}
+                </div>
                 {tunes.length > 0 && (
                     <div className="Hymn-tunes">
                         Tune:{" "}
@@ -97,6 +131,18 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                                 </React.Fragment>
                             );
                         })}
+                    </div>
+                )}
+                {topics.length > 0 && (
+                    <div className="Hymn-topics">
+                        {topics.map((topic, index) => (
+                            <React.Fragment key={topic.id}>
+                                <Link to={`?q=topic:${topic.id}#${page}`}>
+                                    {topic.name}
+                                </Link>
+                                {index < topics.length - 1 && " / "}
+                            </React.Fragment>
+                        ))}
                     </div>
                 )}
             </header>
@@ -146,20 +192,10 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 })}
             </div>
             <div className="Hymn-details">
-                {topics.length > 0 && (
-                    <div className="Hymn-topics">
-                        {topics.length === 1 ? "Topic: " : "Topics: "}
-                        {topics.map((topic, index) => {
-                            const topicId = topic.getAttribute("id");
-                            return (
-                                <React.Fragment key={topicId}>
-                                    <Link to={`?q=topic:${topicId}#${page}`}>
-                                        {topic.getAttribute("name")}
-                                    </Link>
-                                    {index < topics.length - 1 && ", "}
-                                </React.Fragment>
-                            );
-                        })}
+                {language !== documentLanguage && (
+                    <div>
+                        Language:{" "}
+                        <Link to={`?q=lang:${language}#${page}`}>{language}</Link>
                     </div>
                 )}
                 {authors.length > 0 && (
@@ -168,10 +204,8 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                         {authors
                             .map(
                                 author =>
-                                    author.textContent +
-                                    (author.getAttribute("year")
-                                        ? ` (${author.getAttribute("year")})`
-                                        : "")
+                                    author.name +
+                                    (author.year ? ` (${author.year})` : "")
                             )
                             .join(", ")}
                         {origin && ` [${origin}]`}
@@ -183,10 +217,8 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                         {translators
                             .map(
                                 translator =>
-                                    translator.textContent +
-                                    (translator.getAttribute("year")
-                                        ? ` (${translator.getAttribute("year")})`
-                                        : "")
+                                    translator.name +
+                                    (translator.year ? ` (${translator.year})` : "")
                             )
                             .join(", ")}
                     </div>
@@ -201,19 +233,15 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                 {days.length > 0 && (
                     <div className="Hymn-days">
                         {days.length === 1 ? "Day: " : "Days: "}
-                        {days.map((day, index) => {
-                            const name = day.getAttribute("shortName");
-                            const dayId = day.getAttribute("id");
-                            return (
-                                <React.Fragment key={dayId}>
-                                    <Link to={`?q=day:${dayId}#${page}`}>{name}</Link>
-                                    {index < days.length - 1 && ", "}
-                                </React.Fragment>
-                            );
-                        })}
+                        {days.map((day, index) => (
+                            <React.Fragment key={day.id}>
+                                <Link to={`?q=day:${day.id}#${page}`}>{day.name}</Link>
+                                {index < days.length - 1 && ", "}
+                            </React.Fragment>
+                        ))}
                     </div>
                 )}
-                {altTunes.length > 0 && (
+                {/* {altTunes.length > 0 && (
                     <div>
                         {altTunes.length === 1 ? "Alternate tune:" : "Alternate tunes:"}
                         <ul>
@@ -229,7 +257,7 @@ function _Hymn({node, isAboveTheFold = true}: HymnProps) {
                             })}
                         </ul>
                     </div>
-                )}
+                )} */}
             </div>
         </article>
     );
@@ -258,8 +286,8 @@ function Lines({lines}: {lines: Element[]}) {
                             <span key={i} className="Hymn-repeat">
                                 <Lines lines={lines} />
                                 <span className="Hymn-repeatMarker">
-                                    {/* {[...Array(times)].map(() => ":").join(",")} */}
-                                    (x{times}){" "}
+                                    {[...Array(times)].map(() => ":").join(",")}
+                                    {/* ({times}x){" "} */}
                                 </span>
                             </span>
                         );

@@ -48,11 +48,14 @@ export class HymnalDocument {
     public get id() {
         return this.xmlDocument.documentElement.getAttribute("id");
     }
+    public get year() {
+        return this.xmlDocument.documentElement.getAttribute("year");
+    }
     public get title() {
         return this.xmlDocument.documentElement.getAttribute("title");
     }
     public get language() {
-        return this.xmlDocument.documentElement.getAttribute("language");
+        return this.xmlDocument.documentElement.getAttribute("language")!;
     }
 
     // public get indices() {
@@ -132,6 +135,11 @@ export class HymnalDocument {
                     if (tuneID) predicates.push(`[hr:tune/@ref="${tuneID}"]`);
                     break;
                 }
+                case "lang": {
+                    if (value === this.language) predicates.push("[not(@language)]");
+                    else predicates.push(`[@language="${value}"]`);
+                    break;
+                }
                 case "day":
                     predicates.push(`[hr:day/@ref = "${value}"]`);
                     break;
@@ -143,8 +151,26 @@ export class HymnalDocument {
                             predicates.push(`[.//hr:${value}]`);
                     }
                     break;
+                case "hasnot":
+                    switch (value) {
+                        case "refrain":
+                        case "chorus":
+                        case "repeat":
+                            predicates.push(`[not(.//hr:${value})]`);
+                    }
+                    break;
                 case "is":
                     if (value === "deleted") predicates.push("[@deleted]");
+                    if (value === "restricted") predicates.push("[@restricted]");
+                    if (value === "new")
+                        predicates.push(`[not(hr:link[@edition < "${this.year}"])]`);
+                    break;
+                case "isnot":
+                    if (value === "deleted") predicates.push("[not(@deleted)]");
+                    if (value === "restricted") predicates.push("[not(@restricted)]");
+                    if (value === "new")
+                        predicates.push(`[hr:link[@edition < "${this.year}"]]`);
+                    break;
                 // case "author":
                 //     predicates.push(`[hr:author="${value}"]`);
                 //     break;
@@ -195,6 +221,9 @@ export class HymnValue {
     }
     public get title(): string {
         return evaluateOne("hr:title", this.element)!.textContent!;
+    }
+    public get language(): string {
+        return this.element.getAttribute("language")!;
     }
     public get topics(): Topic[] {
         return evaluate("hr:topic", this.element).map(node => {

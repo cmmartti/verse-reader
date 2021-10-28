@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 
 import {HymnalDocument} from "../HymnalDocument";
 import {Hymn} from "./Hymn";
+import {Index} from "./Index";
 
 export function Document({
     document,
@@ -72,16 +73,7 @@ export function Document({
                         </p>
                     </>
                 )}
-                <ul>
-                    {matchingHymns.map(hymn => (
-                        <li key={hymn.getAttribute("id")}>
-                            {hymn.getAttribute("id")}.{" "}
-                            <a href={`#${hymn.getAttribute("id")}`}>
-                                {hymn.querySelector("title")?.textContent}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+                <Index document={document} hymns={matchingHymns} />
             </div>
 
             {allHymns.map(hymn => (
@@ -93,6 +85,7 @@ export function Document({
                 >
                     <Hymn
                         node={hymn}
+                        documentLanguage={document.language}
                         isAboveTheFold={matchingHymns.slice(0, 9).includes(hymn)}
                     />
                 </div>

@@ -6,6 +6,7 @@
 @import "DocumentPage.scss";
 @import "HomePage.scss";
 @import "Hymn.scss";
+@import "Index.scss";
 @import "IndexDialog.scss";
 @import "ScrollbarsCustom.scss";
 @import "Toolbar.scss";
@@ -19,7 +20,7 @@
     --hover-color: #008cff;
     --focus-color: orange;
     --disabled-color: hsl(0, 0%, 50%);
-    --link-color: #025cd3;
+    --link-color: #024eb1;
     --border-radius: 6px;
     --outline-width: 2px;
 
@@ -32,7 +33,8 @@
     --control-background: #ececec;
     --control-border-color: black;
     --control-border: 1px solid var(--control-border-color);
-    --control-border-radius: 0.15rem;
+    // --control-border-radius: 0.15rem;
+    --control-border-radius: 0;
     --control-height: 2.25rem;
     --control-outline-offset: -5px;
 
