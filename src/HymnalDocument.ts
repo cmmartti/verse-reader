@@ -149,6 +149,10 @@ export class HymnalDocument {
                         case "chorus":
                         case "repeat":
                             predicates.push(`[.//hr:${value}]`);
+                            break;
+                        case "deleted":
+                            predicates.push("[hr:verses//*[@deleted]]")
+                            break;
                     }
                     break;
                 case "hasnot":
@@ -157,6 +161,10 @@ export class HymnalDocument {
                         case "chorus":
                         case "repeat":
                             predicates.push(`[not(.//hr:${value})]`);
+                            break;
+                        case "deleted":
+                            predicates.push("[not(hr:verses//*[@deleted])]")
+                            break;
                     }
                     break;
                 case "is":
@@ -164,12 +172,16 @@ export class HymnalDocument {
                     if (value === "restricted") predicates.push("[@restricted]");
                     if (value === "new")
                         predicates.push(`[not(hr:link[@edition < "${this.year}"])]`);
+                    if (value === "kept")
+                        predicates.push(`[hr:link[@edition > "${this.year}"]]`);
                     break;
                 case "isnot":
                     if (value === "deleted") predicates.push("[not(@deleted)]");
                     if (value === "restricted") predicates.push("[not(@restricted)]");
                     if (value === "new")
                         predicates.push(`[hr:link[@edition < "${this.year}"]]`);
+                    if (value === "kept")
+                        predicates.push(`[not(hr:link[@edition > "${this.year}"])]`);
                     break;
                 // case "author":
                 //     predicates.push(`[hr:author="${value}"]`);

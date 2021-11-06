@@ -6,11 +6,44 @@
     margin: 0;
 }
 .Index-entry {
-    &.is-deleted {
+    overflow-x: hidden;
+    padding-left: 2em;
+    text-indent: -2em;
+    line-height: 1.2;
+
+    & + .Index-entry {
+        margin-top: 0.65em;
+    }
+    & .Index-entryNumber {
+        // margin-right: 0.1em;
+    }
+
+    // & .Index-entryTitle {
+    //     background: var(--background);
+    //     padding-right: 0.35ch;
+    // }
+    // & .Index-entryNumber {
+    //     background: var(--background);
+    //     float: right;
+    //     padding-left: 0.3ch;
+    //     position: relative;
+    //     z-index: 1;
+    //     text-indent: 0;
+    // }
+    // &::after {
+    //     content: "  ................................................................."
+    //         "..........................................................................";
+    //     float: left;
+    //     width: 0;
+    //     white-space: pre;
+    //     pointer-events: none;
+    // }
+
+    &.is-deleted .Index-entryTitle {
         text-decoration: line-through;
     }
-    &.is-otherLanguage {
+    &.is-otherLanguage .Index-entryTitle {
         font-style: italic;
-        padding-left: 1rem;
+        padding-left: 1ch;
     }
 }

@@ -71,6 +71,9 @@
 .Hymn-repeatMarker {
     // margin-left: -0.5rem;
 }
+.Hymn-verse.is-deleted .Hymn-line {
+    text-decoration: line-through;
+}
 .Hymn-line {
     margin-right: 0.5rem;
     break-after: always;

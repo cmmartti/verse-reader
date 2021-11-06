@@ -151,10 +151,13 @@ function _Hymn({node, isAboveTheFold = true, documentLanguage}: HymnProps) {
                     const verseLines = [
                         ...verse.querySelectorAll(":scope > line, :scope > repeat"),
                     ];
+                    const isDeleted = [1, "true"].includes(
+                        verse.getAttribute("deleted") ?? 0
+                    );
 
                     return (
                         <React.Fragment key={i}>
-                            <p className="Hymn-verse">
+                            <p className={`Hymn-verse${isDeleted ? " is-deleted" : ""}`}>
                                 <span className="Hymn-verseNumber">{i + 1}.</span>{" "}
                                 <Lines lines={verseLines} />
                                 {refrainLines.length > 0 &&
@@ -226,7 +229,7 @@ function _Hymn({node, isAboveTheFold = true, documentLanguage}: HymnProps) {
                 {links.length > 0 && (
                     <div>
                         {links
-                            .map(link => `${link.book}-${link.edition} #${link.id}`)
+                            .map(link => `${link.edition}: #${link.id}`)
                             .join(" / ")}
                     </div>
                 )}
