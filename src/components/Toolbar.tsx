@@ -8,7 +8,7 @@ import {
 } from "@szhsin/react-menu";
 import { useNavigate } from "react-router-dom";
 
-import { DetailsDialog } from "./DetailsDialog";
+// import { DetailsDialog } from "./DetailsDialog";
 import { useDisplayOptions } from "../util/useDisplayOptions";
 import { ReactComponent as MenuIcon } from "../assets/menu-24px.svg";
 import { ReactComponent as SearchIcon } from "../assets/search-24px.svg";
@@ -125,9 +125,9 @@ export function Toolbar({
                 >
                     <SearchIcon />
                 </summary>
-                <DetailsDialog ref={searchMenuRef}>
+                <details-dialog ref={searchMenuRef}>
                     <SearchDialog document={document} />
-                </DetailsDialog>
+                </details-dialog>
             </details>
 
             <details className="Toolbar-item Toolbar-menu">
@@ -139,9 +139,9 @@ export function Toolbar({
                 >
                     Aa
                 </summary>
-                <DetailsDialog ref={optionsMenuRef}>
+                <details-dialog ref={optionsMenuRef}>
                     <OptionsDialog />
-                </DetailsDialog>
+                </details-dialog>
             </details>
         </div>
     );
@@ -219,8 +219,8 @@ function SearchDialog({ document }: { document: HymnalDocument }) {
                                 </div>
                                 {inputValue && (
                                     <ul>
-                                        {result.matches.map(match => (
-                                            <li>{match}</li>
+                                        {result.matches.map((match, i) => (
+                                            <li key={i}>{match}</li>
                                         ))}
                                     </ul>
                                 )}

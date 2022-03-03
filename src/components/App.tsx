@@ -1,5 +1,6 @@
 import * as React from "react";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import "@github/details-dialog-element";
 
 import { ManagePage } from "./ManagePage";
 import { MainPage } from "./MainPage";
@@ -9,14 +10,18 @@ import { getDocuments } from "../util/documentRepository";
 
 import "./App.scss";
 
-// declare global {
-//     namespace JSX {
-//         interface IntrinsicElements {
-//             "details-dialog": any;
-//             // "details-menu": any;
-//         }
-//     }
-// }
+declare global {
+    namespace JSX {
+        interface IntrinsicElements {
+            "details-dialog": React.DetailedHTMLProps<
+                React.HTMLAttributes<HTMLElement>,
+                HTMLElement
+            >;
+            // "details-dialog": any;
+            // "details-menu": any;
+        }
+    }
+}
 
 export const App = () => {
     const bookList = getDocuments();
