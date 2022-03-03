@@ -1,64 +1,59 @@
 @import "form.scss";
 @import "menu.scss";
-@import "fonts.scss";
-@import "Hymn.scss";
-@import "MainPage.scss";
-@import "ManagePage.scss";
+
 @import "Toolbar.scss";
+@import "Dialog.scss";
+@import "MainPage.scss";
+@import "Hymn.scss";
+@import "ManagePage.scss";
 
 :root {
-    font-size: 16px;
+    font-size: calc(16px * var(--ui-scale-factor, 1));
     transition: font-size 0.05s ease-out;
 
     --background: white;
     --color: black;
     --hover-color: #008cff;
-    --focus-color: rebeccapurple;
-    --disabled-color: hsl(0, 0%, 60%);
+    --focus-color: orange;
+    --disabled-color: hsl(0, 0%, 50%);
     --link-color: #003c8b;
     --border-radius: 6px;
     --outline-width: 2px;
 
     --document-font-family: Charter, "Georgia Pro", "Georgia", "Charter",
         "Times New Roman", Times, serif;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-        Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
     --hover-outline: var(--outline-width) dashed var(--hover-color);
     --focus-outline: var(--outline-width) solid var(--focus-color);
 
-    --panel-background: hsla(0, 0%, 80%, 0.9);
     --control-active-background: #b7e3f0;
-    --control-background: hsla(0, 0%, 93%, 0.9);
+    --control-background: #ececec;
     --control-border-color: black;
     --control-border: 1px solid var(--control-border-color);
-    --control-height: 2.25em;
+    // --control-border-radius: 0.15rem;
+    --control-border-radius: 0;
+    --control-height: 2.25rem;
     --control-outline-offset: -5px;
-    --control-background-blur: blur(0.09em);
 
-    --toolbar-scale-factor: 1.25;
     --toolbar-background: transparent;
     --toolbar-border: none;
     --toolbar-gap: 0.5rem;
-    --toolbar-height: calc(
-        var(--toolbar-scale-factor) * var(--control-height) + var(--toolbar-gap)
-    );
+    --toolbar-height: calc(var(--control-height) + 2 * var(--toolbar-gap));
     --toolbar-item-box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
 
     --dialog-inline-block: var(--toolbar-height);
+
+    --scrollbar-width: 1rem;
 
     &[data-color-scheme="dark"] {
         --background: black;
         --color: white;
         --hover-color: yellow;
         --link-color: #aed1ff;
-        --disabled-color: hsl(0, 0%, 40%);
 
-        --panel-background: hsla(216, 12%, 8%, 0.9);
         --outline-width: 1px;
-        --control-border-color: hsl(216, 8%, 40%);
-        --control-border-color: rgb(190, 147, 28);
-        --control-background: rgb(50, 42, 58);
+        --control-border-color: #7a828e;
+        --control-background: hsl(220, 13%, 18%);
         --control-active-background: rgb(39, 99, 122);
 
         // --toolbar-background: black;
@@ -98,11 +93,6 @@ body {
     display: none !important;
 }
 
-.visibility-hidden {
-    visibility: hidden;
-    position: absolute;
-}
-
 p,
 h1,
 h2,
@@ -134,25 +124,25 @@ a:hover {
     text-decoration: underline;
 }
 
-// details {
-//     & > summary {
-//         cursor: default;
-//         user-select: none;
-//         padding: 0.25rem;
-//     }
-//     & > summary:focus {
-//         outline: var(--focus-outline);
-//     }
-//     & > summary:focus:where(:not(:focus-visible)) {
-//         outline: none;
-//     }
-//     & > summary:hover {
-//         // outline: var(--hover-outline);
-//     }
-//     & > summary:active {
-//         background: var(--control-active-background);
-//     }
-// }
+details {
+    & > summary {
+        cursor: default;
+        user-select: none;
+        padding: 0.25rem;
+    }
+    & > summary:focus {
+        outline: var(--focus-outline);
+    }
+    & > summary:focus:where(:not(:focus-visible)) {
+        outline: none;
+    }
+    & > summary:hover {
+        // outline: var(--hover-outline);
+    }
+    & > summary:active {
+        background: var(--control-active-background);
+    }
+}
 
 /* Arrow */
 // .popover::before {

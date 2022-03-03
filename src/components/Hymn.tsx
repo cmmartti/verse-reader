@@ -1,327 +1,224 @@
 import React from "react";
-import {Link, useLocation} from "react-router-dom";
-// import * as xpath from "fontoxpath";
 
-import {useDisplayOptions} from "./ContextDisplayOptions";
+import { useDisplayOptions } from "../util/useDisplayOptions";
+import {
+    Hymn as HymnType,
+    HymnalDocument,
+    Verse as VerseType,
+    Line as LineType,
+    RepeatLines as RepeatLinesType,
+} from "../types";
 
-const EM_DASH = "—";
-const ZERO_WIDTH_SPACE = "\u200B";
-
-// const getTunes = (hymn: Node) =>
-//     xpath.evaluateXPathToStrings("tune/@ref", hymn).map(id => {
-//         const name = xpath.evaluateXPathToString(
-//             '/hymnal/tunes//tune[@id="$id"]/@name',
-//             hymn,
-//             null,
-//             {id}
-//         );
-//         return {id, name: name || id};
-//     });
+const c = (className: string, include: boolean) => (include ? " " + className : "");
 
 export const Hymn = React.memo(_Hymn);
 
-type HymnProps = {
-    node: Element;
-    isAboveTheFold?: boolean;
-    documentLanguage: string;
-};
-
-function _Hymn({node, isAboveTheFold = true, documentLanguage}: HymnProps) {
-    const location = useLocation();
-    const fragment = location.hash.substring(1);
-    const page = /[0-9]+/.test(fragment) ? fragment : null;
-
-    const [{repeatChorus, repeatRefrain}] = useDisplayOptions();
-
-    const [firstRender, setIsFirstRender] = React.useState(true);
-    React.useEffect(() => {
-        setIsFirstRender(false);
-    }, []);
-
-    const id = node.getAttribute("id")!;
-    const language = node.getAttribute("language") ?? documentLanguage;
-    const isDeleted = [1, "true"].includes(node.getAttribute("deleted") ?? 0);
-    const isRestricted = [1, "true"].includes(node.getAttribute("restricted") ?? 0);
-
-    const refrainLines = [...node.querySelectorAll("refrain > line, refrain > repeat")];
-    const chorusLines = [...node.querySelectorAll("chorus > line, chorus > repeat")];
-    const verses = [...node.querySelectorAll("verse")];
-
-    const tunes = [...node.querySelectorAll("tune[ref]")!].map(
-        tuneRef =>
-            node.ownerDocument.querySelector(
-                `hymnal > tunes tune[id="${tuneRef.getAttribute("ref")}"]`
-            )!
-    );
-    // let altTunes: Element[] = [];
-    // if (tunes[0].parentElement?.localName === "tunes-group")
-    //     altTunes = [...tunes[0].parentElement.children].filter(t => t !== tunes[0]);
-
-    const topics = [...node.querySelectorAll("topic[ref]")!]
-        .map(
-            topicRef =>
-                node.ownerDocument.querySelector(
-                    `hymnal > topics > topic[id="${topicRef.getAttribute("ref")}"]`
-                )!
-        )
-        .map(topicNode => ({
-            id: topicNode.getAttribute("id")!,
-            name: topicNode.getAttribute("name") ?? topicNode.getAttribute("id")!,
-        }));
-
-    const origin = node.querySelector("origin")?.textContent ?? null;
-
-    const authors = [...node.querySelectorAll("author")].map(authorNode => ({
-        name: authorNode.textContent ?? "",
-        year: authorNode.getAttribute("year") ?? "",
-    }));
-
-    const translators = [...node.querySelectorAll("translator")].map(translatorNode => ({
-        name: translatorNode.textContent ?? "",
-        year: translatorNode.getAttribute("year") ?? "",
-    }));
-
-    const days = [...node.querySelectorAll("day[ref]")!]
-        .map(
-            dayRef =>
-                node.ownerDocument.querySelector(
-                    `hymnal > calendar > day[id="${dayRef.getAttribute("ref")}"]`
-                )!
-        )
-        .map(dayNode => ({
-            id: dayNode.getAttribute("id")!,
-            name:
-                dayNode.getAttribute("shortName") ??
-                dayNode.getAttribute("name") ??
-                dayNode.getAttribute("id")!,
-        }));
-
-    const links = [...node.querySelectorAll("link")].map(link => ({
-        book: link.getAttribute("book"),
-        edition: link.getAttribute("edition"),
-        id: link.getAttribute("id"),
-    }));
-
-    if (firstRender && !isAboveTheFold) {
-        return (
-            <div className="Hymn">
-                <div className="Hymn-number">{id}</div>
-            </div>
-        );
-    }
+function _Hymn({ hymn, document }: { hymn: HymnType; document: HymnalDocument }) {
+    const [{ hideDeletedLines }] = useDisplayOptions();
 
     return (
-        <article className={"Hymn" + (isDeleted ? " isDeleted" : "")}>
+        <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
                 <div className="Hymn-number">
-                    {isRestricted && "*"}
-                    {id}
+                    {hymn.isRestricted && "*"}
+                    {hymn.id}
                 </div>
-                {tunes.length > 0 && (
+                {hymn.tunes.length > 0 && (
                     <div className="Hymn-tunes">
                         Tune:{" "}
-                        {tunes.map((tune, index) => {
-                            const tuneId = tune.getAttribute("id");
-                            return (
-                                <React.Fragment key={tuneId}>
-                                    <Link key={tuneId} to={`?q=tune:${id}#${page}`}>
-                                        {tune.getAttribute("name") || tuneId}
-                                    </Link>
-                                    {index < tunes.length - 1 && ", "}
-                                </React.Fragment>
-                            );
-                        })}
+                        {hymn.tunes
+                            .map(
+                                tuneId =>
+                                    document.tunes?.[tuneId] ?? {
+                                        id: tuneId,
+                                        name: tuneId,
+                                    }
+                            )
+                            .map((tune, index) => {
+                                return (
+                                    <React.Fragment key={tune.id}>
+                                        {tune.name || tune.id}
+                                        {index < hymn.tunes.length - 1 && ", "}
+                                    </React.Fragment>
+                                );
+                            })}
                     </div>
                 )}
-                {topics.length > 0 && (
+                {hymn.topics.length > 0 && (
                     <div className="Hymn-topics">
-                        {topics.map((topic, index) => (
-                            <React.Fragment key={topic.id}>
-                                <Link to={`?q=topic:${topic.id}#${page}`}>
+                        {hymn.topics
+                            .map(
+                                topicId =>
+                                    document.topics?.[topicId] ?? {
+                                        id: topicId,
+                                        name: topicId,
+                                    }
+                            )
+                            .map((topic, index) => (
+                                <React.Fragment key={topic.id}>
                                     {topic.name}
-                                </Link>
-                                {index < topics.length - 1 && " / "}
-                            </React.Fragment>
-                        ))}
+                                    {index < hymn.topics.length - 1 && " / "}
+                                </React.Fragment>
+                            ))}
                     </div>
                 )}
             </header>
+
             <div className="Hymn-verses">
-                {verses.map((verse, i) => {
-                    const verseLines = [
-                        ...verse.querySelectorAll(":scope > line, :scope > repeat"),
-                    ];
-                    const isDeleted = [1, "true"].includes(
-                        verse.getAttribute("deleted") ?? 0
-                    );
-
-                    return (
-                        <React.Fragment key={i}>
-                            <p className={`Hymn-verse${isDeleted ? " is-deleted" : ""}`}>
-                                <span className="Hymn-verseNumber">{i + 1}.</span>{" "}
-                                <Lines lines={verseLines} />
-                                {refrainLines.length > 0 &&
-                                    (repeatRefrain ? (
-                                        <span className="Hymn-inlineRefrain">
-                                            <Lines lines={refrainLines} />
-                                        </span>
-                                    ) : (
-                                        i > 0 && <i>Refrain:</i>
-                                    ))}
-                                {i > 0 && chorusLines.length > 0 && !repeatChorus && (
-                                    <i>Chorus:</i>
-                                )}
-                            </p>
-
-                            {refrainLines.length > 0 && !repeatRefrain && i === 0 && (
-                                <p className="Hymn-refrain">
-                                    <i>Refrain:</i> <Lines lines={refrainLines} />
-                                </p>
-                            )}
-
-                            {chorusLines.length > 0 && !repeatChorus && i === 0 && (
-                                <p className="Hymn-chorus">
-                                    <i>Chorus:</i> <Lines lines={chorusLines} />
-                                </p>
-                            )}
-
-                            {chorusLines.length > 0 && repeatChorus && (
-                                <p className="Hymn-chorus">
-                                    <Lines lines={chorusLines} />
-                                </p>
-                            )}
-                        </React.Fragment>
-                    );
-                })}
+                {hymn.verses
+                    .filter(verse => !(hideDeletedLines && verse.isDeleted))
+                    .map((verse, i) => (
+                        <Verse verse={verse} verseNumber={i + 1} hymn={hymn} key={i} />
+                    ))}
             </div>
-            <div className="Hymn-details">
-                {language !== documentLanguage && (
+
+            <footer className="Hymn-details">
+                {hymn.language !== document.language && (
                     <div>
                         Language:{" "}
-                        <Link to={`?q=lang:${language}#${page}`}>{language}</Link>
+                        {document.languages[hymn.language]?.name ?? hymn.language}
                     </div>
                 )}
-                {authors.length > 0 && (
+                {hymn.authors.length > 0 && (
                     <div>
-                        {authors.length === 1 ? "Author: " : "Authors: "}
-                        {authors
+                        {hymn.authors.length === 1 ? "Author: " : "Authors: "}
+                        {hymn.authors
                             .map(
                                 author =>
                                     author.name +
+                                    (author.note ? ` (${author.note})` : "") +
                                     (author.year ? ` (${author.year})` : "")
                             )
                             .join(", ")}
-                        {origin && ` [${origin}]`}
+                        {hymn.origin && ` [${hymn.origin}]`}
                     </div>
                 )}
-                {translators.length > 0 && (
+                {hymn.translators.length > 0 && (
                     <div>
-                        {translators.length === 1 ? "Translator: " : "Translators: "}
-                        {translators
+                        {hymn.translators.length === 1
+                            ? "Translator: "
+                            : "Translators: "}
+                        {hymn.translators
                             .map(
                                 translator =>
                                     translator.name +
+                                    (translator.note ? ` (${translator.note})` : "") +
                                     (translator.year ? ` (${translator.year})` : "")
                             )
                             .join(", ")}
                     </div>
                 )}
-                {links.length > 0 && (
+                {hymn.links.length > 0 && (
                     <div>
-                        {links
+                        {hymn.links
                             .map(link => `${link.edition}: #${link.id}`)
                             .join(" / ")}
                     </div>
                 )}
-                {days.length > 0 && (
+                {/* {hymn.days.length > 0 && (
                     <div className="Hymn-days">
-                        {days.length === 1 ? "Day: " : "Days: "}
-                        {days.map((day, index) => (
-                            <React.Fragment key={day.id}>
-                                <Link to={`?q=day:${day.id}#${page}`}>{day.name}</Link>
-                                {index < days.length - 1 && ", "}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                )}
-                {/* {altTunes.length > 0 && (
-                    <div>
-                        {altTunes.length === 1 ? "Alternate tune:" : "Alternate tunes:"}
-                        <ul>
-                            {altTunes.map(tune => {
-                                const tuneId = tune.getAttribute("id");
-                                return (
-                                    <li key={tuneId}>
-                                        <Link to={`?q=tune:${id}#${page}`}>
-                                            {tune.getAttribute("name") || tuneId}
-                                        </Link>
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                        {hymn.days.length === 1 ? "Day: " : "Days: "}
+                        {hymn.days
+                            .map(dayId => document.calendar[dayId])
+                            .map((day, index) => (
+                                <React.Fragment key={day.id}>
+                                    {day.name}
+                                    {index < hymn.days.length - 1 && ", "}
+                                </React.Fragment>
+                            ))}
                     </div>
                 )} */}
-            </div>
+                {hymn.isRestricted && (
+                    <div>*Not for church services; may be used for other occasions.</div>
+                )}
+            </footer>
         </article>
     );
 }
 
-function Lines({lines}: {lines: Element[]}) {
-    const [{highlight, expandRepeatedLines}] = useDisplayOptions();
+function Verse({
+    verse,
+    verseNumber,
+    hymn,
+}: {
+    verse: VerseType;
+    verseNumber: number;
+    hymn: HymnType;
+}) {
+    const [{ repeatChorus, repeatRefrain, hideDeletedLines }] = useDisplayOptions();
 
     return (
         <React.Fragment>
-            {lines.map((line, i) => {
-                switch (line.localName) {
-                    case "repeat": {
-                        const times = parseInt(line.getAttribute("times") || "2", 10);
-                        const lines = [...line.querySelectorAll(":scope > line")];
-                        if (expandRepeatedLines) {
-                            return (
-                                <span>
-                                    {[...Array(times)].map((_, i) => (
-                                        <Lines key={i} lines={lines} />
-                                    ))}
-                                </span>
-                            );
-                        }
-                        return (
-                            <span key={i} className="Hymn-repeat">
-                                <Lines lines={lines} />
-                                <span className="Hymn-repeatMarker">
-                                    {[...Array(times)].map(() => ":").join(",")}
-                                    {/* ({times}x){" "} */}
-                                </span>
-                            </span>
-                        );
-                    }
+            <p className={"Hymn-verse" + c("is-deleted", verse.isDeleted)}>
+                <span className="Hymn-verseNumber">{verseNumber}.</span>{" "}
+                <Lines lines={verse.lines} />
+                {hymn.refrain &&
+                    (hideDeletedLines ? !hymn.refrain.isDeleted : true) &&
+                    (repeatRefrain ? (
+                        <span
+                            className={
+                                "Hymn-inlineRefrain" +
+                                c("is-deleted", hymn.refrain.isDeleted)
+                            }
+                        >
+                            <Lines lines={hymn.refrain.lines} />
+                        </span>
+                    ) : (
+                        verseNumber > 1 && <i>Refrain:</i>
+                    ))}
+                {verseNumber > 1 && hymn.chorus && !repeatChorus && <i>Chorus:</i>}
+            </p>
 
-                    case "line": {
-                        let renderedText: React.ReactNode = line.textContent;
-                        if (highlight) {
-                            renderedText = replaceAll(
-                                line.textContent ?? "",
-                                new RegExp(highlight, "gi"),
-                                substr => <span className="highlight">{substr}</span>
-                            );
+            {hymn.refrain &&
+                !repeatRefrain &&
+                (hideDeletedLines ? !hymn.refrain.isDeleted : true) &&
+                verseNumber === 1 && (
+                    <p
+                        className={
+                            "Hymn-refrain" + c("is-deleted", hymn.refrain.isDeleted)
                         }
-                        const noSpaceAfter = line.textContent!.slice(-1) === EM_DASH;
-                        return (
-                            <React.Fragment key={i}>
-                                <span
-                                    className={
-                                        "Hymn-line" +
-                                        (noSpaceAfter ? " Hymn-line--nospaceafter" : "")
-                                    }
-                                >
-                                    {renderedText}
-                                </span>
-                                {/* Allow for line-breaks after em dashes */}
-                                {noSpaceAfter ? ZERO_WIDTH_SPACE : " "}
-                            </React.Fragment>
-                        );
-                    }
+                    >
+                        <i>Refrain:</i> <Lines lines={hymn.refrain.lines} />
+                    </p>
+                )}
 
+            {hymn.chorus &&
+                !repeatChorus &&
+                (hideDeletedLines ? !hymn.chorus.isDeleted : true) &&
+                verseNumber === 1 && (
+                    <p
+                        className={
+                            "Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)
+                        }
+                    >
+                        <i>Chorus:</i> <Lines lines={hymn.chorus.lines} />
+                    </p>
+                )}
+
+            {hymn.chorus &&
+                repeatChorus &&
+                (hideDeletedLines ? !hymn.chorus.isDeleted : true) && (
+                    <p
+                        className={
+                            "Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)
+                        }
+                    >
+                        <Lines lines={hymn.chorus.lines} />
+                    </p>
+                )}
+        </React.Fragment>
+    );
+}
+
+function Lines({ lines }: { lines: (LineType | RepeatLinesType)[] }) {
+    return (
+        <React.Fragment>
+            {lines.map((lineOrRepeat, i) => {
+                switch (lineOrRepeat.kind) {
+                    case "repeat":
+                        return <RepeatLines key={i} repeat={lineOrRepeat} />;
+                    case "line":
+                        return <Line key={i} line={lineOrRepeat} />;
                     default:
                         return null;
                 }
@@ -330,20 +227,47 @@ function Lines({lines}: {lines: Element[]}) {
     );
 }
 
-function replaceAll(
-    text: string,
-    regex: RegExp,
-    replaceWith: (substr: string) => React.ReactNode
-) {
-    const matches = [...text.matchAll(regex)];
-    if (matches.length === 0) return text;
-    return matches.map((match, i) => (
-        <React.Fragment key={i.toString()}>
-            {i === 0 && text.substring(0, match.index!)}
-            {replaceWith(match[0])}
-            {i === matches.length - 1
-                ? text.substring(match.index! + match[0].length)
-                : text.substring(match.index! + match[0].length, matches[i + 1].index)}
+function RepeatLines({ repeat }: { repeat: RepeatLinesType }) {
+    const [{ expandRepeatedLines }] = useDisplayOptions();
+
+    if (expandRepeatedLines) {
+        return (
+            <span>
+                {[...Array(repeat.times)].map((_, i) => (
+                    <Lines key={i} lines={repeat.lines} />
+                ))}
+            </span>
+        );
+    }
+    return (
+        <span className="Hymn-repeat">
+            <Lines lines={repeat.lines} />
+            <span className="Hymn-repeatMarker">
+                {[...Array(repeat.times)].map(() => ":").join(",")}
+                {/* ({repeat.times}x){" "} */}
+            </span>
+        </span>
+    );
+}
+
+const EM_DASH = "—";
+const ZERO_WIDTH_SPACE = "\u200B";
+
+function Line({ line }: { line: LineType }) {
+    // const [{ breakLines }] = useDisplayOptions();
+
+    // if (breakLines) {
+    //     return <div className="Hymn-line Hymn-line--break">{line.text}</div>;
+    // }
+
+    const noSpaceAfter = line.text.slice(-1) === EM_DASH;
+    return (
+        <React.Fragment>
+            <span className={"Hymn-line" + c("Hymn-line--nospaceafter", noSpaceAfter)}>
+                {line.text}
+            </span>
+            {/* Allow for line-breaks after em dashes */}
+            {noSpaceAfter ? ZERO_WIDTH_SPACE : " "}
         </React.Fragment>
-    ));
+    );
 }

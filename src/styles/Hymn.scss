@@ -1,16 +1,16 @@
 .Hymn {
-    font-size: calc(1rem * var(--ui-scale-factor, 1));
-    padding: 1rem 0.75rem 0.75rem 0.75rem;
-    min-height: 100%;
+    // background: var(--background);
+    // padding: 0.75rem;
+    // box-shadow: 0 2px 4px rgba(34, 31, 28, 0.37);
     display: flex;
     flex-direction: column;
-    background: var(--background);
+    min-height: 100%;
 
     & > * {
         margin-top: 0;
     }
     & > * + * {
-        margin-top: 0.5em;
+        margin-top: 0.5rem;
     }
 }
 
@@ -22,14 +22,14 @@
         margin-top: 0;
     }
     & > * + * {
-        margin-top: 0.5em;
+        margin-top: 0.5rem;
     }
 }
 .Hymn-number {
-    font-size: 1.625em;
+    font-size: 1.625rem;
     line-height: 1;
     font-weight: bold;
-    scroll-margin-top: 5em;
+    scroll-margin-top: 5rem;
 }
 .Hymn.isDeleted .Hymn-number {
     text-decoration: line-through;
@@ -40,7 +40,7 @@
 
 .Hymn-chorus,
 .Hymn-refrain {
-    margin-left: 1em;
+    margin-left: 1rem;
 }
 .Hymn-inlineRefrain {
     font-style: italic;
@@ -57,23 +57,26 @@
         margin-top: 0;
     }
     & > * + * {
-        margin-top: 0.5em;
+        margin-top: 0.5rem;
     }
 }
 .Hymn-verseNumber {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 }
 .Hymn-repeat {
     font-weight: bold;
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
 }
 .Hymn-repeatMarker {
-    // margin-left: -0.5em;
+    // margin-left: -0.5rem;
 }
 .Hymn-line {
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
     break-after: always;
+    // display: block;
+    // text-indent: -1rem;
+    // margin-left: 1rem;
 }
 .Hymn-verse,
 .Hymn-chorus,
@@ -90,18 +93,14 @@
 .Hymn-line--nospaceafter {
     margin-right: 0;
 }
-.Hymn-line--break {
-    text-indent: -1em;
-    margin-left: 1em;
-}
 
 .Hymn-details {
     border-top: 1px solid;
-    padding-top: 0.5em;
+    padding-top: 0.5rem;
     font-size: 0.8em;
     line-height: 1.5;
 }
 .Hymn-topics,
 .Hymn-days {
-    font-size: 0.85em;
+    font-size: 0.85rem;
 }

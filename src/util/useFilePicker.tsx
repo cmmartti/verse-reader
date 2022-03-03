@@ -2,6 +2,35 @@ import React from "react";
 
 // import {useEventListener} from "./useEventListener";
 
+/**
+    Example usage:
+
+    ```
+    function FilePicker() {
+        const filepicker = useFilePicker<HTMLDivElement>(
+            (filelist: FileList) => {
+                [...filelist].forEach(async file => {
+                    const fileText = await file.text();
+                    processFile(fileText);
+                });
+            },
+            {accept: "text/xml", multiple: true}
+        );
+
+        return (
+            <div
+                {...filepicker.innerProps}
+                ref={filepicker.innerRef}
+                className={"filepicker" + (filepicker.isOver ? " is-over" : "")}
+            >
+                <button onClick={filepicker.promptForFiles}>Select file(s) to upload</button>
+                <p>Or drag and drop your files here</p>
+                {filepicker.hiddenFileInput}
+            </div>
+        );
+    }
+    ```
+*/
 export function useFilePicker<E extends HTMLElement = HTMLElement>(
     handleFiles: (files: FileList) => void,
     fileInputProps?: React.DetailedHTMLProps<

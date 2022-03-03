@@ -1,7 +1,6 @@
 import React from "react";
 
-// Pass a query like `(min-width: 768px)`
-
+/** Pass a query like `(min-width: 768px)`. */
 export function useMatchMedia(query: string) {
     const [doesMatch, setDoesMatch] = React.useState(() => matchMedia(query).matches);
 

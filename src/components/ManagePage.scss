@@ -1,14 +1,6 @@
 .PageHome {
     margin: 0 auto;
     max-width: 35rem;
-}
-
-.PageHome-aboveFold {
-    min-height: 20rem;
-    @media (max-width: 37rem) {
-        min-height: 93vh;
-    }
-    transition: min-height 0.25s ease-in;
     padding: 1rem;
 
     display: flex;
@@ -22,7 +14,7 @@
     text-align: center;
     font-weight: normal;
     flex: 1 0;
-    margin: 0;
+    margin: 2rem 0;
 
     display: flex;
     flex-direction: column;
@@ -41,13 +33,6 @@
     }
     & > * + * {
         border-top: var(--control-border);
-    }
-}
-
-.PageHome-more {
-    padding: 1rem;
-    & > * + * {
-        margin-top: 1rem;
     }
 }
 

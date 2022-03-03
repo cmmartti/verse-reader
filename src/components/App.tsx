@@ -1,14 +1,14 @@
-import React from "react";
-import {BrowserRouter, Switch, Route} from "react-router-dom";
+import "@github/details-dialog-element";
+import "@github/details-menu-element";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
-import {HomePage} from "./HomePage";
-import {DocumentPage} from "./DocumentPage";
-
-import {ColorSchemeProvider} from "../util/useColorScheme";
-import {DisplayZoomProvider} from "../util/useDisplayZoom";
+import { ManagePage } from "./ManagePage";
+import { MainPage } from "./MainPage";
+import { NotFound } from "./NotFound";
+import { DisplayOptionsProvider } from "../util/useDisplayOptions";
+import { getDocuments } from "../util/documentRepository";
 
 import "./App.scss";
-import "@github/details-dialog-element";
 
 declare global {
     namespace JSX {
@@ -18,25 +18,53 @@ declare global {
             //     HTMLElement
             // >;
             "details-dialog": any;
+            "details-menu": any;
         }
     }
 }
 
-export default function App() {
-    return (
-        <BrowserRouter>
-            <DisplayZoomProvider>
-                <ColorSchemeProvider>
-                    <Switch>
-                        <Route
-                            path="/:id"
-                            render={({match}) => <DocumentPage id={match.params.id} />}
-                        />
-
-                        <Route path="/" exact component={HomePage}></Route>
-                    </Switch>
-                </ColorSchemeProvider>
-            </DisplayZoomProvider>
-        </BrowserRouter>
+export const App = () => {
+    const bookList = getDocuments();
+    const mru = bookList.reduce(
+        (prev, cur) => (prev.lastOpened >= cur.lastOpened ? prev : cur),
+        { id: "en-1994", lastOpened: 0 }
     );
-}
+    return (
+        <DisplayOptionsProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/manage" element={<ManagePage />} />
+
+                    {bookList.map(book => (
+                        <Route
+                            key={book.id}
+                            path={`/${book.id}`}
+                            element={
+                                <MainPage
+                                    id={book.id}
+                                    lastPosition={book.lastPosition}
+                                />
+                            }
+                        />
+                    ))}
+
+                    {bookList.map(book => (
+                        <Route
+                            key={book.id}
+                            path={`/${book.id}/:position`}
+                            element={
+                                <MainPage
+                                    id={book.id}
+                                    lastPosition={book.lastPosition}
+                                />
+                            }
+                        />
+                    ))}
+
+                    <Route path="/" element={<Navigate replace to={"/" + mru.id} />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </BrowserRouter>
+        </DisplayOptionsProvider>
+    );
+};

@@ -1,56 +1,140 @@
 .Toolbar {
-    padding: var(--toolbar-padding);
+    font-size: calc(var(--toolbar-scale-factor) * 1rem);
+    padding: var(--toolbar-gap);
     background: var(--toolbar-background);
-    // margin-right: var(--scrollbar-width);
-    // border-right: var(--toolbar-border);
+    border-bottom: var(--toolbar-border);
+    z-index: 2;
+    position: relative;
+
+    // Click-through transparent background
     pointer-events: none;
     & * {
         pointer-events: all;
     }
-    @media (max-width: 37rem) {
-        overflow-x: auto;
-    }
-    &.Toolbar--top {
-        border-bottom: var(--toolbar-border);
-        z-index: 2;
-    }
-    &.Toolbar--bottom {
-        border-top: var(--toolbar-border);
-    }
 
     display: flex;
     align-items: flex-end;
-    gap: var(--toolbar-padding);
 
-    & > * {
-        box-shadow: var(--toolbar-item-box-shadow);
-        border-radius: var(--control-border-radius);
+    gap: var(--toolbar-gap);
+    @media (max-width: 29rem) {
+        justify-content: center;
     }
 }
 
-.Toolbar-grow {
-    flex: 1;
-    max-width: 22rem;
+.Toolbar-item,
+.Toolbar-group {
+    flex: 0 1;
+    flex-basis: 2.75em;
+    @media (max-width: 29rem) {
+        flex-basis: 5.5em;
+    }
+
+    box-shadow: var(--toolbar-item-box-shadow);
+
+    display: flex;
+    & > * {
+        flex: 1 0;
+    }
 }
 
 .Toolbar-group {
-    display: flex;
-
-    & > *:not(:first-child) {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-    & > *:not(:last-child) {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
     & > * {
-        // Force the group's min-width of "auto" to use the child element's
+        // Force the group's min-width of "auto" to use each child element's
         // min-width, instead of its default width.
         width: 0;
     }
 
     & > * + * {
         border-left: none;
+    }
+}
+
+.SearchDialog {
+    display: grid;
+    gap: var(--toolbar-gap);
+    grid-template-areas:
+        "controls"
+        "results";
+    @media (max-width: 29rem) {
+        grid-template-areas:
+            "results"
+            "controls";
+    }
+}
+.SearchDialog-controls {
+    grid-area: controls;
+    position: sticky;
+    padding: var(--toolbar-gap);
+    @media (max-width: 29rem) {
+        bottom: 0;
+    }
+    @media (min-width: 29rem) {
+        top: 0;
+    }
+
+    display: grid;
+}
+.SearchDialog-results {
+    grid-area: results;
+    padding: var(--toolbar-gap);
+
+    font-size: calc(1rem * var(--ui-scale-factor, 1));
+}
+.SearchDialog-hymnList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.OptionsDialog {
+    display: grid;
+    gap: var(--toolbar-gap);
+    padding: var(--toolbar-gap);
+}
+.OptionsDialog-range {
+    padding: 0.25rem 0.2rem 0;
+}
+.OptionsDialog-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--toolbar-gap);
+
+    & > * {
+        flex: 1 0;
+        width: fit-content;
+    }
+}
+
+// // Full-screen overlay underneath the popup to trigger a close on click
+// .Toolbar-menu[open] > summary::before {
+//     // content: "";
+//     display: block;
+//     position: fixed;
+//     inset: 0;
+//     z-index: 1;
+//     // background: rgba(42, 43, 44, 0.4);
+// }
+.Toolbar-menu > details-dialog {
+    z-index: 2;
+    font-size: 1rem;
+    background: var(--panel-background);
+    box-shadow: var(--toolbar-item-box-shadow);
+    backdrop-filter: var(--control-background-blur);
+    border: var(--control-border);
+    max-height: calc(100vh - var(--toolbar-height) - 2 * var(--toolbar-gap));
+    overflow: auto;
+
+    @media (min-width: 29rem) {
+        position: absolute;
+        top: calc(var(--toolbar-height) + var(--toolbar-gap));
+        min-width: 15rem;
+        max-width: 20rem;
+    }
+
+    @media (max-width: 29rem) {
+        position: fixed;
+        bottom: calc(var(--toolbar-height) + var(--toolbar-gap));
+        left: var(--toolbar-gap);
+        right: var(--toolbar-gap);
     }
 }

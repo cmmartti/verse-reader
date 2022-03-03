@@ -1,14 +1,15 @@
 %form-control {
     border: var(--control-border);
-    border-radius: var(--control-border-radius);
     color: var(--color);
     outline-offset: var(--control-outline-offset);
-    padding: 0.4rem;
+    padding: 0.4em;
     line-height: 1;
-    font: inherit;
-    font-size: 1rem;
+    font-family: inherit;
+    font-size: inherit;
+    // font-size: 1em;
     text-decoration: none;
     height: var(--control-height);
+    accent-color: rebeccapurple;
     &:active {
         outline: none;
     }
@@ -30,14 +31,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
+    gap: 0.25em;
 
     & svg {
         display: inline-block;
         height: 1.2em;
         width: 1.2em;
-        // margin-block: -0.2rem;
-        // vertical-align: -0.15rem;
+        flex-shrink: 0;
+        // margin-block: -0.2em;
+        // vertical-align: -0.15em;
     }
 }
 
@@ -45,13 +47,85 @@ button,
 .Button {
     @extend %form-control;
     background: var(--control-background);
-    min-width: 2.5rem;
-    &:disabled,
-    &[aria-disabled] {
-        // text-decoration: line-through;
-    }
+    min-width: var(--control-height);
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    user-select: none;
+    cursor: default;
+    backdrop-filter: var(--control-background-blur);
+
     &:active:not(:disabled):not([aria-disabled]) {
         background: var(--control-active-background);
+    }
+}
+
+.ToggleButton {
+    @extend %form-control;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    background: var(--control-background);
+    user-select: none;
+    justify-content: center;
+    white-space: nowrap;
+    box-shadow: var(--toolbar-item-box-shadow);
+
+    outline-offset: -4px;
+    &:focus-within {
+        outline: 1px dashed rebeccapurple;
+    }
+    &.ToggleButton--checked:focus-within {
+        outline-color: #b9b9b9;
+    }
+
+    & input {
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    &.ToggleButton--checked {
+        text-decoration: underline;
+        background: rebeccapurple;
+        color: white;
+    }
+}
+
+.RadioButtons {
+    // box-shadow: var(--toolbar-item-box-shadow);
+    border: var(--control-border);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    grid-auto-columns: 1fr;
+
+    & .RadioButtons-button {
+        @extend %form-control;
+        border: none;
+        background: var(--control-background);
+        user-select: none;
+
+        display: flex;
+        justify-content: center;
+        gap: 0.25em;
+
+        outline-offset: -4px;
+        &:focus-within {
+            outline: 1px dashed rebeccapurple;
+        }
+        &.RadioButtons-button--checked:focus-within {
+            outline-color: #b9b9b9;
+        }
+
+        & input {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        &.RadioButtons-button--checked {
+            text-decoration: underline;
+            background: rebeccapurple;
+            color: white;
+        }
     }
 }
 
@@ -59,12 +133,12 @@ select {
     @extend %form-control;
     background: var(--control-background);
     // appearance: none;
-    // background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+    // background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
     // background-repeat: no-repeat;
-    // background-position-x: calc(100% - 0.5rem);
+    // background-position-x: calc(100% - 0.5em);
     // background-position-y: center;
-    // background-size: 1rem;
-    // padding-right: 1.75rem;
+    // background-size: 1em;
+    // padding-right: 1.75em;
 }
 
 input[type="text"],
@@ -72,9 +146,9 @@ input[type="search"] {
     @extend %form-control;
     max-width: 100%;
     background: var(--background);
-    min-width: 6rem;
+    min-width: 6em;
     appearance: textfield;
-    // font-size: 0.85rem;
+    // font-size: 0.85em;
 }
 
 input[type="number"] {
@@ -82,9 +156,10 @@ input[type="number"] {
     background: var(--background);
     appearance: textfield;
     max-width: 10em;
-    width: 3.5rem;
+    width: 3em;
     text-align: center;
-    // font-size: 0.85rem;
+    font-weight: bold;
+    // font-size: 0.85em;
 
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
@@ -93,10 +168,23 @@ input[type="number"] {
     }
 }
 
+input[type="range"] {
+    width: 100%;
+    accent-color: rebeccapurple;
+    height: var(--control-height);
+
+    &:focus-visible {
+        outline: var(--focus-outline);
+        outline-offset: 2px;
+        outline: 1px dashed gray;
+        -moz-outline-radius: 1em;
+    }
+}
+
 label.contains-checkbox {
     display: flex;
     user-select: none;
-    gap: 0.25rem;
+    gap: 0.25em;
     min-width: max-content;
     &:focus-within {
         outline: var(--focus-outline);
@@ -105,20 +193,28 @@ label.contains-checkbox {
 
 .fieldset {
     border: var(--control-border);
-    border-radius: var(--border-radius);
 
     & > * {
-        padding: 0.75rem;
+        padding: 0.25em;
     }
     & > * + * {
         border-top: var(--control-border);
     }
 }
 
+fieldset {
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+fieldset legend {
+    padding: 0 0.15em;
+}
+
 .form-field {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1em;
     flex-wrap: wrap;
     align-items: center;
 

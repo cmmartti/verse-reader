@@ -1,0 +1,57 @@
+.Toolbar {
+    padding: var(--toolbar-gap);
+    background: var(--toolbar-background);
+    // margin-right: var(--scrollbar-width);
+    // border-right: var(--toolbar-border);
+    pointer-events: none;
+    border-bottom: var(--toolbar-border);
+    z-index: 2;
+    & * {
+        pointer-events: all;
+    }
+    @media (max-width: 37rem) {
+        // overflow-x: auto;
+    }
+
+    display: flex;
+    align-items: flex-end;
+    gap: var(--toolbar-gap);
+    @media (max-width: 35rem) {
+        justify-content: space-around;
+        & > * {
+            flex: 1 0;
+        }
+    }
+
+    & > * {
+        box-shadow: var(--toolbar-item-box-shadow);
+        border-radius: var(--control-border-radius);
+    }
+}
+
+.Toolbar-grow {
+    flex: 1;
+    max-width: 22rem;
+}
+
+.Toolbar-group {
+    display: flex;
+
+    & > *:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    & > *:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    & > * {
+        // Force the group's min-width of "auto" to use the child element's
+        // min-width, instead of its default width.
+        width: 0;
+    }
+
+    & > * + * {
+        border-left: none;
+    }
+}

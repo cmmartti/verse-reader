@@ -1,25 +1,14 @@
-import {Result} from "@badrap/result";
+import { Result } from "@badrap/result";
 
+import { convert } from "../convertDocument";
+import { HymnalDocument, CACHE_ID } from "../types";
 import * as ls from "./localstorage";
-
-export type Options = {
-    highlight: string | null;
-    expandRepeatedLines: boolean;
-    repeatRefrain: boolean;
-    repeatChorus: boolean;
-};
-
-const DEFAULT_OPTIONS = {
-    highlight: null,
-    expandRepeatedLines: false,
-    repeatRefrain: false,
-    repeatChorus: false,
-};
 
 export type DocumentMetadata = {
     id: string;
     title: string;
-    options: Options;
+    lastOpened: number;
+    lastPosition: string | null;
 };
 
 export class NotFoundError extends Error {
@@ -34,22 +23,41 @@ export class DuplicateDocumentError extends Error {
     name = "DuplicateDocumentError";
 }
 
-export function getDocuments(): Result<DocumentMetadata[]> {
-    // TODO: validate JSON
-    return ls.getItem("hymnals").chain(
-        json =>
-            Result.ok(
-                (JSON.parse(json) as DocumentMetadata[]).sort((a, b) =>
-                    a.title.localeCompare(b.title)
-                )
-            ),
+export function getMetadata(): Result<{ [id: string]: DocumentMetadata }> {
+    return ls.getItem("metadata").chain(
+        json => Result.ok(JSON.parse(json) as { [id: string]: DocumentMetadata }),
         err => {
             if (err instanceof ls.NotFoundError) {
-                return Result.ok([]);
+                return Result.ok({});
             }
             return Result.err(err);
         }
     );
+}
+
+export function setLastPosition(id: string, position: string) {
+    return getMetadata().map(metadata => {
+        return ls.setItem(
+            "metadata",
+            JSON.stringify({
+                ...metadata,
+                [id]: {
+                    ...metadata[id],
+                    lastPosition: position,
+                },
+            })
+        );
+    });
+}
+
+export function getDocuments(): DocumentMetadata[] {
+    return Object.values(getMetadata().unwrap()).sort((a, b) =>
+        a.title.localeCompare(b.title)
+    );
+}
+
+function cacheDocumentJSON(id: string, xmlDocument: XMLDocument) {
+    return ls.setItem(`data:${id}.json`, JSON.stringify(convert(xmlDocument)));
 }
 
 export function addDocument(
@@ -63,53 +71,45 @@ export function addDocument(
     const title = hymnalNode.getAttribute("title");
     if (!title) return Result.err(new InvalidDocumentError(`Document title is missing`));
 
-    const documentMetadata = {id, title, options: DEFAULT_OPTIONS};
+    const documentMetadata = { id, title, lastOpened: 0, lastPosition: null };
 
     // TODO: validate XML document
 
-    return getDocuments()
+    return getMetadata()
         .chain(documents =>
-            documents.some(h => h.id === id)
+            documents.hasOwnProperty(id)
                 ? Result.err(
-                      new DuplicateDocumentError(`That document [${id}] already exists`)
+                      new DuplicateDocumentError(`That document already exists (${id})`)
                   )
-                : ls.setItem("hymnals", JSON.stringify([...documents, documentMetadata]))
+                : ls.setItem(
+                      "metadata",
+                      JSON.stringify({ ...documents, [id]: documentMetadata })
+                  )
         )
         .chain(() =>
             ls.setItem(
-                `hymnal:${id}`,
+                `file:${id}.xml`,
                 new XMLSerializer().serializeToString(xmlDocument)
             )
         )
+        .chain(() => cacheDocumentJSON(id, xmlDocument))
         .map(() => documentMetadata);
 }
 
 export function deleteDocument(id: string): Result<void> {
-    return getDocuments()
+    return getMetadata()
         .chain(documents => {
-            const index = documents.findIndex(h => h.id === id);
-            if (index === -1)
-                return Result.err(
-                    new NotFoundError(
-                        `Hymnal [${id}] can't be deleted because it doesn't exist`
-                    )
-                );
-            return ls.setItem(
-                "hymnals",
-                JSON.stringify([
-                    ...documents.slice(0, index),
-                    ...documents.slice(index + 1),
-                ])
-            );
+            delete documents[id];
+            return ls.setItem("metadata", JSON.stringify(documents));
         })
-        .chain(() => ls.removeItem("hymnal:" + id));
+        .chain(() => ls.removeItem(`file:${id}.xml`))
+        .chain(() => ls.removeItem(`data:${id}.json`));
 }
 
 export function getDocument(id: string): Result<XMLDocument> {
     const domParser = new DOMParser();
 
-    // TODO: validate XML document
-    return ls.getItem(`hymnal:${id}`).chain(xmlString => {
+    return ls.getItem(`file:${id}.xml`).chain(xmlString => {
         let xmlDocument: XMLDocument;
         try {
             xmlDocument = domParser.parseFromString(xmlString, "text/xml");
@@ -120,22 +120,29 @@ export function getDocument(id: string): Result<XMLDocument> {
     });
 }
 
-export function updateDocumentOptions(id: string, newOptions: Options) {
-    return getDocuments().chain(documents => {
-        const index = documents.findIndex(h => h.id === id);
-        if (index === -1)
-            return Result.err(
-                new NotFoundError(
-                    `Hymnal [${id}] can't be updated because it doesn't exist`
-                )
-            );
-        return ls.setItem(
-            "hymnals",
-            JSON.stringify([
-                ...documents.slice(0, index),
-                {...documents[index], options: newOptions},
-                ...documents.slice(index + 1),
-            ])
-        );
-    });
+export function getDocumentData(id: string): Result<HymnalDocument> {
+    // Update lastOpened data
+    getMetadata().map(metadata =>
+        ls.setItem(
+            "metadata",
+            JSON.stringify({
+                ...metadata,
+                [id]: {
+                    ...metadata[id],
+                    lastOpened: Date.now(),
+                },
+            })
+        )
+    );
+
+    return ls
+        .getItem(`data:${id}.json`)
+        .map(json => JSON.parse(json) as HymnalDocument)
+        .chain(document => {
+            if (document.CACHE_ID === CACHE_ID) {
+                return Result.ok(document);
+            }
+            getDocument(id).map(xmlDocument => cacheDocumentJSON(id, xmlDocument));
+            return getDocumentData(id);
+        });
 }
