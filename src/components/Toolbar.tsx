@@ -8,15 +8,17 @@ import {
 } from "@szhsin/react-menu";
 import { useNavigate } from "react-router-dom";
 
+import { DetailsDialog } from "./DetailsDialog";
 import { useDisplayOptions } from "../util/useDisplayOptions";
 import { ReactComponent as MenuIcon } from "../assets/menu-24px.svg";
 import { ReactComponent as SearchIcon } from "../assets/search-24px.svg";
 import { ReactComponent as ArrowForwardIcon } from "../assets/arrow_forward_black_24dp.svg";
-import { HymnalDocument, Hymn as HymnType, Verse as VerseType } from "../types";
+import { HymnalDocument, Verse as VerseType } from "../types";
 // import { DisplayOptionsDialog } from "./DisplayOptionsDialog";
 import { getDocuments } from "../util/documentRepository";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
 import { useOnClickOutside } from "../util/useOnClickOutside";
+import DetailsDialogElement from "@github/details-dialog-element";
 
 const c = (className: string, include: boolean) => (include ? " " + className : "");
 
@@ -35,7 +37,7 @@ export function Toolbar({
     const { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
 
     const optionsButtonRef = React.useRef<HTMLElement>(null!);
-    const optionsMenuRef = React.useRef<HTMLElement>(null!);
+    const optionsMenuRef = React.useRef<DetailsDialogElement>(null!);
     useOnClickOutside(
         [optionsMenuRef, optionsButtonRef],
         React.useCallback(() => {
@@ -44,7 +46,7 @@ export function Toolbar({
     );
 
     const searchButtonRef = React.useRef<HTMLElement>(null!);
-    const searchMenuRef = React.useRef<HTMLElement>(null!);
+    const searchMenuRef = React.useRef<DetailsDialogElement>(null!);
     useOnClickOutside(
         [searchMenuRef, searchButtonRef],
         React.useCallback(() => {
@@ -123,9 +125,9 @@ export function Toolbar({
                 >
                     <SearchIcon />
                 </summary>
-                <details-dialog ref={searchMenuRef}>
+                <DetailsDialog ref={searchMenuRef}>
                     <SearchDialog document={document} />
-                </details-dialog>
+                </DetailsDialog>
             </details>
 
             <details className="Toolbar-item Toolbar-menu">
@@ -137,9 +139,9 @@ export function Toolbar({
                 >
                     Aa
                 </summary>
-                <details-dialog ref={optionsMenuRef}>
+                <DetailsDialog ref={optionsMenuRef}>
                     <OptionsDialog />
-                </details-dialog>
+                </DetailsDialog>
             </details>
         </div>
     );
