@@ -6,14 +6,13 @@ import {
     evaluateXPathToBoolean as evaluateBoolean,
 } from "fontoxpath";
 
-import { HymnalDocument, Line, RepeatLines, CACHE_ID } from "./types";
+import { HymnalDocument, Line, RepeatLines } from "./types";
 
-const objectFromEntries = <T extends { id: string }>(entries: T[]) =>
+let objectFromEntries = <T extends { id: string }>(entries: T[]) =>
     Object.fromEntries(entries.map(entry => [entry.id, entry]));
 
-export function convert(xmlDocument: XMLDocument): HymnalDocument {
+export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
     return {
-        CACHE_ID,
         id: evaluateString("/hymnal/@id", xmlDocument),
         year: evaluateString("/hymnal/@year", xmlDocument),
         title: evaluateString("/hymnal/@title", xmlDocument),
@@ -99,7 +98,7 @@ export function convert(xmlDocument: XMLDocument): HymnalDocument {
     };
 }
 
-const getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
+let getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
     evaluateNodes(selector, verse).map(lineOrRepeat => {
         if ((lineOrRepeat as Node).nodeName === "repeat") {
             return {
@@ -108,13 +107,11 @@ const getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
                 lines: evaluateNodes("line", lineOrRepeat).map(line => ({
                     kind: "line",
                     text: (line as Node).textContent ?? "",
-                    isDeleted: evaluateBoolean("@deleted", line),
                 })),
             };
         }
         return {
             kind: "line",
             text: (lineOrRepeat as Node).textContent ?? "",
-            isDeleted: evaluateBoolean("@deleted", lineOrRepeat),
         };
     });

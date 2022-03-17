@@ -1,0 +1,18 @@
+.OptionsDialog {
+    display: grid;
+    gap: var(--toolbar-gap);
+    padding: var(--toolbar-gap);
+}
+.OptionsDialog-range {
+    padding: 0.25rem 0.2rem 0;
+}
+.OptionsDialog-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--toolbar-gap);
+
+    & > * {
+        flex: 1 0;
+        width: fit-content;
+    }
+}

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useDisplayOptions } from "../util/useDisplayOptions";
+import { useOptions } from "../options";
 import {
     Hymn as HymnType,
     HymnalDocument,
@@ -9,13 +9,11 @@ import {
     RepeatLines as RepeatLinesType,
 } from "../types";
 
-const c = (className: string, include: boolean) => (include ? " " + className : "");
+let c = (className: string, include: boolean) => (include ? " " + className : "");
 
-export const Hymn = React.memo(_Hymn);
+export let Hymn = React.memo(_Hymn);
 
 function _Hymn({ hymn, document }: { hymn: HymnType; document: HymnalDocument }) {
-    const [{ hideDeletedLines }] = useDisplayOptions();
-
     return (
         <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
@@ -65,11 +63,9 @@ function _Hymn({ hymn, document }: { hymn: HymnType; document: HymnalDocument })
             </header>
 
             <div className="Hymn-verses">
-                {hymn.verses
-                    .filter(verse => !(hideDeletedLines && verse.isDeleted))
-                    .map((verse, i) => (
-                        <Verse verse={verse} verseNumber={i + 1} hymn={hymn} key={i} />
-                    ))}
+                {hymn.verses.map((verse, i) => (
+                    <Verse verse={verse} verseNumber={i + 1} hymn={hymn} key={i} />
+                ))}
             </div>
 
             <footer className="Hymn-details">
@@ -145,7 +141,7 @@ function Verse({
     verseNumber: number;
     hymn: HymnType;
 }) {
-    const [{ repeatChorus, repeatRefrain, hideDeletedLines }] = useDisplayOptions();
+    let [{ repeatChorus, repeatRefrain }] = useOptions();
 
     return (
         <React.Fragment>
@@ -153,7 +149,6 @@ function Verse({
                 <span className="Hymn-verseNumber">{verseNumber}.</span>{" "}
                 <Lines lines={verse.lines} />
                 {hymn.refrain &&
-                    (hideDeletedLines ? !hymn.refrain.isDeleted : true) &&
                     (repeatRefrain ? (
                         <span
                             className={
@@ -169,43 +164,23 @@ function Verse({
                 {verseNumber > 1 && hymn.chorus && !repeatChorus && <i>Chorus:</i>}
             </p>
 
-            {hymn.refrain &&
-                !repeatRefrain &&
-                (hideDeletedLines ? !hymn.refrain.isDeleted : true) &&
-                verseNumber === 1 && (
-                    <p
-                        className={
-                            "Hymn-refrain" + c("is-deleted", hymn.refrain.isDeleted)
-                        }
-                    >
-                        <i>Refrain:</i> <Lines lines={hymn.refrain.lines} />
-                    </p>
-                )}
+            {hymn.refrain && !repeatRefrain && verseNumber === 1 && (
+                <p className={"Hymn-refrain" + c("is-deleted", hymn.refrain.isDeleted)}>
+                    <i>Refrain:</i> <Lines lines={hymn.refrain.lines} />
+                </p>
+            )}
 
-            {hymn.chorus &&
-                !repeatChorus &&
-                (hideDeletedLines ? !hymn.chorus.isDeleted : true) &&
-                verseNumber === 1 && (
-                    <p
-                        className={
-                            "Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)
-                        }
-                    >
-                        <i>Chorus:</i> <Lines lines={hymn.chorus.lines} />
-                    </p>
-                )}
+            {hymn.chorus && !repeatChorus && verseNumber === 1 && (
+                <p className={"Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)}>
+                    <i>Chorus:</i> <Lines lines={hymn.chorus.lines} />
+                </p>
+            )}
 
-            {hymn.chorus &&
-                repeatChorus &&
-                (hideDeletedLines ? !hymn.chorus.isDeleted : true) && (
-                    <p
-                        className={
-                            "Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)
-                        }
-                    >
-                        <Lines lines={hymn.chorus.lines} />
-                    </p>
-                )}
+            {hymn.chorus && repeatChorus && (
+                <p className={"Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)}>
+                    <Lines lines={hymn.chorus.lines} />
+                </p>
+            )}
         </React.Fragment>
     );
 }
@@ -228,7 +203,7 @@ function Lines({ lines }: { lines: (LineType | RepeatLinesType)[] }) {
 }
 
 function RepeatLines({ repeat }: { repeat: RepeatLinesType }) {
-    const [{ expandRepeatedLines }] = useDisplayOptions();
+    let [{ expandRepeatedLines }] = useOptions();
 
     if (expandRepeatedLines) {
         return (
@@ -254,13 +229,13 @@ const EM_DASH = "—";
 const ZERO_WIDTH_SPACE = "\u200B";
 
 function Line({ line }: { line: LineType }) {
-    // const [{ breakLines }] = useDisplayOptions();
+    // let [{ breakLines }] = useOptions();
 
     // if (breakLines) {
     //     return <div className="Hymn-line Hymn-line--break">{line.text}</div>;
     // }
 
-    const noSpaceAfter = line.text.slice(-1) === EM_DASH;
+    let noSpaceAfter = line.text.slice(-1) === EM_DASH;
     return (
         <React.Fragment>
             <span className={"Hymn-line" + c("Hymn-line--nospaceafter", noSpaceAfter)}>

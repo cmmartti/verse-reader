@@ -1,5 +1,5 @@
 import {useMatchMedia} from "./useMatchMedia";
 
-export const useIsInstalled = () =>
+export let useIsInstalled = () =>
     useMatchMedia("(display-mode: standalone)") ||
     (navigator as Navigator & {standalone: boolean}).standalone;

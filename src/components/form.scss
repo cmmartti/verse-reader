@@ -43,7 +43,7 @@
     }
 }
 
-button,
+// button,
 .Button {
     @extend %form-control;
     background: var(--control-background);
@@ -57,6 +57,17 @@ button,
     &:active:not(:disabled):not([aria-disabled]) {
         background: var(--control-active-background);
     }
+}
+
+.ButtonLink {
+    background: none;
+    border: none;
+    display: inline-block;
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+    color: var(--link-color);
+    padding: 0;
 }
 
 .ToggleButton {
@@ -122,9 +133,9 @@ button,
             pointer-events: none;
         }
         &.RadioButtons-button--checked {
-            text-decoration: underline;
-            background: rebeccapurple;
             color: white;
+            background: rebeccapurple;
+            border: 0.25em solid var(--control-background);
         }
     }
 }

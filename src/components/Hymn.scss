@@ -1,5 +1,6 @@
 .Hymn {
     font-size: calc(1rem * var(--ui-scale-factor, 1));
+    // transition: font-size 0.15s;
     padding: 1rem 0.75rem 0.75rem 0.75rem;
     min-height: 100%;
     display: flex;

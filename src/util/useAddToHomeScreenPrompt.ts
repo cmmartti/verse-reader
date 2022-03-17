@@ -29,7 +29,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function useAddToHomeScreenPrompt() {
-    const [deferredPrompt, setDeferredPrompt] =
+    let [deferredPrompt, setDeferredPrompt] =
         React.useState<BeforeInstallPromptEvent | null>(null);
 
     function promptToInstall() {

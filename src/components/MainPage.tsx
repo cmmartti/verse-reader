@@ -1,58 +1,66 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useVirtual } from "react-virtual";
+import { useMatch, useNavigate } from "@tanstack/react-location";
 
 import { Toolbar } from "./Toolbar";
 import { useDebounceCallback } from "../util/useDebounceCallback";
 import { useViewportWidth } from "../util/useViewportWidth";
 import { Hymn } from "./Hymn";
-import { getDocumentData, setLastPosition } from "../util/documentRepository";
+import { setLastPosition } from "../db";
+import { toggleFullscreen } from "../util/toggleFullscreen";
+import { useCSSVar } from "../util/useCSSVar";
+import { LocationGenerics } from "./App";
 
-const HYMN_WIDTH_DEFAULT = 560;
+const HYMN_WIDTH_PREFERRED = 560;
+const HYMN_HEIGHT_PREFERRED = 500;
 const HYMN_SPACING = 1;
 
-export function MainPage({
-    id,
-    lastPosition,
-}: {
-    id: string;
-    lastPosition: string | null;
-}) {
-    const { position: urlPosition } = useParams();
+export function MainPage() {
+    let {
+        data,
+        params: { position: urlPosition },
+    } = useMatch<LocationGenerics>();
+    let document = data.document!;
+    let metadata = data.metadata!;
 
-    const document = React.useMemo(() => getDocumentData(id).unwrap(), [id]);
-    const hymnList = React.useMemo(() => Object.values(document.hymns), [document]);
+    let hymnList = React.useMemo(() => Object.values(document.hymns), [document]);
 
-
-    const mainRef = React.useRef<HTMLDivElement>(null!);
+    let mainRef = React.useRef<HTMLDivElement>(null!);
 
     // Increase scrolling performance by limiting total DOM elements,
     // using a virtualizer to only keep a few pages in memory at a time.
-    const viewportWidth = useViewportWidth(mainRef, HYMN_WIDTH_DEFAULT);
-    const { scrollToIndex, ...virtualizer } = useVirtual({
+    let [viewportWidth, viewportHeight] = useViewportWidth(
+        mainRef,
+        HYMN_WIDTH_PREFERRED
+    );
+
+    let mobileMode =
+        viewportHeight < HYMN_HEIGHT_PREFERRED || viewportWidth < HYMN_WIDTH_PREFERRED;
+    useCSSVar("--scroll-snap-type", mobileMode ? "x mandatory" : "none");
+
+    let { scrollToIndex, ...virtualizer } = useVirtual({
         size: hymnList.length,
         parentRef: mainRef,
         horizontal: true,
-        paddingEnd: viewportWidth - Math.min(HYMN_WIDTH_DEFAULT, viewportWidth),
+        paddingEnd: viewportWidth - Math.min(HYMN_WIDTH_PREFERRED, viewportWidth),
         estimateSize: React.useCallback(
-            () => Math.min(HYMN_WIDTH_DEFAULT, viewportWidth) + HYMN_SPACING,
-            [viewportWidth]
+            () => (mobileMode ? viewportWidth : HYMN_WIDTH_PREFERRED) + HYMN_SPACING,
+            [viewportWidth, mobileMode]
         ),
-        overscan: 1,
-        // keyExtractor: index => document.id + "/" + hymnList[index].id,
+        overscan: 3,
     });
 
-    const navigate = useNavigate();
+    let navigate = useNavigate();
 
     /**
      * Saves the current position to the browser (URL and localStorage).
      * This function is debounced to avoid overloading the browser with
      * frequent URL updates.
      */
-    const persistPosition = useDebounceCallback(
+    let persistPosition = useDebounceCallback(
         React.useCallback(
             (newPosition: string, replace: true | false) => {
-                navigate(`/${document.id}/${newPosition}`, { replace });
+                navigate({ to: `/${document.id}/${newPosition}`, replace });
                 setLastPosition(document.id, newPosition);
             },
             [document.id, navigate]
@@ -60,20 +68,20 @@ export function MainPage({
         200
     );
 
-    const initialPosition = React.useMemo(() => {
+    let initialPosition = React.useMemo(() => {
         if (urlPosition && urlPosition in document.hymns) {
             return urlPosition;
         }
-        if (lastPosition && lastPosition in document.hymns) {
-            return lastPosition;
+        if (metadata.lastPosition && metadata.lastPosition in document.hymns) {
+            return metadata.lastPosition;
         }
         return null;
-    }, [document, urlPosition, lastPosition]);
+    }, [metadata, document, urlPosition]);
 
-    const [position, _setPosition] = React.useState<string | null>(initialPosition);
-    const positionRef = React.useRef<string | null>(null);
+    let [position, _setPosition] = React.useState<string | null>(initialPosition);
+    let positionRef = React.useRef<string | null>(null);
 
-    const setPosition = React.useCallback(
+    let setPosition = React.useCallback(
         ({
             id,
             replace,
@@ -115,22 +123,22 @@ export function MainPage({
     }, [hymnList, scrollToIndex, initialPosition, setPosition]);
 
     // Update the current position when scrolling occurs
-    const observer = React.useRef<IntersectionObserver | null>(null);
+    let observer = React.useRef<IntersectionObserver | null>(null);
     React.useEffect(() => {
         // Keep a list of all intersection ratios.
-        const ratios: { [id: string]: number } = {};
+        let ratios: { [id: string]: number } = {};
 
         // Then whenever a threshold is crossed...
         observer.current = new IntersectionObserver(
             entries => {
                 // update the above list,
                 entries.forEach(entry => {
-                    const id = entry.target.getAttribute("data-id")!;
+                    let id = entry.target.getAttribute("data-id")!;
                     ratios[id] = entry.intersectionRatio;
                 });
 
                 // find the first page that has the highest intersection ratio,
-                const activePage = Object.entries(ratios)
+                let activePage = Object.entries(ratios)
                     .map(([id, ratio]) => ({ id, ratio }))
                     .reduce((prev, cur) => (cur.ratio > prev.ratio ? cur : prev));
 
@@ -144,13 +152,15 @@ export function MainPage({
         return () => observer.current!.disconnect();
     }, [setPosition]);
 
-    const observeElement = React.useCallback(element => {
+    let observeElement = React.useCallback(element => {
         if (observer.current && element) observer.current.observe(element);
     }, []);
 
     return (
         <main className="MainPage" ref={mainRef}>
-            <h1 className="MainPage-title">{document.title}</h1>
+            <h1 className="MainPage-title" onClick={() => toggleFullscreen(mainRef)}>
+                {document.title}
+            </h1>
 
             <Toolbar
                 page={position}
@@ -162,6 +172,9 @@ export function MainPage({
                     setPosition({ id, replace: false, persist: true });
                 }}
                 document={document}
+                index={data.index!}
+                documents={data.documents!}
+                toggleFullscreen={() => toggleFullscreen(mainRef)}
             />
 
             <div
@@ -172,7 +185,7 @@ export function MainPage({
                 }}
             >
                 {virtualizer.virtualItems.map(virtualColumn => {
-                    const hymn = hymnList[virtualColumn.index];
+                    let hymn = hymnList[virtualColumn.index];
 
                     return (
                         <div

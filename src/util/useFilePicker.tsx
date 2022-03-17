@@ -7,10 +7,10 @@ import React from "react";
 
     ```
     function FilePicker() {
-        const filepicker = useFilePicker<HTMLDivElement>(
+        let filepicker = useFilePicker<HTMLDivElement>(
             (filelist: FileList) => {
                 [...filelist].forEach(async file => {
-                    const fileText = await file.text();
+                    let fileText = await file.text();
                     processFile(fileText);
                 });
             },
@@ -38,11 +38,11 @@ export function useFilePicker<E extends HTMLElement = HTMLElement>(
         HTMLInputElement
     >
 ) {
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-    const [isOver, _setIsOver] = React.useState(false);
+    let fileInputRef = React.useRef<HTMLInputElement>(null);
+    let [isOver, _setIsOver] = React.useState(false);
 
-    const containerRef = React.useRef<E>(null);
-    // const prevValueRef = React.useRef<string>(null!);
+    let containerRef = React.useRef<E>(null);
+    // let prevValueRef = React.useRef<string>(null!);
 
     function setIsOver(value: boolean) {
         _setIsOver(value);

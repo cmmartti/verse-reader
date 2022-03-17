@@ -4,16 +4,18 @@ export function useViewportWidth<E extends HTMLElement>(
     elementRef: React.MutableRefObject<E>,
     initialWidth: number
 ) {
-    const [viewportWidth, setViewportWidth] = React.useState(initialWidth);
+    let [viewportWidth, setViewportWidth] = React.useState(initialWidth);
+    let [viewportHeight, setViewportHeight] = React.useState(initialWidth);
 
     React.useEffect(() => {
         function resizeHandler() {
             setViewportWidth(elementRef.current.offsetWidth);
+            setViewportHeight(elementRef.current.offsetHeight);
         }
         resizeHandler();
         window.addEventListener("resize", resizeHandler);
         return () => window.removeEventListener("resize", resizeHandler);
     }, [elementRef]);
 
-    return viewportWidth;
+    return [viewportWidth, viewportHeight];
 }

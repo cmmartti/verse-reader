@@ -49,62 +49,6 @@
     }
 }
 
-.SearchDialog {
-    display: grid;
-    gap: var(--toolbar-gap);
-    grid-template-areas:
-        "controls"
-        "results";
-    @media (max-width: 29rem) {
-        grid-template-areas:
-            "results"
-            "controls";
-    }
-}
-.SearchDialog-controls {
-    grid-area: controls;
-    position: sticky;
-    padding: var(--toolbar-gap);
-    @media (max-width: 29rem) {
-        bottom: 0;
-    }
-    @media (min-width: 29rem) {
-        top: 0;
-    }
-
-    display: grid;
-}
-.SearchDialog-results {
-    grid-area: results;
-    padding: var(--toolbar-gap);
-
-    font-size: calc(1rem * var(--ui-scale-factor, 1));
-}
-.SearchDialog-hymnList {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.OptionsDialog {
-    display: grid;
-    gap: var(--toolbar-gap);
-    padding: var(--toolbar-gap);
-}
-.OptionsDialog-range {
-    padding: 0.25rem 0.2rem 0;
-}
-.OptionsDialog-toggles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--toolbar-gap);
-
-    & > * {
-        flex: 1 0;
-        width: fit-content;
-    }
-}
-
 // // Full-screen overlay underneath the popup to trigger a close on click
 // .Toolbar-menu[open] > summary::before {
 //     // content: "";

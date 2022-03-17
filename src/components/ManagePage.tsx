@@ -1,59 +1,47 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useMatch, Link } from "@tanstack/react-location";
 
 import { ReactComponent as DeleteIcon } from "../assets/delete_black_24dp.svg";
 import { useFilePicker } from "../util/useFilePicker";
-import {
-    DocumentMetadata,
-    getDocuments,
-    addDocument,
-    deleteDocument,
-} from "../util/documentRepository";
+import { addDocument, deleteDocument } from "../db";
+import { LocationGenerics } from "./App";
 
 export function ManagePage() {
-    const [bookList, setBookList] = React.useState<DocumentMetadata[]>(getDocuments());
+    let { data } = useMatch<LocationGenerics>();
+    let documentList = data.documents!;
 
-    const addBook = React.useCallback((newBook: XMLDocument) => {
-        const res = addDocument(newBook);
-        if (res.isOk) setBookList(getDocuments());
-        return res.unwrap();
-    }, []);
-
-    const deleteBook = React.useCallback((id: string) => {
-        const res = deleteDocument(id);
-        if (res.isOk) setBookList(getDocuments());
-        return res.unwrap();
-    }, []);
-
-    const filepicker = useFilePicker<HTMLDivElement>(
+    let filepicker = useFilePicker<HTMLDivElement>(
         (filelist: FileList) => {
             [...filelist].forEach(async file => {
-                const xmlString = await file.text();
-                const hymnal = new DOMParser().parseFromString(xmlString, "text/xml");
-                addBook(hymnal);
+                let xmlString = await file.text();
+                let xmlDocument = new DOMParser().parseFromString(xmlString, "text/xml");
+                addDocument(xmlDocument);
             });
         },
         { accept: "text/xml", multiple: true }
     );
 
-    function handleDelete(document: DocumentMetadata) {
+    function handleDelete(id: string, title: string) {
         return function () {
-            if (window.confirm(`Are you sure you want to delete "${document.title}?"`))
-                deleteBook(document.id);
+            if (window.confirm(`Are you sure you want to delete "${title}?"`))
+                deleteDocument(id);
         };
     }
 
     return (
-        <div className="PageHome">
-            <h1 className="PageHome-title">Manage Books</h1>
+        <div className="ManagePage">
+            <h1 className="ManagePage-title">Manage Books</h1>
             <Link to="/">Exit</Link>
 
-            <div className="PageHome-documentsList">
-                {bookList.length === 0 && <div>No books have been installed.</div>}
-                {bookList.map(hymnal => (
-                    <div key={hymnal.id}>
-                        {hymnal.title}
-                        <button className="Button" onClick={handleDelete(hymnal)}>
+            <div className="ManagePage-documentsList">
+                {documentList.length === 0 && <div>No books have been installed.</div>}
+                {documentList.map(document => (
+                    <div key={document.id}>
+                        {document.title}
+                        <button
+                            className="Button"
+                            onClick={handleDelete(document.id, document.title)}
+                        >
                             <DeleteIcon /> Delete
                         </button>
                     </div>

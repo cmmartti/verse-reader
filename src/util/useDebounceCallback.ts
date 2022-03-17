@@ -5,8 +5,8 @@ export function useDebounceCallback<CallbackArgs extends any[]>(
     wait = 100,
     leading = false
 ): (...args: CallbackArgs) => void {
-    const storedCallback = useLatestRef(callback);
-    const timeout = React.useRef<ReturnType<typeof setTimeout>>();
+    let storedCallback = useLatestRef(callback);
+    let timeout = React.useRef<ReturnType<typeof setTimeout>>();
 
     return React.useCallback(
         (...args) => {
@@ -38,7 +38,7 @@ export function useDebounceCallback<CallbackArgs extends any[]>(
 }
 
 function useLatestRef<T extends any>(current: T) {
-    const storedValue = React.useRef(current);
+    let storedValue = React.useRef(current);
     React.useEffect(() => {
         storedValue.current = current;
     });

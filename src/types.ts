@@ -1,7 +1,4 @@
-export const CACHE_ID = 3;
-
 export type HymnalDocument = {
-    CACHE_ID: typeof CACHE_ID;
     id: string;
     year: string;
     title: string;
@@ -66,7 +63,6 @@ export type Verse = {
 export type Line = {
     kind: "line";
     text: string;
-    isDeleted: boolean;
 };
 export type RepeatLines = {
     kind: "repeat";

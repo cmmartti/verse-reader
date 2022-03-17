@@ -11,7 +11,7 @@ export function useOnClickOutside(
 ) {
     React.useEffect(() => {
         function handleClick(event: MouseEvent | TouchEvent) {
-            for (const ref of refs) {
+            for (let ref of refs) {
                 if (!ref.current || ref.current.contains(event.target as Node)) {
                     return;
                 }

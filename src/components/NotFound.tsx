@@ -1,11 +1,17 @@
-import * as React from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useMatch } from "@tanstack/react-location";
 
 export function NotFound() {
+    let { error } = useMatch();
+
     return (
         <main>
-            <h1>Not Found</h1>
-            <Link to="/manage">Manage Books</Link>
+            <h1>Error</h1>
+            {error && <p>{error.toString()}</p>}
+            <hr />
+            <p>
+                <Link to="/manage">Manage Books</Link>
+            </p>
         </main>
     );
 }
