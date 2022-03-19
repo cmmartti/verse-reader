@@ -1,8 +1,6 @@
-import React from "react";
-
-export function toggleFullscreen(elementRef: React.MutableRefObject<HTMLElement>) {
+export function toggleFullscreen(element: HTMLElement) {
     if (!document.fullscreenElement) {
-        elementRef.current.requestFullscreen({ navigationUI: "show" }).catch(err => {
+        element.requestFullscreen({ navigationUI: "show" }).catch(err => {
             console.error(
                 `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
             );

@@ -78,7 +78,7 @@ export async function addDocument(xmlDocument: XMLDocument) {
     let metadata = {
         id: document.id,
         lastOpened: 0,
-        lastPosition: document.hymns[0].id,
+        lastPosition: Object.keys(document.hymns)[0],
     };
     let xml = new XMLSerializer().serializeToString(xmlDocument);
     let index = buildIndex(document).toJSON();

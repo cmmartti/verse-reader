@@ -21,15 +21,15 @@ import { SearchDialog } from "./SearchDialog";
 import { MetadataPlusTitle } from "../db";
 
 export function Toolbar({
-    page,
-    setPage,
+    position,
+    setPosition,
     document,
     documents,
     toggleFullscreen,
     index,
 }: {
-    page: string | null;
-    setPage: (page: string) => void;
+    position: string | null;
+    setPosition: (position: string) => void;
     document: HymnalDocument;
     toggleFullscreen: () => void;
     documents: MetadataPlusTitle[];
@@ -62,8 +62,6 @@ export function Toolbar({
             <div className="Toolbar-item">
                 <Menu
                     transition={false}
-                    // position="initial"
-                    // reposition="initial"
                     menuButton={
                         <MenuButton aria-label="Menu" title="Menu" className="Button">
                             <MenuIcon />
@@ -105,8 +103,8 @@ export function Toolbar({
                 </Menu>
             </div>
             <GoToInput
-                initialValue={page ?? ""}
-                onSubmit={page => setPage(page)}
+                initialValue={position ?? ""}
+                onSubmit={position => setPosition(position)}
                 maxValue={Math.max(
                     ...Object.keys(document.hymns)
                         .map(id => parseInt(id, 10))

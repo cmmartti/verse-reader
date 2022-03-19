@@ -3,28 +3,37 @@ import { useMatch, Link } from "@tanstack/react-location";
 
 import { ReactComponent as DeleteIcon } from "../assets/delete_black_24dp.svg";
 import { useFilePicker } from "../util/useFilePicker";
-import { addDocument, deleteDocument } from "../db";
+import { addDocument, deleteDocument, getDocumentList } from "../db";
 import { LocationGenerics } from "./App";
 
 export function ManagePage() {
     let { data } = useMatch<LocationGenerics>();
-    let documentList = data.documents!;
+
+    let [documentList, setDocumentList] = React.useState(data.documents || []);
+    let [isLoading, setIsLoading] = React.useState(false);
 
     let filepicker = useFilePicker<HTMLDivElement>(
-        (filelist: FileList) => {
-            [...filelist].forEach(async file => {
+        async (filelist: FileList) => {
+            setIsLoading(true);
+
+            for (let file of filelist) {
                 let xmlString = await file.text();
                 let xmlDocument = new DOMParser().parseFromString(xmlString, "text/xml");
-                addDocument(xmlDocument);
-            });
+                await addDocument(xmlDocument);
+            }
+
+            setDocumentList(await getDocumentList());
+            setIsLoading(false);
         },
         { accept: "text/xml", multiple: true }
     );
 
     function handleDelete(id: string, title: string) {
-        return function () {
-            if (window.confirm(`Are you sure you want to delete "${title}?"`))
-                deleteDocument(id);
+        return async function () {
+            if (window.confirm(`Are you sure you want to delete "${title}?"`)) {
+                await deleteDocument(id);
+                setDocumentList(await getDocumentList());
+            }
         };
     }
 
@@ -46,6 +55,7 @@ export function ManagePage() {
                         </button>
                     </div>
                 ))}
+                {isLoading && <div>Loading...</div>}
             </div>
 
             <h2>Add a Book</h2>

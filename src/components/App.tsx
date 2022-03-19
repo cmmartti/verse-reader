@@ -1,14 +1,12 @@
-import * as React from "react";
-import "@github/details-dialog-element";
 import {
-    MakeGenerics,
-    Outlet,
     ReactLocation,
+    MakeGenerics,
     Router,
+    Outlet,
     useMatch,
-    Route,
     Navigate,
 } from "@tanstack/react-location";
+// import { ReactLocationDevtools } from "@tanstack/react-location-devtools";
 
 import { ManagePage } from "./ManagePage";
 import { MainPage } from "./MainPage";
@@ -25,17 +23,6 @@ import { HymnalDocument } from "../types";
 
 import "./App.scss";
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "details-dialog": React.DetailedHTMLProps<
-                React.HTMLAttributes<HTMLElement>,
-                HTMLElement
-            >;
-        }
-    }
-}
-
 export type LocationGenerics = MakeGenerics<{
     LoaderData: {
         documents: MetadataPlusTitle[];
@@ -48,76 +35,86 @@ export type LocationGenerics = MakeGenerics<{
 
 const location = new ReactLocation();
 
-let routes: Route[] = [
-    {
-        pendingElement: <p>Loading...</p>,
-        pendingMs: 200,
-        pendingMinMs: 500,
-        errorElement: <NotFound />,
-
-        loader: async () => {
-            let documentList = await getDocumentList();
-            documentList.sort((a, b) => b.lastOpened - a.lastOpened);
-            return {
-                mru: documentList.sort((a, b) => b.lastOpened - a.lastOpened)[0].id,
-                documents: documentList,
-            };
-        },
-
-        children: [
-            {
-                path: "/",
-                element: <NavigateToMRU />,
-            },
-            {
-                path: "manage",
-                element: <ManagePage />,
-            },
-            {
-                path: ":bookId",
-                loader: async ({ params: { bookId } }) => {
-                    let [metadata, document, index] = await getDocument(bookId);
-                    return { metadata, document, index };
-                },
-
-                children: [
-                    {
-                        path: "/",
-                        element: <RedirectWithPosition />,
-                    },
-                    {
-                        path: ":position",
-                        element: <MainPage />,
-                        onMatch: match => {
-                            setLastOpened(match.params.bookId, Date.now());
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-];
-
 export function App() {
     return (
-        <OptionsProvider>
-            <Router
-                location={location}
-                routes={routes}
-                useErrorBoundary
-            >
+        <Router
+            location={location}
+            routes={[
+                {
+                    pendingElement: <p>Loading...</p>,
+                    pendingMs: 200,
+                    pendingMinMs: 500,
+                    errorElement: <NotFound />,
+
+                    loader: async () => {
+                        let documentList = await getDocumentList();
+                        documentList.sort((a, b) => b.lastOpened - a.lastOpened);
+                        return {
+                            mru:
+                                documentList.sort(
+                                    (a, b) => b.lastOpened - a.lastOpened
+                                )[0]?.id ?? null,
+                            documents: documentList,
+                        };
+                    },
+
+                    children: [
+                        {
+                            path: "/",
+                            element: <NavigateToMRU />,
+                        },
+                        {
+                            path: "manage",
+                            element: <ManagePage />,
+                            loader: async () => {
+                                let documentList = await getDocumentList();
+                                documentList.sort((a, b) => b.lastOpened - a.lastOpened);
+                                return {
+                                    documents: documentList,
+                                };
+                            },
+                        },
+                        {
+                            path: ":bookId",
+                            loader: async match => {
+                                let [metadata, document, index] = await getDocument(
+                                    match.params.bookId
+                                );
+                                return { metadata, document, index };
+                            },
+
+                            children: [
+                                {
+                                    path: "/",
+                                    element: <RedirectWithPosition />,
+                                },
+                                {
+                                    path: ":position",
+                                    element: <MainPage />,
+                                    onMatch: match => {
+                                        setLastOpened(match.params.bookId, Date.now());
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ]}
+            useErrorBoundary
+        >
+            <OptionsProvider>
                 <Outlet />
-            </Router>
-        </OptionsProvider>
+                {/* <ReactLocationDevtools initialIsOpen={false} /> */}
+            </OptionsProvider>
+        </Router>
     );
 }
 
 function NavigateToMRU() {
-    const { data } = useMatch<LocationGenerics>();
+    let { data } = useMatch<LocationGenerics>();
     if (data.mru) {
         return <Navigate to={data.mru} />;
-    }
-    return <NotFound />;
+    } else return <Navigate to="/manage" />;
 }
 
 function RedirectWithPosition() {
