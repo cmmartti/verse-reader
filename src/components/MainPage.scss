@@ -4,9 +4,6 @@
     background: var(--control-border-color);
     line-height: 1.5;
     font-family: var(--document-font-family);
-    overflow-x: auto;
-    scroll-padding-block: var(--toolbar-height);
-    scroll-snap-type: var(--scroll-snap-type);
 
     display: flex;
     flex-direction: column;

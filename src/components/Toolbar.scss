@@ -51,12 +51,12 @@
 
 // // Full-screen overlay underneath the popup to trigger a close on click
 // .Toolbar-menu[open] > summary::before {
-//     // content: "";
+//     content: "";
 //     display: block;
 //     position: fixed;
 //     inset: 0;
 //     z-index: 1;
-//     // background: rgba(42, 43, 44, 0.4);
+//     background: rgba(42, 43, 44, 0.4);
 // }
 .Toolbar-menu > details-dialog {
     z-index: 2;

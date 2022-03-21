@@ -119,5 +119,6 @@ function NavigateToMRU() {
 
 function RedirectWithPosition() {
     let { data } = useMatch<LocationGenerics>();
-    return <Navigate to={data.metadata!.lastPosition} replace />;
+    let position = data.metadata!.lastPosition || Object.keys(data.document!.hymns)[0];
+    return <Navigate to={position} replace />;
 }

@@ -10,31 +10,58 @@ import { useDebounceCallback } from "../util/useDebounceCallback";
 import { LocationGenerics } from "./App";
 
 export function MainPage() {
-    let { data, params } = useMatch<LocationGenerics>();
+    let {
+        data,
+        params: { position: initPosition },
+    } = useMatch<LocationGenerics>();
     let document = data.document!;
-    let metadata = data.metadata!;
-
-    let initialPosition = React.useMemo(() => {
-        if (params.position && params.position in document.hymns) {
-            return params.position;
-        }
-        if (metadata.lastPosition && metadata.lastPosition in document.hymns) {
-            return metadata.lastPosition;
-        }
-        return Object.keys(document.hymns)[0];
-    }, [metadata, document, params.position]);
 
     let ref = React.useRef<HTMLDivElement>(null!);
 
+    let [position, setPosition, shouldScroll] = usePosition(initPosition, document.id);
+
+    let toggleFullscreen = React.useCallback(() => _toggleFullscreen(ref.current), []);
+
+    return (
+        <main className="MainPage" ref={ref}>
+            <h1 className="MainPage-title" onClick={toggleFullscreen}>
+                {document.title}
+            </h1>
+            <Toolbar
+                position={position}
+                setPosition={React.useCallback(
+                    (newPosition: string) => setPosition(newPosition, "goto"),
+                    [setPosition]
+                )}
+                document={document}
+                index={data.index!}
+                documents={data.documents!}
+                toggleFullscreen={toggleFullscreen}
+            />
+            <Document
+                parentRef={ref}
+                shouldScroll={shouldScroll}
+                position={position}
+                setPosition={React.useCallback(
+                    newPosition => setPosition(newPosition, "scroll"),
+                    [setPosition]
+                )}
+                document={document}
+            />
+        </main>
+    );
+}
+
+function usePosition(initialPosition: string, documentId: string) {
     let navigate = useNavigate();
 
     let savePosition = useDebounceCallback(
         React.useCallback(
-            (newPosition: string, replace: true | false = false) => {
-                navigate({ to: `/${document.id}/${newPosition}`, replace });
-                setLastPosition(document.id, newPosition);
+            (newPosition: string, replace: boolean) => {
+                navigate({ to: `/${documentId}/${newPosition}`, replace });
+                setLastPosition(documentId, newPosition);
             },
-            [document.id, navigate]
+            [documentId, navigate]
         ),
         200
     );
@@ -52,21 +79,28 @@ export function MainPage() {
     let latestPositionRef = React.useRef<string | null>(null);
 
     let setPosition = React.useCallback(
-        (
-            newPosition: string,
-            opt: { save?: "replace" | false | "push"; scroll?: boolean }
-        ) => {
-            let { save = false, scroll = false } = opt;
-
+        (newPosition: string, type: "goto" | "scroll" | "url") => {
             // Don't let repeat calls destroy the history,
-            // e.g. when the position is updated on scroll at (*) below.
-            // Use `latestPositionRef` instead of `position` to avoid changing
-            // function identity.
+            // e.g. when the position is updated on scroll
+            // Use `latestPositionRef` instead of `position`
+            // to avoid changing the function identity.
             if (newPosition !== latestPositionRef.current) {
                 _setPosition(newPosition);
-                if (save) savePosition(newPosition, save === "replace");
-                if (scroll) setShouldScroll(true);
-                else setShouldScroll(false);
+
+                switch (type) {
+                    case "goto":
+                        savePosition(newPosition, true);
+                        setShouldScroll(true);
+                        break;
+                    case "scroll":
+                        savePosition(newPosition, false);
+                        setShouldScroll(false);
+                        break;
+                    case "url":
+                        setShouldScroll(true);
+                        break;
+                }
+
                 latestPositionRef.current = newPosition;
             }
         },
@@ -75,42 +109,9 @@ export function MainPage() {
 
     React.useLayoutEffect(() => {
         if (latestPositionRef.current !== initialPosition) {
-            setPosition(initialPosition, { scroll: true });
+            setPosition(initialPosition, "url");
         }
     }, [initialPosition, setPosition]);
 
-    let toggleFullscreen = React.useCallback(() => _toggleFullscreen(ref.current), []);
-
-    return (
-        <main className="MainPage" ref={ref}>
-            <h1 className="MainPage-title" onClick={toggleFullscreen}>
-                {document.title}
-            </h1>
-            <Toolbar
-                position={position}
-                setPosition={React.useCallback(
-                    (position: string) => {
-                        setPosition(position, { save: "push", scroll: true });
-                    },
-                    [setPosition]
-                )}
-                document={document}
-                index={data.index!}
-                documents={data.documents!}
-                toggleFullscreen={toggleFullscreen}
-            />
-            <Document
-                parentRef={ref}
-                shouldScroll={shouldScroll}
-                position={position}
-                setPosition={React.useCallback(
-                    position => {
-                        setPosition(position, { save: "replace" }); // (*)
-                    },
-                    [setPosition]
-                )}
-                document={document}
-            />
-        </main>
-    );
+    return [position, setPosition, shouldScroll] as const;
 }
