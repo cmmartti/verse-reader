@@ -1,47 +1,39 @@
 import { openDB, DBSchema } from "idb/with-async-ittr";
 import { Index } from "lunr";
 
-import { HymnalDocument } from "./types";
+import * as types from "./types";
 import { parseXML } from "./parseXML";
 import { buildIndex } from "./buildIndex";
 
-export type Metadata = {
-    id: string;
-    lastOpened: number;
-    lastPosition: string;
-};
-
-export type MetadataPlusTitle = Metadata & { title: string };
-
 interface HymnalDatabase extends DBSchema {
     metadata: {
-        value: Metadata;
-        key: string;
+        value: types.Metadata;
+        key: types.DocumentId;
     };
     documents: {
-        value: HymnalDocument;
-        key: string;
+        value: types.HymnalDocument;
+        key: types.DocumentId;
     };
     xmlFiles: {
         value: {
-            id: string;
+            id: types.DocumentId;
             xml: string;
         };
-        key: string;
+        key: types.DocumentId;
     };
     searchIndices: {
         value: {
-            id: string;
+            id: types.DocumentId;
             index: object;
         };
-        key: string;
+        key: types.DocumentId;
     };
 }
 
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = 3;
 
 let db = openDB<HymnalDatabase>("hymnalreader", DATABASE_VERSION, {
-    upgrade: (upgradeDB, oldVersion) => {
+    upgrade: async (upgradeDB, oldVersion, newVersion, tx) => {
         switch (oldVersion) {
             case 0:
                 // If the DB does not exist yet, oldVersion will be 0
@@ -49,13 +41,26 @@ let db = openDB<HymnalDatabase>("hymnalreader", DATABASE_VERSION, {
                 upgradeDB.createObjectStore("documents", { keyPath: "id" });
                 upgradeDB.createObjectStore("xmlFiles", { keyPath: "id" });
                 upgradeDB.createObjectStore("searchIndices", { keyPath: "id" });
+
             case 1:
-            // Put any DB version changes in a new case
+                for await (let cursor of tx.objectStore("metadata").iterate()) {
+                    let document = await tx
+                        .objectStore("documents")
+                        .get(cursor.value.id);
+                    if (document) {
+                        await tx.objectStore("metadata").put({
+                            ...cursor.value,
+                            title: document.title,
+                            year: document.year,
+                            publisher: document.publisher,
+                        });
+                    }
+                }
         }
     },
 });
 
-export async function deleteDocument(id: string) {
+export async function deleteDocument(id: types.DocumentId) {
     let tx = (await db).transaction(
         ["metadata", "documents", "xmlFiles", "searchIndices"],
         "readwrite"
@@ -79,6 +84,9 @@ export async function addDocument(xmlDocument: XMLDocument) {
         id: document.id,
         lastOpened: 0,
         lastPosition: Object.keys(document.hymns)[0],
+        title: document.title,
+        year: document.year,
+        publisher: document.publisher,
     };
     let xml = new XMLSerializer().serializeToString(xmlDocument);
     let index = buildIndex(document).toJSON();
@@ -93,7 +101,7 @@ export async function addDocument(xmlDocument: XMLDocument) {
     return document;
 }
 
-// async function resetData(id: string) {
+// async function resetData(id: types.DocumentId) {
 //     let res = await (await db).transaction("xmlFiles").store.get(id);
 //     if (!res)
 //         throw new Error(
@@ -104,7 +112,7 @@ export async function addDocument(xmlDocument: XMLDocument) {
 //     return addDocument(xmlDocument);
 // }
 
-export async function getDocument(id: string) {
+export async function getDocument(id: types.DocumentId) {
     let tx = (await db).transaction(["metadata", "documents", "searchIndices"]);
     let [metadata, document, indexRes] = await Promise.all([
         tx.objectStore("metadata").get(id),
@@ -122,18 +130,10 @@ export async function getDocument(id: string) {
 }
 
 export async function getDocumentList() {
-    let tx = (await db).transaction(["metadata", "documents"], "readonly");
-
-    let list: MetadataPlusTitle[] = [];
-    for await (let cursor of tx.objectStore("metadata").iterate()) {
-        let document = await tx.objectStore("documents").get(cursor.value.id);
-        if (document) list.push({ ...cursor.value, title: document.title });
-    }
-
-    return list;
+    return (await db).transaction("metadata").store.getAll();
 }
 
-export async function rebuildIndex(id: string) {
+export async function rebuildIndex(id: types.DocumentId) {
     let tx = (await db).transaction(["documents", "searchIndices"], "readwrite");
 
     let document = await tx.objectStore("documents").get(id);
@@ -144,13 +144,13 @@ export async function rebuildIndex(id: string) {
     } else throw new Error(`That document does not exist (${id})`);
 }
 
-export async function setLastPosition(id: string, position: string) {
+export async function setLastPosition(id: types.DocumentId, position: types.HymnId) {
     let store = (await db).transaction("metadata", "readwrite").store;
     let metadata = await store.get(id);
     if (metadata) store.put({ ...metadata, lastPosition: position });
 }
 
-export async function setLastOpened(id: string, time: number) {
+export async function setLastOpened(id: types.DocumentId, time: number) {
     let store = (await db).transaction("metadata", "readwrite").store;
     let metadata = await store.get(id);
     if (metadata) store.put({ ...metadata, lastOpened: time });

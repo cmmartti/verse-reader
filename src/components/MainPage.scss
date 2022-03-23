@@ -19,7 +19,8 @@
         border-bottom: var(--control-border);
         box-shadow: var(--toolbar-item-box-shadow);
 
-        @media (max-width: 29rem) {
+        @media (min-width: 29rem) {
+            display: none;
         }
     }
 

@@ -5,20 +5,28 @@ import { useMatch, useNavigate } from "@tanstack/react-location";
 import { Toolbar } from "./Toolbar";
 import { Document } from "./Document";
 
+import { HymnId } from "../types";
 import { toggleFullscreen as _toggleFullscreen } from "../util/toggleFullscreen";
-import { useDebounceCallback } from "../util/useDebounceCallback";
 import { LocationGenerics } from "./App";
+import { useDebounceCallback } from "../util/useDebounceCallback";
+import { OptionsDialog } from "./OptionsDialog";
+import { SearchDialog } from "./SearchDialog";
 
 export function MainPage() {
     let {
         data,
-        params: { position: initPosition },
+        params: { position: initialPosition },
     } = useMatch<LocationGenerics>();
     let document = data.document!;
+    let index = data.index!;
+    let documents = data.documents!;
 
     let ref = React.useRef<HTMLDivElement>(null!);
 
-    let [position, setPosition, shouldScroll] = usePosition(initPosition, document.id);
+    let { position, setPosition, shouldScroll } = usePosition(
+        initialPosition,
+        document.id
+    );
 
     let toggleFullscreen = React.useCallback(() => _toggleFullscreen(ref.current), []);
 
@@ -27,19 +35,17 @@ export function MainPage() {
             <h1 className="MainPage-title" onClick={toggleFullscreen}>
                 {document.title}
             </h1>
+
             <Toolbar
                 position={position}
                 setPosition={React.useCallback(
-                    (newPosition: string) => setPosition(newPosition, "goto"),
+                    (newPosition: HymnId) => setPosition(newPosition, "goto"),
                     [setPosition]
                 )}
                 document={document}
-                index={data.index!}
-                documents={data.documents!}
-                toggleFullscreen={toggleFullscreen}
+                documents={documents}
             />
             <Document
-                parentRef={ref}
                 shouldScroll={shouldScroll}
                 position={position}
                 setPosition={React.useCallback(
@@ -48,16 +54,18 @@ export function MainPage() {
                 )}
                 document={document}
             />
+            <OptionsDialog toggleFullscreen={toggleFullscreen} />
+            <SearchDialog document={document} index={index} />
         </main>
     );
 }
 
-function usePosition(initialPosition: string, documentId: string) {
+function usePosition(initialPosition: HymnId, documentId: string) {
     let navigate = useNavigate();
 
     let savePosition = useDebounceCallback(
         React.useCallback(
-            (newPosition: string, replace: boolean) => {
+            (newPosition: HymnId, replace: boolean) => {
                 navigate({ to: `/${documentId}/${newPosition}`, replace });
                 setLastPosition(documentId, newPosition);
             },
@@ -67,23 +75,14 @@ function usePosition(initialPosition: string, documentId: string) {
     );
 
     let [shouldScroll, setShouldScroll] = React.useState(false);
-    let [position, _setPosition] = React.useState<string>(initialPosition);
+    let [position, _setPosition] = React.useState<HymnId>(initialPosition);
 
-    /**
-     * The app should update the URL, but changing the URL should also update
-     * the app. We need to distinguish these changes to avoid a feedback loop.
-     * Changing the URL will not change `latestPositionRef`, so if this value ever
-     * gets out of sync with `position` it means the URL was updated externally.
-     * (browser back button, etc.).
-     */
     let latestPositionRef = React.useRef<string | null>(null);
 
     let setPosition = React.useCallback(
-        (newPosition: string, type: "goto" | "scroll" | "url") => {
-            // Don't let repeat calls destroy the history,
+        (newPosition: HymnId, type: "goto" | "scroll" | "url") => {
+            // Don't let repeat calls destroy the browser history,
             // e.g. when the position is updated on scroll
-            // Use `latestPositionRef` instead of `position`
-            // to avoid changing the function identity.
             if (newPosition !== latestPositionRef.current) {
                 _setPosition(newPosition);
 
@@ -108,10 +107,28 @@ function usePosition(initialPosition: string, documentId: string) {
     );
 
     React.useLayoutEffect(() => {
+        /**
+         * The app should update the URL, but changing the URL should also update
+         * the app. We need to distinguish these changes to avoid a feedback loop.
+         * Changing the URL will not change `latestPositionRef`, so if it doesn't
+         * match `initialPosition` here it means the URL was updated externally
+         * (browser back button, etc.).
+         */
         if (latestPositionRef.current !== initialPosition) {
             setPosition(initialPosition, "url");
         }
     }, [initialPosition, setPosition]);
 
-    return [position, setPosition, shouldScroll] as const;
+    return { position, setPosition, shouldScroll };
 }
+
+// import { useCSSVar } from "../util/useCSSVar";
+// import { useViewportWidth } from "../util/useViewportWidth";
+
+// const HYMN_WIDTH_PREFERRED = 560;
+// const HYMN_HEIGHT_PREFERRED = 500;
+
+// let [viewportWidth, viewportHeight] = useViewportWidth(ref, HYMN_WIDTH_PREFERRED);
+// let mobileMode =
+//     viewportHeight < HYMN_HEIGHT_PREFERRED || viewportWidth < HYMN_WIDTH_PREFERRED;
+// useCSSVar("--scroll-snap-type", mobileMode ? "x mandatory" : "none");

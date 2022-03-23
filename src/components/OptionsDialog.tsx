@@ -1,6 +1,7 @@
 import React from "react";
 
 import { useOptions } from "../options";
+import { Dialog } from "./Dialog";
 
 let fonts = [
     { name: "Raleway", value: "raleway" },
@@ -15,7 +16,7 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
     let [options, setDisplayOption] = useOptions();
 
     return (
-        <div className="OptionsDialog">
+        <Dialog id="options-dialog" title="Settings" className="OptionsDialog">
             <div>
                 Tap the header to{" "}
                 <button className="ButtonLink" onClick={toggleFullscreen}>
@@ -24,12 +25,6 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
                 .
             </div>
             <div className="OptionsDialog-toggles">
-                {/* <ToggleButton
-                    checked={options.hideDeletedLines}
-                    onChange={checked => setDisplayOption("hide_deleted_lines", checked)}
-                >
-                    Hide Deleted
-                </ToggleButton> */}
                 <ToggleButton
                     checked={options.repeatRefrain}
                     onChange={checked => setDisplayOption("repeat_refrain", checked)}
@@ -95,7 +90,7 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
                     step="any"
                 />
             </div>
-        </div>
+        </Dialog>
     );
 }
 
@@ -151,7 +146,6 @@ function RadioButtons({
                         onChange={e => {
                             if (e.target.checked) onChange(buttonValue);
                         }}
-                        // tabIndex={value === buttonValue ? 1 : -1}
                     />
                     {buttonText}
                 </label>

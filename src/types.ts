@@ -1,40 +1,47 @@
+export type DocumentId = string;
+export type LanguageId = string;
+export type HymnId = string;
+export type TopicId = string;
+export type TuneId = string;
+export type DayId = string;
+
 export type HymnalDocument = {
-    id: string;
+    id: DocumentId;
     year: string;
     title: string;
     publisher: string | null;
-    language: string;
-    languages: Record<string, Language>;
-    topics: Record<string, Topic> | null;
-    calendar: Record<string, Day> | null;
-    tunes: Record<string, Tune> | null;
-    hymns: Record<string, Hymn>;
+    language: LanguageId;
+    languages: Record<LanguageId, Language>;
+    topics: Record<TopicId, Topic> | null;
+    calendar: Record<DayId, Day> | null;
+    tunes: Record<TuneId, Tune> | null;
+    hymns: Record<HymnId, Hymn>;
 };
 export type Language = {
-    id: string;
+    id: LanguageId;
     name: string;
 };
 export type Topic = {
-    id: string;
+    id: TopicId;
     name: string;
 };
 export type Day = {
-    id: string;
+    id: DayId;
     shortName: string;
     name: string;
 };
 export type Tune = {
-    id: string;
+    id: TuneId;
     name: string;
 };
 export type Hymn = {
-    id: string;
+    id: HymnId;
     title: string;
-    language: string;
+    language: LanguageId;
     isDeleted: boolean;
     isRestricted: boolean;
-    topics: string[];
-    tunes: string[];
+    topics: TopicId[];
+    tunes: TuneId[];
     origin: string;
     authors: {
         name: string;
@@ -46,11 +53,11 @@ export type Hymn = {
         year: string;
         note: string;
     }[];
-    days: string[];
+    days: DayId[];
     links: {
         book: string;
         edition: string;
-        id: string;
+        id: DocumentId;
     }[];
     verses: Verse[];
     refrain: Verse | null;
@@ -68,4 +75,13 @@ export type RepeatLines = {
     kind: "repeat";
     times: number;
     lines: Line[];
+};
+
+export type Metadata = {
+    id: DocumentId;
+    lastOpened: number;
+    lastPosition: HymnId;
+    title: HymnalDocument["title"];
+    year: HymnalDocument["year"];
+    publisher: HymnalDocument["publisher"];
 };

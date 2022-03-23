@@ -19,6 +19,9 @@
     @media (max-width: 29rem) {
         justify-content: center;
     }
+    @media (min-width: 29rem) {
+        // justify-content: center;
+    }
 }
 
 .Toolbar-item,
@@ -80,5 +83,15 @@
         bottom: calc(var(--toolbar-height) + var(--toolbar-gap));
         left: var(--toolbar-gap);
         right: var(--toolbar-gap);
+    }
+}
+
+.Toolbar-title {
+    display: inline;
+    // font-size: 1.1rem;
+    font-size: inherit;
+    margin-left: 0.25em;
+    @media (max-width: 29rem) {
+        display: none;
     }
 }

@@ -1,9 +1,10 @@
 import React from "react";
 
-import { HymnalDocument } from "../types";
-import { useDebounceCallback } from "../util/useDebounceCallback";
-import { searchIndex } from "../buildIndex";
+import * as types from "../types";
+import { Dialog } from "./Dialog";
 import { rebuildIndex } from "../db";
+import { searchIndex } from "../buildIndex";
+import { useDebounceCallback } from "../util/useDebounceCallback";
 
 type Result = { id: string; lines: string[] };
 
@@ -13,7 +14,7 @@ export function SearchDialog({
     document,
     index,
 }: {
-    document: HymnalDocument;
+    document: types.HymnalDocument;
     index: lunr.Index;
 }) {
     let [inputValue, setInputValue] = React.useState("");
@@ -32,7 +33,7 @@ export function SearchDialog({
     let [isLoading, setIsLoading] = React.useState(false);
 
     return (
-        <div className="SearchDialog">
+        <Dialog id="search-dialog" title="Search" className="SearchDialog">
             <div className="SearchDialog-controls">
                 <input
                     autoFocus
@@ -77,50 +78,6 @@ export function SearchDialog({
                     })}
                 </ul>
             </div>
-        </div>
+        </Dialog>
     );
 }
-
-// type HymnResult = {
-//     id: string;
-//     matches: string[];
-// };
-
-// function filterHymns(document: HymnalDocument, search: string) {
-//     let results: HymnResult[] = [];
-//     let lowerCasedSearch = search.toLowerCase();
-//     for (let hymn of Object.values(document.hymns)) {
-//         let matches: Array<string | string[]> = [];
-//         for (let verse of hymn.verses) {
-//             matches.push(searchVerse(verse, lowerCasedSearch));
-//         }
-//         if (hymn.refrain) {
-//             matches.push(searchVerse(hymn.refrain, search));
-//         }
-//         if (hymn.chorus) {
-//             matches.push(searchVerse(hymn.chorus, search));
-//         }
-//         let flatMatches = matches.flat();
-//         if (flatMatches.length > 0) {
-//             results.push({ id: hymn.id, matches: flatMatches });
-//         }
-//     }
-
-//     return results;
-// }
-
-// function searchVerse(verse: Verse, lowerCasedSearch: string) {
-//     let matches: string[] = [];
-//     for (let lineOrRepeat of verse.lines) {
-//         if (lineOrRepeat.kind === "line") {
-//             if (lineOrRepeat.text.toLowerCase().includes(lowerCasedSearch))
-//                 matches.push(lineOrRepeat.text);
-//         } else if (lineOrRepeat.kind === "repeat") {
-//             for (let line of lineOrRepeat.lines) {
-//                 if (line.text.toLowerCase().includes(lowerCasedSearch))
-//                     matches.push(line.text);
-//             }
-//         }
-//     }
-//     return matches;
-// }

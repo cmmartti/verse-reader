@@ -1,19 +1,17 @@
 import React from "react";
 
+import * as types from "../types";
 import { useOptions } from "../options";
-import {
-    Hymn as HymnType,
-    HymnalDocument,
-    Verse as VerseType,
-    Line as LineType,
-    RepeatLines as RepeatLinesType,
-} from "../types";
 
 let c = (className: string, include: boolean) => (include ? " " + className : "");
 
-export let Hymn = React.memo(_Hymn);
-
-function _Hymn({ hymn, document }: { hymn: HymnType; document: HymnalDocument }) {
+export function Hymn({
+    hymn,
+    document,
+}: {
+    hymn: types.Hymn;
+    document: types.HymnalDocument;
+}) {
     return (
         <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
@@ -137,9 +135,9 @@ function Verse({
     verseNumber,
     hymn,
 }: {
-    verse: VerseType;
+    verse: types.Verse;
     verseNumber: number;
-    hymn: HymnType;
+    hymn: types.Hymn;
 }) {
     let [{ repeatChorus, repeatRefrain }] = useOptions();
 
@@ -185,7 +183,7 @@ function Verse({
     );
 }
 
-function Lines({ lines }: { lines: (LineType | RepeatLinesType)[] }) {
+function Lines({ lines }: { lines: (types.Line | types.RepeatLines)[] }) {
     return (
         <React.Fragment>
             {lines.map((lineOrRepeat, i) => {
@@ -202,7 +200,7 @@ function Lines({ lines }: { lines: (LineType | RepeatLinesType)[] }) {
     );
 }
 
-function RepeatLines({ repeat }: { repeat: RepeatLinesType }) {
+function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {
     let [{ expandRepeatedLines }] = useOptions();
 
     if (expandRepeatedLines) {
@@ -228,7 +226,7 @@ function RepeatLines({ repeat }: { repeat: RepeatLinesType }) {
 const EM_DASH = "—";
 const ZERO_WIDTH_SPACE = "\u200B";
 
-function Line({ line }: { line: LineType }) {
+function Line({ line }: { line: types.Line }) {
     // let [{ breakLines }] = useOptions();
 
     // if (breakLines) {

@@ -1,92 +1,64 @@
 import React from "react";
 
-import { useViewportWidth } from "../util/useViewportWidth";
+import * as types from "../types";
 import { Hymn } from "./Hymn";
-import { useCSSVar } from "../util/useCSSVar";
-import { HymnalDocument } from "../types";
 
-const HYMN_WIDTH_PREFERRED = 560;
-const HYMN_HEIGHT_PREFERRED = 500;
+const OVERSCAN = 3;
 
-export function Document<E extends HTMLElement>({
-    parentRef,
+export function Document({
     position,
     setPosition,
     shouldScroll,
     document,
 }: {
-    parentRef: React.MutableRefObject<E>;
-    position: string;
-    setPosition: (newPosition: string) => void;
+    position: types.HymnId;
+    setPosition: (newPosition: types.HymnId) => void;
     shouldScroll: boolean;
-    document: HymnalDocument;
+    document: types.HymnalDocument;
 }) {
-    let hymnList = React.useMemo(() => Object.values(document.hymns), [document]);
-
-    let [viewportWidth, viewportHeight] = useViewportWidth(
-        parentRef,
-        HYMN_WIDTH_PREFERRED
-    );
-
-    let mobileMode =
-        viewportHeight < HYMN_HEIGHT_PREFERRED || viewportWidth < HYMN_WIDTH_PREFERRED;
-    useCSSVar("--scroll-snap-type", mobileMode ? "x mandatory" : "none");
-
     let ref = React.useRef<HTMLDivElement>(null!);
 
     React.useLayoutEffect(() => {
         if (shouldScroll) {
-            let el = [...ref.current.children].find(
-                el => el.getAttribute("data-id") === position
-            );
+            let el = [...ref.current.children].find(el => el.id === position);
             el?.scrollIntoView({ inline: "start" });
         }
     }, [shouldScroll, position]);
 
-    let [loaded, setLoaded] = React.useState(
-        extractRange({
-            list: Object.keys(document.hymns),
-            start: position,
-            end: position,
-            overscan: 5,
-        })
-    );
-
     React.useEffect(() => {
-        // Keep a list of all intersection ratios.
-        let ratios: { [id: string]: number } = {};
-        let list = [...ref.current.children]
-            .map(child => child.getAttribute("data-id")!)
-            .filter(Boolean);
+        let ids = [...ref.current.children].map(child => child.id);
+        let ratios = new Map(ids.map(hymnId => [hymnId, 0]));
 
-        // Update the current position when scrolling occurs
-        // Then whenever a threshold is crossed...
         let observer = new IntersectionObserver(
             entries => {
-                // update the above list,
-                entries.forEach(entry => {
-                    let id = entry.target.getAttribute("data-id");
-                    if (id) ratios[id] = entry.intersectionRatio;
-                });
+                for (let entry of entries) {
+                    ratios.set(entry.target.id, entry.intersectionRatio);
+                }
 
-                // find the first page that has the highest intersection ratio,
-                // TODO: Order is not guaranteed
-                let activePage = Object.entries(ratios)
-                    .map(([id, ratio]) => ({ id, ratio }))
-                    .reduce((prev, cur) => (cur.ratio > prev.ratio ? cur : prev));
+                setPosition(
+                    ids.reduce((prev, cur) =>
+                        ratios.get(cur)! > ratios.get(prev)! ? cur : prev
+                    )
+                );
 
-                // and set it as the current page.
-                if (activePage) setPosition(activePage.id);
-
-                let start: string | null = null;
-                let end: string | null = null;
-                for (let id of list) {
-                    if (!start && ratios[id] > 0) start = id;
-                    if (ratios[id] > 0) end = id;
+                let start: types.HymnId | null = null;
+                let end: types.HymnId | null = null;
+                for (let id of ids) {
+                    if (ratios.get(id)! > 0) {
+                        if (!start) start = id;
+                        end = id;
+                    }
                 }
 
                 if (start && end)
-                    setLoaded(extractRange({ list, start, end, overscan: 5 }));
+                    setLoaded(
+                        extractRange({
+                            list: ids,
+                            start,
+                            end,
+                            overscan: OVERSCAN,
+                        })
+                    );
             },
             {
                 threshold: [0, 0.5, 1],
@@ -101,10 +73,21 @@ export function Document<E extends HTMLElement>({
         return () => observer.disconnect();
     }, [setPosition]);
 
+    let [loaded, setLoaded] = React.useState(() =>
+        extractRange({
+            list: Object.keys(document.hymns),
+            start: position,
+            end: position,
+            overscan: OVERSCAN,
+        })
+    );
+
+    let hymnList = React.useMemo(() => Object.values(document.hymns), [document]);
+
     return (
         <div className="Document" ref={ref}>
             {hymnList.map(hymn => (
-                <div key={hymn.id} data-id={hymn.id}>
+                <div key={hymn.id} id={hymn.id}>
                     {loaded.includes(hymn.id) && (
                         <Hymn hymn={hymn} document={document} />
                     )}
@@ -114,9 +97,14 @@ export function Document<E extends HTMLElement>({
     );
 }
 
-type Range = { list: string[]; start: string; end: string; overscan: number };
+type Range = {
+    list: types.HymnId[];
+    start: types.HymnId;
+    end: types.HymnId;
+    overscan: number;
+};
 
-function extractRange(range: Range): string[] {
+function extractRange(range: Range): types.HymnId[] {
     let indexOfStart = range.list.findIndex(id => id === range.start);
     let indexOfEnd = range.list.findIndex(id => id === range.end);
 

@@ -1,0 +1,58 @@
+.Dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    &[aria-hidden] {
+        display: none;
+    }
+}
+
+.Dialog-overlay {
+    position: fixed;
+    inset: 0;
+}
+
+.Dialog-window {
+    margin: auto;
+    z-index: 2;
+    position: relative;
+    font-size: 1rem;
+    background: var(--panel-background);
+    box-shadow: var(--toolbar-item-box-shadow);
+    backdrop-filter: var(--control-background-blur);
+    border: var(--control-border);
+    max-height: calc(100vh - var(--toolbar-height) - 2 * var(--toolbar-gap));
+    overflow: auto;
+
+    @media (min-width: 29rem) {
+        position: absolute;
+        top: calc(var(--toolbar-height) + var(--toolbar-gap));
+        left: var(--toolbar-gap);
+        left: 25%;
+        transform: translateX(-50%);
+        min-width: 15rem;
+        max-width: 20rem;
+    }
+
+    @media (max-width: 29rem) {
+        position: fixed;
+        bottom: calc(var(--toolbar-height) + var(--toolbar-gap));
+        left: var(--toolbar-gap);
+        right: var(--toolbar-gap);
+    }
+}
+
+.Dialog-title {
+    display: none;
+}
+
+.Dialog-closeButton {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+    &:focus {
+        pointer-events: all;
+        opacity: 100;
+    }
+}

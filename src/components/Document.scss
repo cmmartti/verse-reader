@@ -1,27 +1,27 @@
 .Document {
     height: 100%;
-    max-height: 100%;
 
     display: flex;
     gap: 1px;
-    align-items: stretch;
-    justify-content: stretch;
     overflow-x: auto;
     scroll-padding-block: var(--toolbar-height);
     scroll-snap-type: var(--scroll-snap-type);
+
+    @media (max-width: 29rem) {
+        scroll-snap-type: x mandatory;
+    }
 
     & > * {
         flex: 1 0 560px;
         width: 560px;
         max-width: 100vw;
-
         background: var(--background);
+
         scroll-snap-align: center;
-        scroll-stop-snap: always;
+        scroll-snap-stop: always;
         overflow-y: auto;
 
         @media (min-width: 29rem) {
-            // scrollbar-width: thin;
             padding-top: calc(var(--toolbar-height)); // top toolbar
         }
         @media (max-width: 29rem) {

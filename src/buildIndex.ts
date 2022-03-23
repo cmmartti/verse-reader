@@ -41,7 +41,7 @@ export function buildIndex(document: HymnalDocument) {
     builder.field("translator");
     builder.field("origin");
 
-    builder.pipeline.add(limitLength);
+    // builder.pipeline.add(limitLength);
     builder.pipeline.add(stripPunctuation);
     builder.searchPipeline.add(stripPunctuation);
 

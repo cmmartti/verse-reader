@@ -1,5 +1,4 @@
 import * as React from "react";
-import DetailsDialogElement from "@github/details-dialog-element";
 import {
     Menu,
     MenuItem,
@@ -13,49 +12,23 @@ import { ReactComponent as MenuIcon } from "../assets/menu-24px.svg";
 import { ReactComponent as SearchIcon } from "../assets/search-24px.svg";
 import { ReactComponent as ArrowForwardIcon } from "../assets/arrow_forward_black_24dp.svg";
 
-import { HymnalDocument } from "../types";
+import * as types from "../types";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
-import { useOnClickOutside } from "../util/useOnClickOutside";
-import { OptionsDialog } from "./OptionsDialog";
-import { SearchDialog } from "./SearchDialog";
-import { MetadataPlusTitle } from "../db";
 
 export function Toolbar({
     position,
     setPosition,
     document,
     documents,
-    toggleFullscreen,
-    index,
 }: {
     position: string | null;
     setPosition: (position: string) => void;
-    document: HymnalDocument;
-    toggleFullscreen: () => void;
-    documents: MetadataPlusTitle[];
-    index: lunr.Index;
+    document: types.HymnalDocument;
+    documents: types.Metadata[];
 }) {
     let navigate = useNavigate();
 
     let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
-
-    let optionsButtonRef = React.useRef<HTMLElement>(null!);
-    let optionsMenuRef = React.useRef<DetailsDialogElement>(null!);
-    useOnClickOutside(
-        [optionsMenuRef, optionsButtonRef],
-        React.useCallback(() => {
-            optionsMenuRef.current.toggle(false);
-        }, [])
-    );
-
-    let searchButtonRef = React.useRef<HTMLElement>(null!);
-    let searchMenuRef = React.useRef<DetailsDialogElement>(null!);
-    useOnClickOutside(
-        [searchMenuRef, searchButtonRef],
-        React.useCallback(() => {
-            searchMenuRef.current.toggle(false);
-        }, [])
-    );
 
     return (
         <div className="Toolbar">
@@ -64,7 +37,8 @@ export function Toolbar({
                     transition={false}
                     menuButton={
                         <MenuButton aria-label="Menu" title="Menu" className="Button">
-                            <MenuIcon />
+                            <MenuIcon />{" "}
+                            <h1 className="Toolbar-title">{document.title}</h1>
                         </MenuButton>
                     }
                 >
@@ -112,33 +86,28 @@ export function Toolbar({
                 )}
             />
 
-            <details className="Toolbar-item Toolbar-menu">
-                <summary
+            <div className="Toolbar-item">
+                <button
+                    className="Button"
                     aria-label="search"
                     title="Search"
-                    className="Button"
-                    ref={searchButtonRef}
+                    type="button"
+                    data-a11y-dialog-show="search-dialog"
                 >
                     <SearchIcon />
-                </summary>
-                <details-dialog ref={searchMenuRef}>
-                    <SearchDialog document={document} index={index} />
-                </details-dialog>
-            </details>
-
-            <details className="Toolbar-item Toolbar-menu">
-                <summary
-                    aria-label="options"
-                    title="Options"
+                </button>
+            </div>
+            <div className="Toolbar-item">
+                <button
                     className="Button"
-                    ref={optionsButtonRef}
+                    aria-label="settings"
+                    title="Settings"
+                    type="button"
+                    data-a11y-dialog-show="options-dialog"
                 >
                     Aa
-                </summary>
-                <details-dialog ref={optionsMenuRef}>
-                    <OptionsDialog toggleFullscreen={toggleFullscreen} />
-                </details-dialog>
-            </details>
+                </button>
+            </div>
         </div>
     );
 }
