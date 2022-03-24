@@ -12,7 +12,6 @@ import { useDebounceCallback } from "../util/useDebounceCallback";
 import { OptionsDialog } from "./OptionsDialog";
 import { SearchDialog } from "./SearchDialog";
 import { MenuDialog } from "./MenuDialog";
-import { DialogRef } from "./Dialog";
 
 export function MainPage() {
     let {
