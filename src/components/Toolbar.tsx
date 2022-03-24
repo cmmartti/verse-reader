@@ -1,80 +1,32 @@
 import * as React from "react";
-import {
-    Menu,
-    MenuItem,
-    MenuButton,
-    MenuDivider,
-    MenuRadioGroup,
-} from "@szhsin/react-menu";
-import { useNavigate } from "@tanstack/react-location";
 
 import { ReactComponent as MenuIcon } from "../assets/menu-24px.svg";
 import { ReactComponent as SearchIcon } from "../assets/search-24px.svg";
 import { ReactComponent as ArrowForwardIcon } from "../assets/arrow_forward_black_24dp.svg";
 
 import * as types from "../types";
-import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
 
 export function Toolbar({
     position,
     setPosition,
     document,
-    documents,
 }: {
     position: string | null;
     setPosition: (position: string) => void;
     document: types.HymnalDocument;
-    documents: types.Metadata[];
 }) {
-    let navigate = useNavigate();
-
-    let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
-
     return (
         <div className="Toolbar">
             <div className="Toolbar-item">
-                <Menu
-                    transition={false}
-                    menuButton={
-                        <MenuButton aria-label="Menu" title="Menu" className="Button">
-                            <MenuIcon />{" "}
-                            <h1 className="Toolbar-title">{document.title}</h1>
-                        </MenuButton>
-                    }
+                <button
+                    className="Button"
+                    aria-label="menu"
+                    title="Menu"
+                    type="button"
+                    data-a11y-dialog-toggle="menu-dialog"
                 >
-                    <MenuItem disabled={!isPromptable} onClick={() => promptToInstall()}>
-                        Install to Home Screen
-                    </MenuItem>
-                    <MenuItem
-                        href="/"
-                        onClick={e => {
-                            e.syntheticEvent.preventDefault();
-                            navigate({ to: "/manage" });
-                        }}
-                    >
-                        Manage Books…
-                    </MenuItem>
-                    {documents.length > 1 && (
-                        <>
-                            <MenuDivider />
-                            <MenuRadioGroup value={document.id}>
-                                {documents.map(({ id, title }) => (
-                                    <MenuItem
-                                        key={id}
-                                        value={id}
-                                        href={"/" + id}
-                                        onClick={e => {
-                                            e.syntheticEvent.preventDefault();
-                                            navigate({ to: "/" + id });
-                                        }}
-                                    >
-                                        {title}
-                                    </MenuItem>
-                                ))}
-                            </MenuRadioGroup>
-                        </>
-                    )}
-                </Menu>
+                    <MenuIcon /> <h1 className="Toolbar-title">{document.year}</h1>
+                </button>
             </div>
             <GoToInput
                 initialValue={position ?? ""}
@@ -85,14 +37,13 @@ export function Toolbar({
                         .sort((a, b) => a - b)
                 )}
             />
-
             <div className="Toolbar-item">
                 <button
                     className="Button"
                     aria-label="search"
                     title="Search"
                     type="button"
-                    data-a11y-dialog-show="search-dialog"
+                    data-a11y-dialog-toggle="search-dialog"
                 >
                     <SearchIcon />
                 </button>
@@ -102,8 +53,7 @@ export function Toolbar({
                     className="Button"
                     aria-label="settings"
                     title="Settings"
-                    type="button"
-                    data-a11y-dialog-show="options-dialog"
+                    data-a11y-dialog-toggle="options-dialog"
                 >
                     Aa
                 </button>
@@ -133,7 +83,6 @@ function GoToInput({
             onSubmit={event => {
                 event.preventDefault();
                 onSubmit(value);
-                // (event.target as HTMLButtonElement).focus();
             }}
         >
             <input

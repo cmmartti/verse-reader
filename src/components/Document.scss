@@ -1,11 +1,12 @@
 .Document {
-    height: 100%;
-
     display: flex;
-    gap: 1px;
     overflow-x: auto;
     scroll-padding-block: var(--toolbar-height);
     scroll-snap-type: var(--scroll-snap-type);
+
+    // pseudo-borders
+    gap: 2px;
+    background: gray;
 
     @media (max-width: 29rem) {
         scroll-snap-type: x mandatory;
@@ -22,10 +23,15 @@
         overflow-y: auto;
 
         @media (min-width: 29rem) {
-            padding-top: calc(var(--toolbar-height)); // top toolbar
+            padding-top: var(--toolbar-height); // top toolbar
         }
         @media (max-width: 29rem) {
             padding-bottom: var(--toolbar-height); // bottom toolbar
         }
+    }
+    &::after {
+        content: "";
+        flex: 1 0;
+        min-width: calc(100vw - min(100vw, 560px));
     }
 }

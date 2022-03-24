@@ -53,7 +53,7 @@ const DEFAULT_OPTIONS: Options = {
     repeatChorus: false,
     colorScheme: "light",
     fontSize: 1.2,
-    fontFamily: "raleway",
+    fontFamily: "charter",
 };
 
 export type Action =

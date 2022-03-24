@@ -13,25 +13,47 @@ export function Dialog({
     title: string;
     className?: string;
 }) {
+    let [instance, attributes] = useA11yDialog({ id, title: undefined });
+
+    let [isOpen, setIsOpen] = React.useState(false);
+
+    React.useEffect(() => {
+        instance?.on("show", () => setIsOpen(true));
+        instance?.on("hide", () => setIsOpen(false));
+    }, [instance]);
+
+    let windowRef = React.useRef<HTMLDivElement>(null!);
+
+    React.useEffect(() => {
+        function handleClick(event: MouseEvent) {
+            let target = event.target as Element;
+            if (target.closest(`[data-a11y-dialog-toggle="${id}"]`)) {
+                if (isOpen) instance?.hide();
+                else {
+                    instance?.show();
+                }
+            } else if (!windowRef.current.contains(target)) {
+                instance?.hide();
+            }
+        }
+        document.addEventListener("click", handleClick);
+        // document.addEventListener("mousedown", handleClick);
+        return () => {
+            document.removeEventListener("click", handleClick);
+            // document.removeEventListener("mousedown", handleClick);
+        };
+    }, [id, instance, isOpen]);
+
     let [isMounted, setIsMounted] = React.useState(false);
     React.useEffect(() => setIsMounted(true), []);
-
-    let [, attributes] = useA11yDialog({ id, title: undefined });
-
     if (!isMounted) return null;
 
     return ReactDOM.createPortal(
-        <div
-            {...attributes.container}
-            aria-label="Settings"
-            aria-modal
-            aria-hidden
-            className="Dialog"
-        >
-            <div className="Dialog-overlay" {...attributes.overlay} />
+        <div {...attributes.container} className="Dialog">
             <div
                 {...attributes.dialog}
-                className={"Dialog-window" + c(className, className)}
+                className={"Dialog-window" + (className ? " " + className : "")}
+                ref={windowRef}
             >
                 <p {...attributes.title} className="Dialog-title">
                     {title}
@@ -45,5 +67,3 @@ export function Dialog({
         document.body
     );
 }
-
-let c = (className: string, include: any) => (include ? " " + className : "");

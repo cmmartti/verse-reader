@@ -112,16 +112,6 @@ export function Routes() {
                 useErrorBoundary
             >
                 <Outlet />
-                {/* <button
-                onClick={showOptions}
-                // data-a11y-dialog-show="options-dialog"
-                className="Button"
-                aria-label="options"
-                title="Options"
-                type="button"
-            >
-                Aa
-            </button> */}
                 {/* <ReactLocationDevtools initialIsOpen={false} /> */}
             </Router>
         </>

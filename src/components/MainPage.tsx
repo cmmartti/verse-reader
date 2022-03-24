@@ -11,6 +11,8 @@ import { LocationGenerics } from "./App";
 import { useDebounceCallback } from "../util/useDebounceCallback";
 import { OptionsDialog } from "./OptionsDialog";
 import { SearchDialog } from "./SearchDialog";
+import { MenuDialog } from "./MenuDialog";
+import { DialogRef } from "./Dialog";
 
 export function MainPage() {
     let {
@@ -35,7 +37,6 @@ export function MainPage() {
             <h1 className="MainPage-title" onClick={toggleFullscreen}>
                 {document.title}
             </h1>
-
             <Toolbar
                 position={position}
                 setPosition={React.useCallback(
@@ -43,7 +44,6 @@ export function MainPage() {
                     [setPosition]
                 )}
                 document={document}
-                documents={documents}
             />
             <Document
                 shouldScroll={shouldScroll}
@@ -54,6 +54,8 @@ export function MainPage() {
                 )}
                 document={document}
             />
+
+            <MenuDialog document={document} documents={documents} />
             <OptionsDialog toggleFullscreen={toggleFullscreen} />
             <SearchDialog document={document} index={index} />
         </main>

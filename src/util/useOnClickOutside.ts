@@ -1,20 +1,17 @@
 import * as React from "react";
 
 /**
- *
- * @param ref
+ * @param element
  * @param handler Event handler. Must be memoized with useCallback.
  */
 export function useOnClickOutside(
-    refs: React.MutableRefObject<HTMLElement>[],
+    element: Element,
     handler: (event: MouseEvent | TouchEvent) => void
 ) {
     React.useEffect(() => {
         function handleClick(event: MouseEvent | TouchEvent) {
-            for (let ref of refs) {
-                if (!ref.current || ref.current.contains(event.target as Node)) {
-                    return;
-                }
+            if (!element || element.contains(event.target as Node)) {
+                return;
             }
             handler(event);
         }
@@ -26,5 +23,5 @@ export function useOnClickOutside(
             document.removeEventListener("mousedown", handleClick);
             document.removeEventListener("touchstart", handleClick);
         };
-    }, [refs, handler]);
+    }, [element, handler]);
 }

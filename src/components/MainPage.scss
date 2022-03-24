@@ -1,38 +1,39 @@
 .MainPage {
     height: 100%;
     max-height: 100%;
-    background: var(--control-border-color);
     line-height: 1.5;
     font-family: var(--document-font-family);
 
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
 
     .MainPage-title {
-        position: sticky;
-        width: 100%;
-        left: 0;
         font-size: 1rem;
-        z-index: 3;
+        position: sticky;
+        top: 0;
         background: var(--control-background);
         text-align: center;
         border-bottom: var(--control-border);
         box-shadow: var(--toolbar-item-box-shadow);
+        z-index: 1;
 
         @media (min-width: 29rem) {
             display: none;
+            visibility: hidden;
         }
     }
 
     .Toolbar {
         position: fixed;
         width: 100%;
-        z-index: 10;
 
         @media (max-width: 29rem) {
             bottom: 0;
         }
-        @media (min-width: 29rem) {
-        }
+    }
+
+    .Document {
+        flex: 1 0;
     }
 }

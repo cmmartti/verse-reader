@@ -1,14 +1,15 @@
 @import "form.scss";
-@import "menu.scss";
 @import "fonts.scss";
+@import "menu.scss";
 @import "Dialog.scss";
 @import "Document.scss";
 @import "Hymn.scss";
 @import "MainPage.scss";
 @import "ManagePage.scss";
-@import "Toolbar.scss";
+@import "MenuDialog.scss";
 @import "OptionsDialog.scss";
 @import "SearchDialog.scss";
+@import "Toolbar.scss";
 
 :root {
     font-size: 16px;
@@ -30,25 +31,21 @@
     --hover-outline: var(--outline-width) dashed var(--hover-color);
     --focus-outline: var(--outline-width) solid var(--focus-color);
 
-    --panel-background: hsla(0, 0%, 80%, 0.9);
+    --panel-background: hsla(0, 0%, 80%, 0.85);
+    --control-background-blur: blur(0.15em);
     --control-active-background: #b7e3f0;
     --control-background: hsla(0, 0%, 93%, 0.9);
     --control-border-color: black;
     --control-border: 1px solid var(--control-border-color);
     --control-height: 2.25em;
     --control-outline-offset: -5px;
-    --control-background-blur: blur(0.09em);
 
     --toolbar-scale-factor: 1.25;
-    --toolbar-background: transparent;
-    --toolbar-border: none;
     --toolbar-gap: 0.5rem;
     --toolbar-height: calc(
         var(--toolbar-scale-factor) * var(--control-height) + var(--toolbar-gap)
     );
     --toolbar-item-box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-
-    --dialog-inline-block: var(--toolbar-height);
 
     &[data-color-scheme="dark"] {
         --background: black;
@@ -65,12 +62,7 @@
         --control-background: hsl(270, 5%, 15%);
         --control-active-background: hsl(197, 52%, 32%);
 
-        // --toolbar-background: black;
-        // --toolbar-border: 1px solid #7a828e;
-        // --toolbar-item-box-shadow: none;
-
-        --dialog-inline-block: calc(var(--toolbar-height) + var(--toolbar-gap));
-        scrollbar-color: grey #1d1d1d;
+        scrollbar-color: #959595 #171717;
     }
 
     text-size-adjust: none;
@@ -88,6 +80,7 @@ body {
     overscroll-behavior: none;
     font: -apple-system-body;
     font-family: system-ui, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--document-font-family);
     line-height: 1.25;
     color: var(--color);
     background-color: var(--background);

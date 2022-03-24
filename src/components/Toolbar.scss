@@ -1,10 +1,7 @@
 .Toolbar {
     font-size: calc(var(--toolbar-scale-factor) * 1rem);
     padding: var(--toolbar-gap);
-    background: var(--toolbar-background);
-    border-bottom: var(--toolbar-border);
     z-index: 2;
-    position: relative;
 
     // Click-through transparent background
     pointer-events: none;
@@ -18,9 +15,6 @@
     gap: var(--toolbar-gap);
     @media (max-width: 29rem) {
         justify-content: center;
-    }
-    @media (min-width: 29rem) {
-        // justify-content: center;
     }
 }
 
@@ -41,48 +35,14 @@
 }
 
 .Toolbar-group {
+    // Force the group's min-width of "auto" to use each child element's
+    // min-width, instead of its default width.
     & > * {
-        // Force the group's min-width of "auto" to use each child element's
-        // min-width, instead of its default width.
         width: 0;
     }
 
     & > * + * {
         border-left: none;
-    }
-}
-
-// // Full-screen overlay underneath the popup to trigger a close on click
-// .Toolbar-menu[open] > summary::before {
-//     content: "";
-//     display: block;
-//     position: fixed;
-//     inset: 0;
-//     z-index: 1;
-//     background: rgba(42, 43, 44, 0.4);
-// }
-.Toolbar-menu > details-dialog {
-    z-index: 2;
-    font-size: 1rem;
-    background: var(--panel-background);
-    box-shadow: var(--toolbar-item-box-shadow);
-    backdrop-filter: var(--control-background-blur);
-    border: var(--control-border);
-    max-height: calc(100vh - var(--toolbar-height) - 2 * var(--toolbar-gap));
-    overflow: auto;
-
-    @media (min-width: 29rem) {
-        position: absolute;
-        top: calc(var(--toolbar-height) + var(--toolbar-gap));
-        min-width: 15rem;
-        max-width: 20rem;
-    }
-
-    @media (max-width: 29rem) {
-        position: fixed;
-        bottom: calc(var(--toolbar-height) + var(--toolbar-gap));
-        left: var(--toolbar-gap);
-        right: var(--toolbar-gap);
     }
 }
 
