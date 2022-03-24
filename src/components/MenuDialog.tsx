@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-location";
 import * as types from "../types";
 import { Dialog } from "./Dialog";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
-import { useMatchMedia } from "../util/useMatchMedia";
+// import { useMatchMedia } from "../util/useMatchMedia";
 
 export function MenuDialog({
     document,
@@ -15,7 +15,7 @@ export function MenuDialog({
 }) {
     let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
 
-    let toolbarOnBottom = useMatchMedia("(max-width: 29rem)");
+    // let toolbarOnBottom = useMatchMedia("(max-width: 29rem)");
 
     return (
         <Dialog id="menu-dialog" title="Menu" className="MenuDialog">
