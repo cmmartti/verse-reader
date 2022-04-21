@@ -1,5 +1,5 @@
 import React from "react";
-import OnDemandLiveRegion from "on-demand-live-region";
+// import OnDemandLiveRegion from "on-demand-live-region";
 
 import * as types from "../../types";
 import { searchIndex } from "../../buildIndex";
@@ -40,11 +40,11 @@ export function SearchPanel({
         DEBOUNCE_WAIT
     );
 
-    let liveRegionRef = React.useRef(new OnDemandLiveRegion());
+    // let liveRegionRef = React.useRef(new OnDemandLiveRegion());
     React.useEffect(() => {
-        liveRegionRef.current.say(
-            `${results.length} result${results.length !== 1 && "s"} available`
-        );
+        // liveRegionRef.current.say(
+        //     `${results.length} result${results.length !== 1 && "s"} available`
+        // );
     }, [results]);
 
     return (
