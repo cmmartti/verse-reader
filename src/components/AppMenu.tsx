@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Link, useNavigate } from "@tanstack/react-location";
+import { useNavigate } from "@tanstack/react-location";
 
 import * as types from "../types";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";

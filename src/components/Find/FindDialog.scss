@@ -3,7 +3,6 @@
         width: 25rem;
     }
     height: var(--dialog-max-height);
-    min-height: calc(min(20rem, var(--dialog-max-height)));
     display: grid;
     grid-template:
         "tablist"
@@ -32,9 +31,6 @@
             border: var(--control-border);
             border-top: none;
             border-width: 0 0.75px 1.5px 0.75px;
-            &:not([aria-selected]) + * {
-                // border-left-color: transparent;
-            }
             &:first-child {
                 border-left-width: 0;
             }
@@ -85,57 +81,4 @@
             flex: 1;
         }
     }
-}
-
-.SearchPanel-controls {
-    grid-area: controls;
-    position: sticky;
-    // font-size: calc(1rem * var(--ui-scale-factor, 1));
-    background: var(--dialog-background);
-
-    // @media (max-width: 29rem) {
-    //     bottom: 0;
-    // }
-    // @media (min-width: 29rem) {
-    // }
-    top: 0;
-
-    display: grid;
-}
-
-.SearchPanel-results {
-    grid-area: results;
-    // padding: var(--toolbar-gap);
-    border: var(--control-border);
-    overflow: auto;
-    background: var(--background);
-    box-shadow: inset var(--toolbar-item-box-shadow);
-
-    &:not(:first-child) details {
-        border-top: var(--control-border);
-    }
-}
-.SearchPanel-hymnList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    & > * {
-        padding: 0.25em 0.5em;
-        &:not(:first-child) {
-            border-top: 1px solid var(--control-border-color);
-        }
-        &:focus-within {
-            background: var(--control-active-background);
-        }
-    }
-}
-
-.SearchPanel-hymnResult-current {
-    outline: 3px dotted red;
-    outline-offset: -6px;
-}
-
-.SearchPanel-hymnResult-lines {
-    padding: 0 1em;
 }
