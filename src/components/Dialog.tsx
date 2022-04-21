@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { useA11yDialog } from "react-a11y-dialog";
+
+import { useA11yDialog } from "../util/useA11yDialog";
 
 export function Dialog({
     id,
@@ -13,7 +14,7 @@ export function Dialog({
     title: string;
     className?: string;
 }) {
-    let [instance, attributes] = useA11yDialog({ id, title: undefined });
+    let [instance, attributes] = useA11yDialog({ id });
 
     let [isOpen, setIsOpen] = React.useState(false);
 
@@ -25,24 +26,33 @@ export function Dialog({
     let windowRef = React.useRef<HTMLDivElement>(null!);
 
     React.useEffect(() => {
-        function handleClick(event: MouseEvent) {
+        let handleClick = (event: MouseEvent) => {
             let target = event.target as Element;
             if (target.closest(`[data-a11y-dialog-toggle="${id}"]`)) {
                 if (isOpen) instance?.hide();
-                else {
-                    instance?.show();
-                }
-            } else if (!windowRef.current.contains(target)) {
+                else instance?.show();
+            }
+        };
+
+        document.addEventListener("click", handleClick);
+        return () => document.removeEventListener("click", handleClick);
+    }, [id, instance, isOpen]);
+
+    React.useEffect(() => {
+        let handleMousedown = (event: MouseEvent) => {
+            let target = event.target as Element;
+            if (
+                !target.closest(`[data-a11y-dialog-toggle="${id}"]`) &&
+                !target.closest(`[data-a11y-dialog-show="${id}"]`) &&
+                !windowRef.current.contains(target)
+            ) {
                 instance?.hide();
             }
-        }
-        document.addEventListener("click", handleClick);
-        // document.addEventListener("mousedown", handleClick);
-        return () => {
-            document.removeEventListener("click", handleClick);
-            // document.removeEventListener("mousedown", handleClick);
         };
-    }, [id, instance, isOpen]);
+
+        document.addEventListener("mousedown", handleMousedown);
+        return () => document.removeEventListener("mousedown", handleMousedown);
+    }, [id, instance]);
 
     let [isMounted, setIsMounted] = React.useState(false);
     React.useEffect(() => setIsMounted(true), []);
@@ -52,10 +62,10 @@ export function Dialog({
         <div {...attributes.container} className="Dialog">
             <div
                 {...attributes.dialog}
-                className={"Dialog-window" + (className ? " " + className : "")}
+                className={(className ? className + " " : "") + "Dialog-content"}
                 ref={windowRef}
             >
-                <p {...attributes.title} className="Dialog-title">
+                <p {...attributes.title} style={{ display: "none" }}>
                     {title}
                 </p>
                 {children}

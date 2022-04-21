@@ -5,7 +5,9 @@ import { useOptions } from "../options";
 
 let c = (className: string, include: boolean) => (include ? " " + className : "");
 
-export function Hymn({
+export let Hymn = React.memo(_Hymn);
+
+export function _Hymn({
     hymn,
     document,
 }: {
@@ -15,12 +17,12 @@ export function Hymn({
     return (
         <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
-                <div className="Hymn-number">
-                    {hymn.isRestricted && "*"}
+                <h2 className="Hymn-number">
+                    {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
                     {hymn.id}
-                </div>
+                </h2>
                 {hymn.tunes.length > 0 && (
-                    <div className="Hymn-tunes">
+                    <p className="Hymn-tunes">
                         Tune:{" "}
                         {hymn.tunes
                             .map(
@@ -38,10 +40,10 @@ export function Hymn({
                                     </React.Fragment>
                                 );
                             })}
-                    </div>
+                    </p>
                 )}
                 {hymn.topics.length > 0 && (
-                    <div className="Hymn-topics">
+                    <p className="Hymn-topics">
                         {hymn.topics
                             .map(
                                 topicId =>
@@ -56,7 +58,7 @@ export function Hymn({
                                     {index < hymn.topics.length - 1 && " / "}
                                 </React.Fragment>
                             ))}
-                    </div>
+                    </p>
                 )}
             </header>
 
@@ -68,13 +70,13 @@ export function Hymn({
 
             <footer className="Hymn-details">
                 {hymn.language !== document.language && (
-                    <div>
+                    <p>
                         Language:{" "}
                         {document.languages[hymn.language]?.name ?? hymn.language}
-                    </div>
+                    </p>
                 )}
                 {hymn.authors.length > 0 && (
-                    <div>
+                    <p>
                         {hymn.authors.length === 1 ? "Author: " : "Authors: "}
                         {hymn.authors
                             .map(
@@ -85,10 +87,10 @@ export function Hymn({
                             )
                             .join(", ")}
                         {hymn.origin && ` [${hymn.origin}]`}
-                    </div>
+                    </p>
                 )}
                 {hymn.translators.length > 0 && (
-                    <div>
+                    <p>
                         {hymn.translators.length === 1
                             ? "Translator: "
                             : "Translators: "}
@@ -100,17 +102,17 @@ export function Hymn({
                                     (translator.year ? ` (${translator.year})` : "")
                             )
                             .join(", ")}
-                    </div>
+                    </p>
                 )}
                 {hymn.links.length > 0 && (
-                    <div>
+                    <p>
                         {hymn.links
                             .map(link => `${link.edition}: #${link.id}`)
                             .join(" / ")}
-                    </div>
+                    </p>
                 )}
                 {/* {hymn.days.length > 0 && (
-                    <div className="Hymn-days">
+                    <p className="Hymn-days">
                         {hymn.days.length === 1 ? "Day: " : "Days: "}
                         {hymn.days
                             .map(dayId => document.calendar[dayId])
@@ -120,10 +122,10 @@ export function Hymn({
                                     {index < hymn.days.length - 1 && ", "}
                                 </React.Fragment>
                             ))}
-                    </div>
+                    </p>
                 )} */}
                 {hymn.isRestricted && (
-                    <div>*Not for church services; may be used for other occasions.</div>
+                    <p>*Not for church services; may be used for other occasions.</p>
                 )}
             </footer>
         </article>

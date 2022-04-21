@@ -19,3 +19,18 @@ export function useViewportWidth<E extends HTMLElement>(
 
     return [viewportWidth, viewportHeight];
 }
+
+export function useViewportHeight(initialWidth: number = 0) {
+    let [viewportHeight, setViewportHeight] = React.useState(initialWidth);
+
+    React.useEffect(() => {
+        function resizeHandler() {
+            setViewportHeight(window.innerHeight);
+        }
+        resizeHandler();
+        window.addEventListener("resize", resizeHandler);
+        return () => window.removeEventListener("resize", resizeHandler);
+    }, []);
+
+    return viewportHeight;
+}

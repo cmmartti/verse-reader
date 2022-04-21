@@ -5,8 +5,8 @@ import React from "react";
  * Synchronously apply it before anything is rendered to avoid momentarily
  * displaying the wrong thing.
  */
-export function useCSSVar(name: string, value: string) {
+export function useCSSVar(name: string, value: string | number) {
     React.useLayoutEffect(() => {
-        document.documentElement.style.setProperty(name, value);
+        document.documentElement.style.setProperty(name, value.toString());
     }, [name, value]);
 }

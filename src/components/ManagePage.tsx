@@ -1,15 +1,13 @@
 import React from "react";
-import { useMatch, Link } from "@tanstack/react-location";
+import { Link } from "@tanstack/react-location";
 
 import { ReactComponent as DeleteIcon } from "../assets/delete_black_24dp.svg";
 import { useFilePicker } from "../util/useFilePicker";
 import { addDocument, deleteDocument, getDocumentList } from "../db";
-import { LocationGenerics } from "./App";
+import * as types from "../types";
 
-export function ManagePage() {
-    let { data } = useMatch<LocationGenerics>();
-
-    let [documentList, setDocumentList] = React.useState(data.documents || []);
+export function ManagePage({ list }: { list: types.Metadata[] }) {
+    let [documentList, setDocumentList] = React.useState(list || []);
     let [isLoading, setIsLoading] = React.useState(false);
 
     let filepicker = useFilePicker<HTMLDivElement>(

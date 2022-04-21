@@ -113,24 +113,31 @@ export async function addDocument(xmlDocument: XMLDocument) {
 // }
 
 export async function getDocument(id: types.DocumentId) {
-    let tx = (await db).transaction(["metadata", "documents", "searchIndices"]);
-    let [metadata, document, indexRes] = await Promise.all([
+    let tx = (await db).transaction(["metadata", "documents"]);
+    let [metadata, document] = await Promise.all([
         tx.objectStore("metadata").get(id),
         tx.objectStore("documents").get(id),
-        tx.objectStore("searchIndices").get(id),
     ]);
+
+    if (metadata && document) {
+        return { ...metadata, ...document } as const;
+    } else throw new Error(`That document does not exist (${id})`);
+}
+
+export async function getIndex(id: types.DocumentId) {
+    let indexRes = await (await db).transaction("searchIndices").store.get(id);
 
     let index: lunr.Index;
     if (!indexRes) index = await rebuildIndex(id);
     else index = Index.load(indexRes.index);
 
-    if (metadata && document) {
-        return [metadata, document, index] as const;
-    } else throw new Error(`That document does not exist (${id})`);
+    return index;
 }
 
 export async function getDocumentList() {
-    return (await db).transaction("metadata").store.getAll();
+    return (await (await db).transaction("metadata").store.getAll()).sort(
+        (a, b) => b.lastOpened - a.lastOpened
+    );
 }
 
 export async function rebuildIndex(id: types.DocumentId) {

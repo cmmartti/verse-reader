@@ -32,6 +32,11 @@
     font-weight: bold;
     scroll-margin-top: 5em;
 }
+.Hymn-asterisk {
+    padding: 0 0.1em;
+    display: inline-block;
+    transform: scale(1.5);
+}
 .Hymn.isDeleted .Hymn-number {
     text-decoration: line-through;
 }
@@ -53,6 +58,8 @@
 
 .Hymn-verses {
     flex: 1;
+    // text-align: justify;
+    // hyphens: auto;
 
     & > * {
         margin-top: 0;

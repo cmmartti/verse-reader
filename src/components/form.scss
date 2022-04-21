@@ -1,23 +1,18 @@
 %form-control {
-    border: var(--control-border);
+    font: inherit;
     color: var(--color);
-    outline-offset: var(--control-outline-offset);
-    padding: 0.4em;
-    line-height: 1;
-    font-family: inherit;
-    font-size: inherit;
-    // font-size: 1em;
-    text-decoration: none;
+    accent-color: var(--accent-color);
+    border: var(--control-border);
     height: var(--control-height);
-    accent-color: rebeccapurple;
+    padding: 0.5em 0.4em;
+    line-height: 1;
+    // text-decoration: none;
+    outline-offset: var(--focus-outline-offset);
     &:active {
         outline: none;
     }
     &:focus:not(:focus-visible) {
         outline: none;
-    }
-    &:hover:not(:disabled):not([aria-disabled]) {
-        // outline: var(--hover-outline);
     }
     &:focus {
         outline: var(--focus-outline);
@@ -38,12 +33,68 @@
         height: 1.2em;
         width: 1.2em;
         flex-shrink: 0;
-        // margin-block: -0.2em;
-        // vertical-align: -0.15em;
     }
 }
 
-// button,
+select {
+    @extend %form-control;
+    background: var(--control-background);
+
+    // open arrow
+    appearance: none;
+    background-image: var(--select-arrow-url);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 0.625em);
+    background-position-y: center;
+    background-size: 0.75em;
+    padding-right: 1.75em;
+
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    font-weight: bold;
+
+    outline-offset: -1px;
+
+    // &:focus:not(:focus-visible) {
+    //     outline: none;
+    // }
+    // &:focus {
+    //     outline: var(--focus-outline);
+    //     outline: none;
+    // }
+}
+
+input[type="text"],
+input[type="search"],
+input[type="number"] {
+    @extend %form-control;
+    max-width: 100%;
+    background: var(--background);
+    min-width: 6em;
+    appearance: textfield;
+}
+
+input[type="number"] {
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-color);
+    height: var(--control-height);
+
+    &:focus-visible {
+        outline: var(--focus-outline);
+        outline-offset: 2px;
+        outline: 1px dashed gray;
+        -moz-outline-radius: 1em;
+    }
+}
+
 .Button {
     @extend %form-control;
     background: var(--control-background);
@@ -60,6 +111,16 @@
     }
 }
 
+.ToolbarButton {
+    @extend .Button;
+    background: var(--toolbar-item-background);
+    backdrop-filter: var(--toolbar-item-backdrop-filter);
+    transition: backdrop-filter 0.25s ease-in-out;
+    &[aria-expanded] {
+        background: var(--control-active-background);
+    }
+}
+
 .ButtonLink {
     background: none;
     border: none;
@@ -69,6 +130,11 @@
     cursor: pointer;
     color: var(--link-color);
     padding: 0;
+
+    &:disabled,
+    &[aria-disabled] {
+        text-decoration: line-through;
+    }
 }
 
 .ToggleButton {
@@ -83,7 +149,7 @@
 
     outline-offset: -4px;
     &:focus-within {
-        outline: 1px dashed rebeccapurple;
+        outline: 1px dashed var(--focus-color);
     }
     &.ToggleButton--checked:focus-within {
         outline-color: #b9b9b9;
@@ -97,23 +163,25 @@
 
     &.ToggleButton--checked {
         text-decoration: underline;
-        background: rebeccapurple;
+        background: var(--accent-color);
         color: white;
     }
 }
 
 .RadioButtons {
-    // box-shadow: var(--toolbar-item-box-shadow);
+    box-shadow: inset var(--toolbar-item-box-shadow);
     border: var(--control-border);
+    padding: 0;
+    margin: 0;
+    background: var(--control-background);
 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-    grid-auto-columns: 1fr;
+    overflow: auto;
+    display: flex;
 
     & .RadioButtons-button {
         @extend %form-control;
+        flex: 1 0;
         border: none;
-        background: var(--control-background);
         user-select: none;
 
         display: flex;
@@ -122,10 +190,15 @@
 
         outline-offset: -8px;
         &:focus-within {
-            outline: 1px dashed rebeccapurple;
+            outline: 1px dashed var(--focus-color);
         }
         &.RadioButtons-button--checked:focus-within {
             outline-color: #b9b9b9;
+        }
+        &.RadioButtons-button--checked {
+            color: white;
+            background: var(--accent-color);
+            // border: 0.25em solid var(--control-background);
         }
 
         & input {
@@ -133,104 +206,5 @@
             position: absolute;
             pointer-events: none;
         }
-        &.RadioButtons-button--checked {
-            color: white;
-            background: rebeccapurple;
-            border: 0.25em solid var(--control-background);
-        }
-    }
-}
-
-select {
-    @extend %form-control;
-    background: var(--control-background);
-    // appearance: none;
-    // background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
-    // background-repeat: no-repeat;
-    // background-position-x: calc(100% - 0.5em);
-    // background-position-y: center;
-    // background-size: 1em;
-    // padding-right: 1.75em;
-}
-
-input[type="text"],
-input[type="search"] {
-    @extend %form-control;
-    max-width: 100%;
-    background: var(--background);
-    min-width: 6em;
-    appearance: textfield;
-    // font-size: 0.85em;
-}
-
-input[type="number"] {
-    @extend %form-control;
-    background: var(--background);
-    appearance: textfield;
-    max-width: 10em;
-    width: 3em;
-    text-align: center;
-    font-weight: bold;
-    // font-size: 0.85em;
-
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-
-input[type="range"] {
-    width: 100%;
-    accent-color: rebeccapurple;
-    height: var(--control-height);
-
-    &:focus-visible {
-        outline: var(--focus-outline);
-        outline-offset: 2px;
-        outline: 1px dashed gray;
-        -moz-outline-radius: 1em;
-    }
-}
-
-label.contains-checkbox {
-    display: flex;
-    user-select: none;
-    gap: 0.25em;
-    min-width: max-content;
-    &:focus-within {
-        outline: var(--focus-outline);
-    }
-}
-
-.fieldset {
-    border: var(--control-border);
-
-    & > * {
-        padding: 0.25em;
-    }
-    & > * + * {
-        border-top: var(--control-border);
-    }
-}
-
-fieldset {
-    padding: 0;
-    margin: 0;
-    border: none;
-}
-fieldset legend {
-    padding: 0 0.15em;
-}
-
-.form-field {
-    display: flex;
-    justify-content: space-between;
-    gap: 1em;
-    flex-wrap: wrap;
-    align-items: center;
-
-    & > label {
-        flex: 1;
     }
 }

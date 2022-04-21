@@ -13,7 +13,7 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
     }, [options]);
 
     useCSSVar("--ui-scale-factor", options.fontSize.toString());
-    useCSSVar("--document-font-family", options.fontFamily);
+    useCSSVar("--font-family", options.fontFamily);
     useColorScheme(options.colorScheme);
 
     let dispatch = React.useCallback((...action: Action) => {
@@ -42,7 +42,7 @@ type Options = {
     expandRepeatedLines: boolean;
     repeatRefrain: boolean;
     repeatChorus: boolean;
-    colorScheme: "dark" | "light" | "system";
+    colorScheme: "dark" | "light" | "system" | "classic";
     fontSize: number;
     fontFamily: string;
 };

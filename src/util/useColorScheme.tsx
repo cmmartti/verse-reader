@@ -1,7 +1,7 @@
 import React from "react";
 import { useMatchMedia } from "../util/useMatchMedia";
 
-export function useColorScheme(colorScheme: "dark" | "light" | "system") {
+export function useColorScheme(colorScheme: "dark" | "light" | "system" | "classic") {
     let systemColorScheme = useMatchMedia("(prefers-color-scheme: dark)")
         ? "dark"
         : "light";

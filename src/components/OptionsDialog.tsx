@@ -86,7 +86,7 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
                         setDisplayOption("font_size", parseInt(e.target.value, 10) / 10)
                     }
                     min="5"
-                    max="17"
+                    max="20"
                     step="any"
                 />
             </div>
@@ -130,7 +130,9 @@ function RadioButtons({
 }) {
     return (
         <fieldset className="RadioButtons" title={label}>
-            <legend className="visibility-hidden">{label}</legend>
+            <legend style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}>
+                {label}
+            </legend>
             {values.map(({ name: buttonText, value: buttonValue }) => (
                 <label
                     key={buttonValue}

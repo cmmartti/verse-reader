@@ -1,107 +1,62 @@
 import React from "react";
-import { setLastPosition } from "../db";
+import { getDocument, setLastPosition } from "../db";
 import { useMatch, useNavigate } from "@tanstack/react-location";
 
-import { Toolbar } from "./Toolbar";
-import { Document } from "./Document";
+import * as types from "../types";
 
-import { HymnId } from "../types";
-import { toggleFullscreen as _toggleFullscreen } from "../util/toggleFullscreen";
-import { LocationGenerics } from "./App";
-import { useDebounceCallback } from "../util/useDebounceCallback";
+import { AppMenu, APP_MENU_BUTTON_ID } from "./AppMenu";
+import { GoToInput } from "./GoToInput";
+import { FindDialog } from "./Find/FindDialog";
 import { OptionsDialog } from "./OptionsDialog";
-import { SearchDialog } from "./SearchDialog";
-import { MenuDialog } from "./MenuDialog";
+import { HorizontalScroller } from "./HorizontalScroller";
 
-export function MainPage() {
-    let {
-        data,
-        params: { position: initialPosition },
-    } = useMatch<LocationGenerics>();
-    let document = data.document!;
-    let index = data.index!;
-    let documents = data.documents!;
+import { useDebounceCallback } from "../util/useDebounceCallback";
+import { ReactComponent as MenuIcon } from "../assets/menu_book-black-24dp.svg";
+import { Hymn } from "./Hymn";
+import useLoader from "../util/useLoader";
 
-    let ref = React.useRef<HTMLDivElement>(null!);
-
-    let { position, setPosition, shouldScroll } = usePosition(
-        initialPosition,
-        document.id
-    );
-
-    let toggleFullscreen = React.useCallback(() => _toggleFullscreen(ref.current), []);
-
-    return (
-        <main className="MainPage" ref={ref}>
-            <h1 className="MainPage-title" onClick={toggleFullscreen}>
-                {document.title}
-            </h1>
-            <Toolbar
-                position={position}
-                setPosition={React.useCallback(
-                    (newPosition: HymnId) => setPosition(newPosition, "goto"),
-                    [setPosition]
-                )}
-                document={document}
-            />
-            <Document
-                shouldScroll={shouldScroll}
-                position={position}
-                setPosition={React.useCallback(
-                    newPosition => setPosition(newPosition, "scroll"),
-                    [setPosition]
-                )}
-                document={document}
-            />
-
-            <MenuDialog document={document} documents={documents} />
-            <OptionsDialog toggleFullscreen={toggleFullscreen} />
-            <SearchDialog document={document} index={index} />
-        </main>
-    );
-}
-
-function usePosition(initialPosition: HymnId, documentId: string) {
+export function MainPage({ list }: { list: types.Metadata[] }) {
     let navigate = useNavigate();
+
+    let { params } = useMatch();
+    let initialPosition = params.position;
+
+    let documents = list;
+    let title = documents.find(doc => doc.id === params.bookId)?.title ?? params.bookId;
+
+    let loader = useLoader(
+        React.useCallback(() => getDocument(params.bookId), [params.bookId]),
+        { pendingMs: 100, pendingMinMs: 300 }
+    );
 
     let savePosition = useDebounceCallback(
         React.useCallback(
-            (newPosition: HymnId, replace: boolean) => {
-                navigate({ to: `/${documentId}/${newPosition}`, replace });
-                setLastPosition(documentId, newPosition);
+            (newPosition: types.HymnId, replace: boolean) => {
+                if (loader.ready) {
+                    navigate({
+                        to: `/${loader.value.id}/${newPosition}`,
+                        replace,
+                    });
+                    setLastPosition(loader.value.id, newPosition);
+                }
             },
-            [documentId, navigate]
+            [loader, navigate]
         ),
         200
     );
 
-    let [shouldScroll, setShouldScroll] = React.useState(false);
-    let [position, _setPosition] = React.useState<HymnId>(initialPosition);
+    let [position, _setPosition] = React.useState<types.HymnId>(initialPosition);
 
     let latestPositionRef = React.useRef<string | null>(null);
 
     let setPosition = React.useCallback(
-        (newPosition: HymnId, type: "goto" | "scroll" | "url") => {
-            // Don't let repeat calls destroy the browser history,
-            // e.g. when the position is updated on scroll
+        (newPosition: types.HymnId, type: "goto" | "scroll" | "url") => {
+            // Prevent repeated calls from nuking the browser history, e.g. on scroll
             if (newPosition !== latestPositionRef.current) {
-                _setPosition(newPosition);
-
-                switch (type) {
-                    case "goto":
-                        savePosition(newPosition, true);
-                        setShouldScroll(true);
-                        break;
-                    case "scroll":
-                        savePosition(newPosition, false);
-                        setShouldScroll(false);
-                        break;
-                    case "url":
-                        setShouldScroll(true);
-                        break;
-                }
-
                 latestPositionRef.current = newPosition;
+                _setPosition(newPosition);
+                if (type === "goto") savePosition(newPosition, false);
+                if (type === "scroll") savePosition(newPosition, true);
             }
         },
         [savePosition]
@@ -109,7 +64,7 @@ function usePosition(initialPosition: HymnId, documentId: string) {
 
     React.useLayoutEffect(() => {
         /**
-         * The app should update the URL, but changing the URL should also update
+         * The app updates the URL, but changing the URL should also update
          * the app. We need to distinguish these changes to avoid a feedback loop.
          * Changing the URL will not change `latestPositionRef`, so if it doesn't
          * match `initialPosition` here it means the URL was updated externally
@@ -120,16 +75,103 @@ function usePosition(initialPosition: HymnId, documentId: string) {
         }
     }, [initialPosition, setPosition]);
 
-    return { position, setPosition, shouldScroll };
+    let pages = React.useMemo(
+        () =>
+            loader.ready
+                ? Object.values(loader.value.hymns).map(hymn => ({
+                      id: hymn.id,
+                      children: <Hymn hymn={hymn} document={loader.value} />,
+                  }))
+                : [],
+        [loader]
+    );
+
+    let onPageChange = React.useCallback(
+        newPosition => setPosition(newPosition, "scroll"),
+        [setPosition]
+    );
+
+    return (
+        <main className="MainPage">
+            <h1 className="MainPage-title" onClick={toggleFullscreen}>
+                {title}
+            </h1>
+
+            <div className="MainPage-toolbar">
+                <button className="ToolbarButton" type="button" id={APP_MENU_BUTTON_ID}>
+                    <MenuIcon aria-hidden />{" "}
+                    <span className="MainPage-toolbar-title">{title}</span>
+                </button>
+
+                <GoToInput
+                    initialValue={position ?? ""}
+                    onSubmit={React.useCallback(
+                        (newPosition: types.HymnId) => setPosition(newPosition, "goto"),
+                        [setPosition]
+                    )}
+                    maxValue={
+                        loader.ready
+                            ? Math.max(
+                                  ...Object.keys(loader.value.hymns)
+                                      .map(id => parseInt(id, 10))
+                                      .sort((a, b) => a - b)
+                              )
+                            : undefined
+                    }
+                />
+
+                <button
+                    className="ToolbarButton"
+                    aria-label="find"
+                    title="Find"
+                    type="button"
+                    data-a11y-dialog-toggle="find-dialog"
+                >
+                    Find
+                </button>
+
+                <button
+                    className="ToolbarButton"
+                    aria-label="settings"
+                    title="Settings"
+                    data-a11y-dialog-toggle="options-dialog"
+                >
+                    Aa
+                </button>
+            </div>
+
+            {loader.loading ? (
+                <div className="MainPage-loadingScreen">
+                    <p>Loading...</p>
+                </div>
+            ) : (
+                loader.ready && (
+                    <HorizontalScroller
+                        pages={pages}
+                        initialPage={position}
+                        onPageChange={onPageChange}
+                    />
+                )
+            )}
+
+            <AppMenu documentId={params.bookId} documents={documents} />
+
+            <FindDialog
+                document={loader.ready ? loader.value : undefined}
+                position={position}
+            />
+
+            <OptionsDialog toggleFullscreen={toggleFullscreen} />
+        </main>
+    );
 }
 
-// import { useCSSVar } from "../util/useCSSVar";
-// import { useViewportWidth } from "../util/useViewportWidth";
-
-// const HYMN_WIDTH_PREFERRED = 560;
-// const HYMN_HEIGHT_PREFERRED = 500;
-
-// let [viewportWidth, viewportHeight] = useViewportWidth(ref, HYMN_WIDTH_PREFERRED);
-// let mobileMode =
-//     viewportHeight < HYMN_HEIGHT_PREFERRED || viewportWidth < HYMN_WIDTH_PREFERRED;
-// useCSSVar("--scroll-snap-type", mobileMode ? "x mandatory" : "none");
+function toggleFullscreen() {
+    if (!document.fullscreenElement)
+        document.body.requestFullscreen({ navigationUI: "show" }).catch(err => {
+            console.error(
+                `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
+            );
+        });
+    else if (document.fullscreenElement) document.exitFullscreen();
+}
