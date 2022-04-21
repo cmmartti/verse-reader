@@ -75,16 +75,14 @@ export function MainPage({ list }: { list: types.Metadata[] }) {
         }
     }, [initialPosition, setPosition]);
 
-    let pages = React.useMemo(
-        () =>
-            loader.ready
-                ? Object.values(loader.value.hymns).map(hymn => ({
-                      id: hymn.id,
-                      children: <Hymn hymn={hymn} document={loader.value} />,
-                  }))
-                : [],
-        [loader]
-    );
+    let pages = React.useMemo(() => {
+        if (!loader.ready) return [];
+        let value = loader.value;
+        return Object.values(loader.value.hymns).map(hymn => ({
+            id: hymn.id,
+            children: <Hymn hymn={hymn} document={value} />,
+        }));
+    }, [loader]);
 
     let onPageChange = React.useCallback(
         newPosition => setPosition(newPosition, "scroll"),
