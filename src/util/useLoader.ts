@@ -1,65 +1,67 @@
 import React from "react";
+import create from "zustand";
 
-export default function useLoader<T>(
-    loader: () => Promise<T>,
-    opts: { pendingMs?: number; pendingMinMs?: number } = {}
-) {
-    let { pendingMs = 0, pendingMinMs = 0 } = opts;
+let useStore = create<Record<string, unknown>>(() => ({}));
+let useCache = <T>(key: string) => useStore(state => state[key]) as T | undefined;
+let setCache = <T>(key: string, value: T) => useStore.setState(() => ({ [key]: value }));
 
-    type State =
-        | { loading: false; ready: false }
-        | { loading: true; ready: false }
-        | { loading: false; ready: true; value: T };
+/**
+ * Not intended for network requests. Has no error management. Yet.
+ */
+export function useLoader<T>(opts: {
+    key: string;
+    loader: () => Promise<T>;
+    pendingMs?: number;
+    pendingMinMs?: number;
+}) {
+    let { key, loader, pendingMs = 0, pendingMinMs = 0 } = opts;
 
-    type Action = ["reset"] | ["pending"] | ["ready", T];
-
-    let [state, dispatch] = React.useReducer(
-        (state: State, [type, value]: Action) => {
-            switch (type) {
-                // case "reset":
-                //     return { loading: false as const, ready: false as const };
-                case "pending":
-                    return { loading: true as const, ready: false as const };
-                case "ready":
-                    return { loading: false as const, ready: true as const, value };
-                default:
-                    return state;
-            }
-        },
-        { loading: false, ready: false }
-    );
+    let value = useCache<T>(key);
+    let [mode, setMode] = React.useState<"idle" | "loading" | "success">("idle");
 
     React.useEffect(() => {
         let pendingTimeout: NodeJS.Timeout | undefined;
         let pendingMinTimeout: NodeJS.Timeout | undefined;
         let heldValue: T | undefined;
 
-        if (!pendingMs) dispatch(["pending"]);
-        else
+        if (!pendingMs) setMode("loading");
+        else {
+            if (pendingMs > 0) setMode("idle");
             pendingTimeout = setTimeout(() => {
-                dispatch(["pending"]);
+                setMode("loading");
                 if (pendingMinMs) {
                     pendingMinTimeout = setTimeout(() => {
                         pendingMinTimeout = undefined;
-                        if (heldValue) dispatch(["ready", heldValue]);
+                        setMode("success");
+                        if (heldValue !== undefined) {
+                            setCache(key, heldValue);
+                        }
                     }, pendingMinMs);
                 }
             }, pendingMs);
+        }
 
         loader().then(value => {
             if (pendingTimeout) {
                 clearTimeout(pendingTimeout);
                 pendingTimeout = undefined;
             }
-            if (!pendingMinTimeout) dispatch(["ready", value]);
-            else heldValue = value;
+            if (!pendingMinTimeout) {
+                setMode("success");
+                setCache(key, value);
+            } else heldValue = value;
         });
 
         return () => {
             if (pendingTimeout) clearTimeout(pendingTimeout);
             if (pendingMinTimeout) clearTimeout(pendingMinTimeout);
         };
-    }, [loader, pendingMs, pendingMinMs]);
+    }, [key, loader, pendingMs, pendingMinMs]);
 
-    return state;
+    if (mode === "success") {
+        if (value === undefined) return { mode: "idle" as const, value: undefined };
+        return { mode: "success" as const, value };
+    }
+    if (mode === "loading") return { mode: "loading" as const, value: undefined };
+    return { mode: "idle" as const, value: undefined };
 }

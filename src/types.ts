@@ -4,6 +4,7 @@ export type HymnId = string;
 export type TopicId = string;
 export type TuneId = string;
 export type DayId = string;
+export type IndexType = string;
 
 export type HymnalDocument = {
     id: DocumentId;
@@ -16,6 +17,12 @@ export type HymnalDocument = {
     calendar: Record<DayId, Day> | null;
     tunes: Record<TuneId, Tune> | null;
     hymns: Record<HymnId, Hymn>;
+    indices: Record<IndexType, Index>;
+};
+export type Index = {
+    type: IndexType;
+    name: string;
+    hasDefaultSort: boolean;
 };
 export type Language = {
     id: LanguageId;
@@ -27,7 +34,7 @@ export type Topic = {
 };
 export type Day = {
     id: DayId;
-    shortName: string;
+    shortName?: string;
     name: string;
 };
 export type Tune = {
@@ -42,14 +49,14 @@ export type Hymn = {
     isRestricted: boolean;
     topics: TopicId[];
     tunes: TuneId[];
-    origin: string;
+    origin: string | null;
     authors: {
-        name: string;
+        name: string | null;
         year: string;
         note: string;
     }[];
     translators: {
-        name: string;
+        name: string | null;
         year: string;
         note: string;
     }[];
@@ -75,13 +82,4 @@ export type RepeatLines = {
     kind: "repeat";
     times: number;
     lines: Line[];
-};
-
-export type Metadata = {
-    id: DocumentId;
-    lastOpened: number;
-    lastPosition: HymnId;
-    title: HymnalDocument["title"];
-    year: HymnalDocument["year"];
-    publisher: HymnalDocument["publisher"];
 };

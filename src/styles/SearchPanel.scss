@@ -1,0 +1,107 @@
+.SearchPanel {
+    display: grid;
+    gap: var(--toolbar-gap);
+    @media (min-width: 29rem) {
+        grid-template:
+            "controls"
+            "results" 1fr;
+    }
+    @media (max-width: 29rem) {
+        grid-template:
+            "results" 1fr
+            "controls";
+    }
+
+    & > .controls {
+        grid-area: controls;
+
+        display: flex;
+        gap: var(--toolbar-gap);
+
+        & input {
+            flex: 1;
+            width: 0;
+        }
+    }
+
+    & > .results {
+        grid-area: results;
+
+        border: var(--control-border);
+        overflow: auto;
+        background: var(--background);
+        box-shadow: inset var(--toolbar-item-box-shadow);
+
+        & .results-count {
+            text-align: center;
+            padding: 0.25rem;
+            border-bottom: 1px solid var(--control-border-color);
+        }
+
+        & ul.results-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 1.75rem;
+
+            display: grid;
+            grid-template-columns: minmax(1.75rem, auto) 1fr;
+
+            & > li {
+                grid-column: 1 / -1;
+            }
+        }
+    }
+
+    & .result {
+        border-bottom: 1px solid var(--control-border-color);
+
+        display: grid;
+        grid-template-areas:
+            "id title"
+            "id lines";
+        grid-template-columns: minmax(2.5rem, auto) 1fr;
+        grid-template-columns: subgrid;
+
+        & > .result-id {
+            grid-area: id;
+            padding: 0.25rem;
+            font-weight: bold;
+            text-align: end;
+        }
+        &.is-current > .result-id {
+            background: orange;
+        }
+
+        & > .result-title {
+            grid-area: title;
+            padding: 0.25rem;
+            color: var(--link-color);
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+            border-left: 1px solid var(--control-border-color);
+        }
+        &.is-deleted > .result-title {
+            text-decoration: line-through;
+        }
+        &.is-deleted > .result-title:hover {
+            text-decoration: line-through underline;
+        }
+
+        & > ul.result-lines {
+            grid-area: lines;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-left: 1px solid var(--control-border-color);
+
+            & > li {
+                font-size: 0.9em;
+                padding: 0.15rem 0.5rem 0.15rem 0.25rem;
+                border-top: 1px dashed var(--control-border-color);
+            }
+        }
+    }
+}

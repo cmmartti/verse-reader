@@ -1,0 +1,164 @@
+.IndexPanel {
+    --gap: 0.5rem;
+
+    display: grid;
+    gap: var(--gap);
+
+    @media (min-width: 29rem) {
+        padding-top: 0;
+        grid-template:
+        "indexSelect"
+        "results" 1fr
+        "expand-controls";
+    }
+    @media (max-width: 29rem) {
+        padding-bottom: 0;
+        grid-template:
+            "expand-controls"
+            "results" 1fr
+            "indexSelect";
+    }
+
+    & > .backButton {
+        grid-area: back;
+    }
+    & > .indexSelect {
+        grid-area: indexSelect;
+        font-weight: bold;
+        // flex: 1 1 2rem;
+    }
+
+    & > .index-controls {
+        grid-area: index-controls;
+        display: flex;
+        // flex-wrap: wrap;
+        gap: var(--gap);
+        // font-size: calc(var(--toolbar-scale-factor) * 1rem);
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+
+    & > .expand-controls {
+        grid-area: expand-controls;
+        display: flex;
+        align-items: center;
+        gap: var(--gap);
+        overflow-x: auto;
+        scrollbar-width: thin;
+
+        & > * {
+            flex: 0 0;
+            min-width: min-content;
+        }
+        & > .spring {
+            flex: 1 1;
+            margin-left: calc(-1 * var(--gap));
+        }
+    }
+
+    & > ul.entries {
+        grid-area: results;
+        border: var(--control-border);
+        overflow: auto;
+        background: var(--background);
+        box-shadow: inset var(--toolbar-item-box-shadow);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        // scrollbar-color: gray var(--listbox-background);
+        background: var(--listbox-background);
+
+        & > li {
+            padding: 0;
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--control-border-color);
+            }
+        }
+    }
+
+    & details.entry {
+        &.is-current > summary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0.25rem;
+            background: orange;
+        }
+
+        .entry-title {
+            font-size: 1.15em;
+            font-weight: inherit;
+        }
+
+        & > summary {
+            padding: 0.325rem 0.5rem;
+            display: block;
+            // text-align: center;
+            cursor: default;
+            user-select: none;
+            background: var(--background);
+
+            display: flex;
+            justify-content: space-between;
+            gap: 1em;
+            align-items: baseline;
+            position: relative;
+
+            &:focus {
+                outline-offset: var(--focus-outline-offset);
+                outline: var(--focus-outline);
+            }
+        }
+
+        & > ul.entry-references {
+            margin: 0;
+            padding: 0 0 0.5rem 0;
+            padding: 0.5rem 0;
+            padding: 0;
+            list-style: none;
+            // box-shadow: inset var(--toolbar-item-box-shadow);
+
+            & .reference {
+                border-top: 1px solid var(--control-border-color);
+                display: flex;
+                text-decoration: none;
+                color: inherit;
+
+                & > * {
+                    padding-top: 0.25rem;
+                    padding-bottom: 0.25rem;
+                }
+
+                &.is-current .reference-id {
+                    background: orange;
+                    text-decoration: none;
+                }
+                &.is-deleted .reference-title {
+                    text-decoration: line-through;
+                }
+                &:hover .reference-title {
+                    text-decoration: underline;
+                }
+                &:hover.is-deleted .reference-title {
+                    text-decoration: line-through underline;
+                }
+                & .reference-id {
+                    font-weight: bold;
+                    min-width: 2.5rem;
+                    text-align: end;
+                    padding-left: 0.1rem;
+                    padding-right: 0.25rem;
+                }
+                & .reference-title {
+                    flex: 1;
+                    border-left: 1px solid var(--control-border-color);
+                    padding-left: 0.25rem;
+                    padding-right: 0.5rem;
+                    color: var(--link-color);
+                }
+            }
+        }
+    }
+}

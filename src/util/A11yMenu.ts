@@ -4,7 +4,6 @@ const SYNTHETIC_CLICK = 1827589;
 
 export default class A11yMenu {
     private shown: boolean = false;
-    private listeners: Record<string, Listener[]> = {};
     private menuitems: HTMLElement[] = [];
 
     constructor(
@@ -20,26 +19,8 @@ export default class A11yMenu {
             return;
         }
 
-        this.documentMousedown = this.documentMousedown.bind(this);
-        this.documentKeydown = this.documentKeydown.bind(this);
-
-        this.buttonMouseup = this.buttonMouseup.bind(this);
-        this.buttonMousedown = this.buttonMousedown.bind(this);
-        this.buttonKeyup = this.buttonKeyup.bind(this);
-
-        this.menuKeydown = this.menuKeydown.bind(this);
-        this.menuMouseup = this.menuMouseup.bind(this);
-        this.menuMousemove = this.menuMousemove.bind(this);
-        this.menuMouseleave = this.menuMouseleave.bind(this);
-        this.menuClick = this.menuClick.bind(this);
-
-        this.create();
-    }
-
-    /** Set up everything necessary for the menu to be functional */
-    create() {
         if (!this.menuElement.getAttribute("aria-hidden")) {
-            console.error(
+            console.warn(
                 '[A11y-Menu] Menus should have an initial `aria-hidden="true"` attribute to avoid flashing an open menu on page load.'
             );
         }
@@ -50,195 +31,6 @@ export default class A11yMenu {
         this.buttonElement.addEventListener("mousedown", this.buttonMousedown);
         this.buttonElement.addEventListener("mouseup", this.buttonMouseup);
         this.buttonElement.addEventListener("keyup", this.buttonKeyup);
-
-        this.fire("create");
-    }
-
-    /** Hide the menu if the mouse was pressed down outside of the menu or menu button. */
-    private documentMousedown(event: Event) {
-        let target = event.target as Element | null;
-        if (!this.buttonElement.contains(target) && !this.menuElement.contains(target)) {
-            this.hide();
-        }
-    }
-
-    /** Hide the menu when Escape or Tab is pressed. */
-    private documentKeydown(event: KeyboardEvent) {
-        switch (event.key) {
-            case "Escape":
-                event.preventDefault();
-                this.hide();
-                break;
-            case "Tab":
-                // Hide the menu and return the focus to the menu button.
-                this.hide();
-                // Do not call event.preventDefault: instead, allow the
-                // browser to move the focus to the next tabindex as usual.
-                break;
-        }
-    }
-
-    /**
-     * Show the menu on mouse down. This allows for clicking down on the menu
-     * button and releasing over the desired menuitem.
-     */
-    private buttonMousedown(event: Event) {
-        if (!this.shown) {
-            event.preventDefault();
-            this.show(event);
-            this.preventMouseupEvent = true;
-        }
-    }
-
-    /** Prevent events that occur on mousedown from also triggering mouseup listeners. */
-    private preventMouseupEvent = false;
-
-    /** Hide the menu on mouse up. */
-    private buttonMouseup(event: Event) {
-        if (this.preventMouseupEvent) event.preventDefault();
-        else this.toggle(event);
-        this.preventMouseupEvent = false;
-    }
-
-    /** Prevent events that occur on keydown from also triggering keyup listeners. */
-    private preventKeyupEvent = false;
-
-    /** Show the menu on ArrowDown/Enter/Space, focusing the first menuitem. */
-    private buttonKeyup(event: Event) {
-        switch ((event as KeyboardEvent).key) {
-            case "ArrowDown":
-            case "Enter":
-            case " ":
-                if (this.preventKeyupEvent) event.preventDefault();
-                else if (!this.shown) {
-                    (event.target as HTMLElement | null)?.focus();
-                    this.show(event, 0);
-                    event.preventDefault();
-                }
-                this.preventKeyupEvent = false;
-                break;
-        }
-    }
-
-    /** Trigger a click on the menuitem under the mouse on mouseup. */
-    private menuMouseup(event: MouseEvent) {
-        let menuitem = (event.target as Element | null)?.closest('[role^="menuitem"]');
-
-        // Primary mouse button only (left-click)
-        if (menuitem && event.button === 0) {
-            this.clickMenuItem(menuitem, event);
-        }
-    }
-
-    /**
-     * Block all click events on menuitems except those dispatched by the clickMenuItem
-     * function (identified by a specific value set on the `detail` property).
-     */
-    private menuClick(event: MouseEvent) {
-        if (event.detail !== SYNTHETIC_CLICK) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
-    }
-
-    /**
-     * Focus the menuitem under the mouse, or focus the menu itself if the mouse
-     * is not over a menuitem.
-     */
-    private menuMousemove(event: Event) {
-        let target = event.target as Element | null;
-        let menuitem = target?.closest('[role^="menuitem"]') as HTMLElement | null;
-        if (menuitem && menuitem.focus) {
-            menuitem.focus();
-        } else {
-            this.menuElement.focus();
-        }
-    }
-
-    /**
-     * Focus the menu element when the focus leaves the menu (defocusing any menuitems).
-     */
-    private menuMouseleave() {
-        this.menuElement.focus();
-    }
-
-    /**
-     * Move focus between menuitems with ArrowUp/ArrowDown and home/end, and
-     * trigger a click on a menuitem on Enter. Also trigger menuitems with an
-     * accesskey attribute matching the key pressed.
-     */
-    private menuKeydown(event: KeyboardEvent) {
-        let target = event.target as HTMLElement | null;
-
-        let items = this.menuitems;
-        let currentIndex = items.findIndex(
-            menuitem => menuitem === target?.closest('[role^="menuitem"]')
-        );
-
-        switch (event.key) {
-            case "Enter": {
-                let menuitem = target?.closest('[role^="menuitem"]');
-                if (menuitem) {
-                    event.preventDefault();
-                    this.clickMenuItem(menuitem, event);
-                    this.preventKeyupEvent = true;
-                }
-                break;
-            }
-            case "ArrowDown":
-                event.preventDefault();
-                items[(currentIndex + 1) % items.length].focus();
-                break;
-            case "ArrowUp":
-                event.preventDefault();
-                if (currentIndex === -1) items[items.length - 1].focus();
-                else {
-                    items[(currentIndex - 1 + items.length) % items.length].focus();
-                }
-                break;
-            case "Home":
-                event.preventDefault();
-                items[0].focus();
-                break;
-            case "End":
-                event.preventDefault();
-                items[items.length - 1].focus();
-                break;
-            default: {
-                // Click the first menuitem that has this key as an accesskey.
-                let menuitem = this.menuElement.querySelector(
-                    `[role^="menuitem"][accesskey="${event.key}"]`
-                );
-                if (menuitem) this.clickMenuItem(menuitem, event);
-            }
-        }
-    }
-
-    /**
-     * Dispatch a synthetic click event to the target `menuitem`.
-     * @param menuitem The menuitem element to target
-     * @param event The source event. Will be merged with the dispatched click event
-     */
-    private clickMenuItem(menuitem: Element, event: Event) {
-        if (
-            menuitem.getAttribute("disabled") ||
-            menuitem.getAttribute("aria-disabled")
-        ) {
-            return;
-        }
-
-        // Assign a specific value to the `detail` property that we can identify later.
-        let clickEvent = new MouseEvent("click", {
-            ...event,
-            button: 0,
-            bubbles: true,
-            detail: SYNTHETIC_CLICK,
-        });
-
-        // Dispatch this new click event to the target menuitem
-        menuitem.dispatchEvent(clickEvent);
-
-        this.hide();
     }
 
     /** Show or hide the menu. */
@@ -282,11 +74,13 @@ export default class A11yMenu {
 
         this.buttonElement.setAttribute("aria-expanded", "true");
 
-        if (initialFocus !== undefined && this.menuitems[initialFocus]) {
-            this.menuitems[initialFocus].focus();
+        if (initialFocus !== undefined) {
+            let initialFocusItem = this.menuitems[initialFocus];
+            if (initialFocusItem !== undefined) initialFocusItem.focus();
+            else this.menuElement.focus();
         } else this.menuElement.focus();
 
-        this.fire("show", event);
+        this.menuElement.dispatchEvent(new CustomEvent("show", { detail: event }));
     }
 
     /**
@@ -316,7 +110,7 @@ export default class A11yMenu {
 
         this.menuitems = [];
 
-        this.fire("hide", event);
+        this.menuElement.dispatchEvent(new CustomEvent("hide", { detail: event }));
     }
 
     /**
@@ -330,24 +124,222 @@ export default class A11yMenu {
         this.buttonElement.removeEventListener("mousedown", this.buttonMousedown);
         this.buttonElement.removeEventListener("mouseup", this.buttonMouseup);
         this.buttonElement.removeEventListener("keyup", this.buttonKeyup);
-
-        this.fire("destroy");
     }
 
     /**
-     * Iterate over all registered handlers for given type and call them all with
-     * the menu element as first argument, event as second argument (if any). Also
-     * dispatch a custom event on the DOM element itself to make it possible to
-     * react to the lifecycle of auto-instantiated tablists.
+     * Dispatch a synthetic click event to the target `menuitem`.
+     * @param menuitem The menuitem element to target
+     * @param event The source event. Will be merged with the dispatched click event
      */
-    private fire(type: "create" | "destroy" | "hide" | "show", event?: Event) {
-        var listeners = this.listeners[type] || [];
-
-        var domEvent = new CustomEvent(type, { detail: event });
-        this.menuElement.dispatchEvent(domEvent);
-
-        for (let listener of listeners) {
-            listener(this.menuElement, event);
+    private clickMenuItem(menuitem: Element, event: Event) {
+        if (
+            menuitem.getAttribute("disabled") ||
+            menuitem.getAttribute("aria-disabled")
+        ) {
+            return;
         }
+
+        // Assign a specific value to the `detail` property that we can identify later.
+        let clickEvent = new MouseEvent("click", {
+            ...event,
+            button: 0,
+            bubbles: true,
+            detail: SYNTHETIC_CLICK,
+        });
+
+        // Dispatch this new click event to the target menuitem
+        menuitem.dispatchEvent(clickEvent);
+
+        this.hide();
     }
+
+    /**
+     * Mousedown event handler for the document:
+     *
+     * Hide the menu if the mouse was pressed down outside of the menu or menu button.
+     */
+    private documentMousedown = (event: Event) => {
+        let target = event.target as Element | null;
+        if (!this.buttonElement.contains(target) && !this.menuElement.contains(target)) {
+            this.hide();
+        }
+    };
+
+    /**
+     * Keydown event handler for the document:
+     *
+     * Hide the menu when Escape or Tab is pressed.
+     */
+    private documentKeydown = (event: KeyboardEvent) => {
+        switch (event.key) {
+            case "Escape":
+                event.preventDefault();
+                this.hide();
+                break;
+            case "Tab":
+                // Hide the menu and return the focus to the menu button.
+                this.hide();
+                // Do not call event.preventDefault: instead, allow the
+                // browser to move the focus to the next tabindex as usual.
+                break;
+        }
+    };
+
+    /**
+     * Mousedown event handler for the menu button:
+     *
+     * Show the menu on mouse down. This allows for clicking down on the menu
+     * button and releasing over the desired menuitem as in classic desktop menus.
+     */
+    private buttonMousedown = (event: Event) => {
+        if (!this.shown) {
+            event.preventDefault();
+            this.show(event);
+            this.preventMouseupEvent = true;
+        }
+    };
+
+    /** Prevent events that occur on mousedown from also triggering mouseup listeners. */
+    private preventMouseupEvent = false;
+
+    /**
+     * Mouseup event handler for the menu button:
+     *
+     * Hide the menu on mouse up.
+     */
+    private buttonMouseup = (event: Event) => {
+        if (this.preventMouseupEvent) event.preventDefault();
+        else this.toggle(event);
+        this.preventMouseupEvent = false;
+    };
+
+    /** Prevent events that occur on keydown from also triggering keyup listeners. */
+    private preventKeyupEvent = false;
+
+    /**
+     * Keyup event handler for the menu button:
+     *
+     * Show the menu on ArrowDown/Enter/Space, focusing the first menuitem.
+     */
+    private buttonKeyup = (event: Event) => {
+        switch ((event as KeyboardEvent).key) {
+            case "ArrowDown":
+            case "Enter":
+            case " ":
+                if (this.preventKeyupEvent) event.preventDefault();
+                else if (!this.shown) {
+                    (event.target as HTMLElement | null)?.focus();
+                    this.show(event, 0);
+                    event.preventDefault();
+                }
+                this.preventKeyupEvent = false;
+                break;
+        }
+    };
+
+    /**
+     * Mouseup event handler for the menu:
+     *
+     * Trigger a click on the menuitem under the mouse on mouseup.
+     */
+    private menuMouseup = (event: MouseEvent) => {
+        let menuitem = (event.target as Element | null)?.closest('[role^="menuitem"]');
+
+        // Primary mouse button only (left-click)
+        if (menuitem && event.button === 0) {
+            this.clickMenuItem(menuitem, event);
+        }
+    };
+
+    /**
+     * Click event handler for the menu:
+     *
+     * Block all click events on menuitems except those dispatched by the clickMenuItem
+     * function (identified by a specific value set on the `detail` property).
+     */
+    private menuClick = (event: MouseEvent) => {
+        if (event.detail !== SYNTHETIC_CLICK) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    };
+
+    /**
+     * Mousemove event handler for the menu:
+     *
+     * Focus the menuitem under the mouse, or focus the menu itself if the mouse
+     * is not over a menuitem.
+     */
+    private menuMousemove = (event: Event) => {
+        let target = event.target as Element | null;
+        let menuitem = target?.closest('[role^="menuitem"]') as HTMLElement | null;
+        if (menuitem && menuitem.focus) {
+            menuitem.focus();
+        } else {
+            this.menuElement.focus();
+        }
+    };
+
+    /**
+     * Mouseleave event handler for the menu:
+     *
+     * Focus the menu element when the focus leaves the menu (defocusing any menuitems).
+     */
+    private menuMouseleave = () => {
+        this.menuElement.focus();
+    };
+
+    /**
+     * Keydown event handler for the menu:
+     *
+     * Move focus between menuitems with ArrowUp/ArrowDown and home/end, and
+     * trigger a click on a menuitem on Enter. Also trigger menuitems with an
+     * accesskey attribute matching the key pressed.
+     */
+    private menuKeydown = (event: KeyboardEvent) => {
+        let target = event.target as HTMLElement | null;
+
+        let items = this.menuitems;
+        let currentIndex = items.findIndex(
+            menuitem => menuitem === target?.closest('[role^="menuitem"]')
+        );
+
+        switch (event.key) {
+            case "Enter": {
+                let menuitem = target?.closest('[role^="menuitem"]');
+                if (menuitem) {
+                    event.preventDefault();
+                    this.clickMenuItem(menuitem, event);
+                    this.preventKeyupEvent = true;
+                }
+                break;
+            }
+            case "ArrowDown":
+                event.preventDefault();
+                items[(currentIndex + 1) % items.length]?.focus();
+                break;
+            case "ArrowUp":
+                event.preventDefault();
+                if (currentIndex === -1) items[items.length - 1]?.focus();
+                else {
+                    items[(currentIndex - 1 + items.length) % items.length]?.focus();
+                }
+                break;
+            case "Home":
+                event.preventDefault();
+                items[0]?.focus();
+                break;
+            case "End":
+                event.preventDefault();
+                items[items.length - 1]?.focus();
+                break;
+            default: {
+                // Click the first menuitem that has this key as an accesskey.
+                let menuitem = this.menuElement.querySelector(
+                    `[role^="menuitem"][accesskey="${event.key}"]`
+                );
+                if (menuitem) this.clickMenuItem(menuitem, event);
+            }
+        }
+    };
 }

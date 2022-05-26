@@ -1,97 +1,180 @@
 import React from "react";
-// import OnDemandLiveRegion from "on-demand-live-region";
+import * as idb from "idb-keyval";
+import * as lunr from "lunr";
 
 import * as types from "../../types";
-import { searchIndex } from "../../buildIndex";
+import { buildIndex, searchIndex } from "../../buildIndex";
 import { useDebounceCallback } from "../../util/useDebounceCallback";
-import { Link } from "@tanstack/react-location";
+import { ReactComponent as SearchOffIcon } from "../../icons/search_off.svg";
+import { useLoader } from "../../util/useLoader";
+import c from "../../util/c";
+import { useAppState } from "../../state";
 
-import useLoader from "../../util/useLoader";
-import { getIndex } from "../../db";
+export function SearchPanel({ book }: { book: types.HymnalDocument }) {
+    let [search, setSearch] = useAppState(`book/${book.id}/search`, "");
 
-type Result = { id: string; lines: string[] };
+    let [inputValue, _setInputValue] = React.useState(search);
+    let [results, setResults] = React.useState([] as { id: string; lines: string[] }[]);
 
-const DEBOUNCE_WAIT = 150;
-
-export function SearchPanel({
-    document,
-    position,
-}: {
-    document: types.HymnalDocument;
-    position: types.HymnId;
-}) {
-    let [inputValue, setInputValue] = React.useState("");
-    let [results, setResults] = React.useState([] as Result[]);
-
-    let indexLoader = useLoader(
-        React.useCallback(() => getIndex(document.id), [document.id]),
-        { pendingMs: 100, pendingMinMs: 500 }
+    let setInputValue = React.useCallback(
+        (search: string) => {
+            _setInputValue(search);
+            setSearch(search);
+        },
+        [setSearch]
     );
+
+    let indexLoader = useLoader({
+        key: `book/${book.id}/searchIndex`,
+        loader: React.useCallback(async () => {
+            if (book === null) return null;
+
+            let response = await idb.get<object>(`book/${book.id}/searchIndex`);
+            if (response === undefined) {
+                let searchIndex = buildIndex(book);
+                idb.set(`book/${book.id}/searchIndex`, searchIndex.toJSON());
+                return searchIndex;
+            } else return lunr.Index.load(response);
+        }, [book]),
+        pendingMs: 100,
+        pendingMinMs: 500,
+    });
 
     let updateResults = useDebounceCallback(
         React.useCallback(
             (search: string) => {
-                if (indexLoader.ready && search.length >= 3) {
-                    setResults(searchIndex(indexLoader.value, document, search));
-                } else setResults([]);
+                if (
+                    indexLoader.mode === "success" &&
+                    indexLoader.value !== null &&
+                    book !== null
+                ) {
+                    setResults(searchIndex(indexLoader.value, book, search));
+                }
             },
-            [document, indexLoader]
+            [book, indexLoader]
         ),
-        DEBOUNCE_WAIT
+        150 // wait 150ms after typing to prevent stuttering and lagging
     );
 
-    // let liveRegionRef = React.useRef(new OnDemandLiveRegion());
     React.useEffect(() => {
-        // liveRegionRef.current.say(
-        //     `${results.length} result${results.length !== 1 && "s"} available`
-        // );
-    }, [results]);
+        if (inputValue.length >= 3) {
+            updateResults(inputValue);
+        } else setResults([]);
+    }, [inputValue, updateResults]);
+
+    let inputRef = React.useRef<HTMLInputElement>(null!);
+    let listRef = React.useRef<HTMLUListElement>(null!);
 
     return (
         <div className="SearchPanel">
             <div className="controls">
-                <label htmlFor="search-input" className="visually-hidden">
-                    search
-                </label>
                 <input
-                    id="search-input"
+                    ref={inputRef}
+                    aria-label="search"
                     type="search"
                     value={inputValue}
-                    onChange={e => {
-                        setInputValue(e.target.value);
-                        updateResults(e.target.value);
-                    }}
+                    onChange={event => setInputValue(event.target.value)}
                     placeholder="Search"
                     onFocus={e => e.target.select()}
+                    autoComplete="off"
+                    onKeyUp={event => {
+                        if (event.key === "Enter" && results.length > 0) {
+                            listRef.current.focus();
+                        }
+                    }}
                 />
+                <button
+                    className="Button"
+                    aria-label="clear search"
+                    title="Clear Search"
+                    disabled={inputValue.length === 0}
+                    onClick={() => {
+                        setInputValue("");
+                        inputRef.current.focus();
+                    }}
+                    // On touch, don't move the focus when tapping the clear button.
+                    // This is to prevent the keyboard from popping up or down unexpectedly
+                    onTouchEnd={event => {
+                        event.preventDefault();
+                        setInputValue("");
+                    }}
+                >
+                    <SearchOffIcon />
+                </button>
             </div>
 
-            <ul className="results">
-                {results.map(result => {
-                    let hymn = document.hymns[result.id];
+            <div className="results">
+                {inputValue.length >= 3 ? (
+                    <p className="results-count" aria-live="polite">
+                        {results.length + " result" + (results.length !== 1 ? "s" : "")}
+                    </p>
+                ) : null}
 
-                    return (
-                        <li key={hymn.id} className="result">
-                            <h2>
-                                <b>
-                                    {hymn.isRestricted && "*"}
-                                    {hymn.id}:
-                                </b>{" "}
-                                <Link to={`/${document.id}/${hymn.id}`}>
-                                    {hymn.title}
-                                </Link>
-                            </h2>
-                            <ul className="result-lines">
-                                {result.lines.map((line, i) => (
-                                    <li key={i} className="result-line">
-                                        {line}
-                                    </li>
-                                ))}
-                            </ul>
-                        </li>
-                    );
-                })}
-            </ul>
+                {inputValue.length > 0 && inputValue.length < 3 ? (
+                    <p className="results-count" aria-live="polite">
+                        (Type at least 3 letters)
+                    </p>
+                ) : null}
+
+                <ul className="results-list" tabIndex={-1} ref={listRef}>
+                    {indexLoader.mode === "loading" && <li>Loading search index...</li>}
+                    {results.map(result => (
+                        <Result
+                            book={book!}
+                            key={result.id}
+                            id={result.id}
+                            lines={result.lines}
+                        />
+                    ))}
+                </ul>
+            </div>
         </div>
+    );
+}
+
+function Result({
+    book,
+    id,
+    lines,
+}: {
+    book: types.HymnalDocument;
+    id: types.HymnId;
+    lines: string[];
+}) {
+    let [loc, setLoc] = useAppState(`book/${book.id}/loc`);
+    let hymn = book.hymns[id];
+    if (hymn === undefined) return null;
+
+    let hymnId = hymn.id;
+    return (
+        <li
+            className={
+                "result" +
+                c("is-current", loc === hymn.id) +
+                c("is-deleted", hymn.isDeleted)
+            }
+        >
+            <div className="result-id">
+                {hymn.isRestricted && <span aria-label="restricted">*</span>}
+                {hymn.id}
+            </div>
+
+            <a
+                href={`/${book.id}?loc=${hymn.id}`}
+                className="result-title"
+                onClick={event => {
+                    event.preventDefault();
+                    setLoc(hymnId);
+                }}
+            >
+                {hymn.title || "(no title)"}
+            </a>
+
+            <ul className="result-lines">
+                {lines.map((line, i) => (
+                    <li key={i}>{line}</li>
+                ))}
+            </ul>
+        </li>
     );
 }

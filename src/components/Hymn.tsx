@@ -1,9 +1,8 @@
 import React from "react";
 
 import * as types from "../types";
-import { useOptions } from "../options";
-
-let c = (className: string, include: boolean) => (include ? " " + className : "");
+import c from "../util/c";
+import { setStateAndNavigate, useAppState } from "../state";
 
 export let Hymn = React.memo(_Hymn);
 
@@ -106,9 +105,27 @@ export function _Hymn({
                 )}
                 {hymn.links.length > 0 && (
                     <p>
-                        {hymn.links
-                            .map(link => `${link.edition}: #${link.id}`)
-                            .join(" / ")}
+                        {hymn.links.map(link => (
+                            <span key={link.edition}>
+                                <a
+                                    href={`/en-${link.edition}?loc=${link.id}`}
+                                    onClick={event => {
+                                        event.preventDefault();
+                                        setStateAndNavigate(
+                                            prevState => ({
+                                                ...prevState,
+                                                "app/currentBook": "en-" + link.edition,
+                                                [`book/en-${link.edition}/loc`]: link.id,
+                                            }),
+                                            false
+                                        );
+                                    }}
+                                >
+                                    {link.edition}#{link.id}
+                                </a>
+                                {", "}
+                            </span>
+                        ))}
                     </p>
                 )}
                 {/* {hymn.days.length > 0 && (
@@ -141,7 +158,8 @@ function Verse({
     verseNumber: number;
     hymn: types.Hymn;
 }) {
-    let [{ repeatChorus, repeatRefrain }] = useOptions();
+    let [repeatRefrain] = useAppState("hymn/repeatRefrain", true);
+    let [repeatChorus] = useAppState("hymn/repeatChorus", false);
 
     return (
         <React.Fragment>
@@ -203,7 +221,7 @@ function Lines({ lines }: { lines: (types.Line | types.RepeatLines)[] }) {
 }
 
 function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {
-    let [{ expandRepeatedLines }] = useOptions();
+    let [expandRepeatedLines] = useAppState("hymn/expandRepeatedLines", false);
 
     if (expandRepeatedLines) {
         return (
@@ -229,12 +247,6 @@ const EM_DASH = "—";
 const ZERO_WIDTH_SPACE = "\u200B";
 
 function Line({ line }: { line: types.Line }) {
-    // let [{ breakLines }] = useOptions();
-
-    // if (breakLines) {
-    //     return <div className="Hymn-line Hymn-line--break">{line.text}</div>;
-    // }
-
     let noSpaceAfter = line.text.slice(-1) === EM_DASH;
     return (
         <React.Fragment>

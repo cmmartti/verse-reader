@@ -10,36 +10,10 @@ let stripPunctuation: PipelineFunction = token =>
     token.update(term => term.replaceAll(/[“”’'".,;:?!\-—–+^0-9]/g, ""));
 Pipeline.registerFunction(stripPunctuation, "stripPunctuation");
 
-export function buildHymnIndex(document: HymnalDocument) {
-    let builder = new Builder();
-    builder.ref("id");
-    builder.field("origin");
-    builder.field("author");
-    builder.field("translator");
-    builder.field("topic");
-    builder.field("tune");
-
-    Object.values(document.hymns).forEach(hymn => {
-        builder.add({
-            id: hymn.id,
-            origin: hymn.origin,
-            author: hymn.authors.map(author => author.name).join(" "),
-            translator: hymn.translators.map(translator => translator.name).join(" "),
-            topic: hymn.topics.join(" "),
-            tune: hymn.tunes.join(" "),
-        });
-    });
-
-    return builder.build();
-}
-
 export function buildIndex(document: HymnalDocument) {
     let builder = new Builder();
     builder.ref("id");
     builder.field("line");
-    builder.field("author");
-    builder.field("translator");
-    builder.field("origin");
 
     // builder.pipeline.add(limitLength);
     builder.pipeline.add(stripPunctuation);
@@ -51,11 +25,6 @@ export function buildIndex(document: HymnalDocument) {
                 builder.add({
                     id: `${hymn.id}/${verseIndex}/${lineIndex}`,
                     line: line,
-                    origin: hymn.origin,
-                    author: hymn.authors.map(author => author.name).join(" "),
-                    translator: hymn.translators
-                        .map(translator => translator.name)
-                        .join(" "),
                 })
             );
         });
@@ -64,11 +33,6 @@ export function buildIndex(document: HymnalDocument) {
                 builder.add({
                     id: `${hymn.id}/r/${lineIndex}`,
                     line: line,
-                    origin: hymn.origin,
-                    author: hymn.authors.map(author => author.name).join(" "),
-                    translator: hymn.translators
-                        .map(translator => translator.name)
-                        .join(" "),
                 })
             );
         if (hymn.chorus)
@@ -76,11 +40,6 @@ export function buildIndex(document: HymnalDocument) {
                 builder.add({
                     id: `${hymn.id}/c/${lineIndex}`,
                     line: line,
-                    origin: hymn.origin,
-                    author: hymn.authors.map(author => author.name).join(" "),
-                    translator: hymn.translators
-                        .map(translator => translator.name)
-                        .join(" "),
                 })
             );
     }, builder);
@@ -97,7 +56,7 @@ export function searchIndex(
 
     let results = index.query(query => {
         query.term(search.trim().split(" "), {
-            fields: ["line", "author", "translator", "origin"],
+            fields: ["line"],
             presence: lunr.Query.presence.REQUIRED,
             wildcard: lunr.Query.wildcard.TRAILING,
         });
@@ -117,24 +76,29 @@ export function searchIndex(
             let lineIndex = parseInt(lineId, 10);
             let hymn = document.hymns[hymnId];
 
-            let lines: string[] = [];
-            if (verseId === "r" && hymn.refrain) {
-                lines = extractLines(hymn.refrain);
-            } else if (verseId === "c" && hymn.chorus) {
-                lines = extractLines(hymn.chorus);
-            } else {
-                let verseIndex = parseInt(verseId, 10);
-                if (hymn.verses[verseIndex]) {
-                    lines = extractLines(hymn.verses[verseIndex]);
-                } else console.error(result);
-            }
+            if (hymn) {
+                let lines: string[] = [];
+                if (verseId === "r" && hymn.refrain) {
+                    lines = extractLines(hymn.refrain);
+                } else if (verseId === "c" && hymn.chorus) {
+                    lines = extractLines(hymn.chorus);
+                } else {
+                    let verseIndex = parseInt(verseId, 10);
+                    if (hymn.verses[verseIndex]) {
+                        let verse = hymn.verses[verseIndex];
+                        if (verse) lines = extractLines(verse);
+                    } else console.error(result);
+                }
 
-            if (!resultsByHymn[hymnId])
-                resultsByHymn[hymnId] = { id: hymnId, lines: [] };
-            resultsByHymn[hymnId] = {
-                id: hymnId,
-                lines: [...resultsByHymn[hymnId].lines, lines[lineIndex]],
-            };
+                if (!resultsByHymn[hymnId]) {
+                    resultsByHymn[hymnId] = { id: hymnId, lines: [] };
+                }
+
+                resultsByHymn[hymnId] = {
+                    id: hymnId,
+                    lines: [...resultsByHymn[hymnId]!.lines, lines[lineIndex]!],
+                };
+            }
         }
     }
 

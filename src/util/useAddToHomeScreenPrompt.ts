@@ -6,15 +6,16 @@ import * as React from "react";
  */
 interface BeforeInstallPromptEvent extends Event {
     /**
-     * Returns an array of DOMString items containing the platforms on which the event was dispatched.
-     * This is provided for user agents that want to present a choice of versions to the user such as,
-     * for example, "web" or "play" which would allow the user to chose between a web version or
-     * an Android version.
+     * Returns an array of DOMString items containing the platforms on which the
+     * event was dispatched. This is provided for user agents that want to present
+     * a choice of versions to the user such as, for example, "web" or "play" which
+     * would allow the user to chose between a web version or an Android version.
      */
     readonly platforms: string[];
 
     /**
-     * Returns a Promise that resolves to a DOMString containing either "accepted" or "dismissed".
+     * Returns a Promise that resolves to a DOMString containing either "accepted"
+     * or "dismissed".
      */
     readonly userChoice: Promise<{
         outcome: "accepted" | "dismissed";

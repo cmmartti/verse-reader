@@ -1,0 +1,376 @@
+:root {
+    font-weight: 400;
+    --font-family: Charter, Georgia, "Times New Roman", Times, serif;
+
+    --vh100: 100vh;
+
+    --background: white;
+    --canvas-background: gray;
+    --color: black;
+    --accent-color: rebeccapurple;
+    --hover-color: #008cff;
+    --focus-color: rebeccapurple;
+    --disabled-color: hsl(0, 0%, 50%);
+    --link-color: #003c8b;
+    --focus-outline: var(--focus-outline-width) solid var(--focus-color);
+    --focus-outline-width: 2px;
+    --focus-outline-offset: -5px;
+
+    --control-height: 2.25em;
+    --control-active-background: #b7e3f0;
+    --control-disabled-background: hsl(0 0% 70%);
+    --control-background: hsl(var(--control-background-hsl));
+    --control-background-hsl: 0 0% 92%;
+    --control-border-width: 1.5px;
+    --control-border-color: black;
+    --control-border: var(--control-border-width) solid var(--control-border-color);
+
+    --toolbar-item-box-shadow: 0 0 7px hsla(0, 0%, 0%, 0.3);
+    --toolbar-item-backdrop-filter: blur(3px);
+    --toolbar-item-background-hsl: var(--control-background-hsl);
+    --toolbar-item-opacity: 1;
+    @supports ((backdrop-filter: blur(3px))) {
+        // --toolbar-item-opacity: 0.7;
+    }
+    --toolbar-item-background: hsl(
+        var(--toolbar-item-background-hsl) / var(--toolbar-item-opacity)
+    );
+
+    --toolbar-scale-factor: 1.2;
+    --toolbar-gap: 0.5rem;
+    --toolbar-height: calc(
+        var(--toolbar-scale-factor) * var(--control-height) + var(--toolbar-gap)
+    );
+
+    --dialog-background-hsl: 0 0% 80%;
+    --dialog-background-opacity: 1;
+    @supports ((backdrop-filter: blur(3px))) {
+        // --dialog-background-opacity: 0.85;
+    }
+    --dialog-background: hsla(
+        var(--dialog-background-hsl) / var(--dialog-background-opacity)
+    );
+    --dialog-backdrop-filter: blur(4px);
+    --dialog-box-shadow: var(--toolbar-item-box-shadow);
+
+    --listbox-background: hsl(0, 0%, 93%);
+
+    --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+
+    &[data-color-scheme="dark"] {
+        font-weight: 300;
+
+        --background: black;
+        --color: white;
+        --accent-color: rebeccapurple;
+        --hover-color: yellow;
+        --link-color: #aed1ff;
+        --disabled-color: #666666;
+        --focus-color: #bd7b00;
+        --focus-outline-width: 1.5px;
+
+        --dialog-background-opacity: 1;
+        --dialog-background-hsl: 216 0% 13%;
+
+        --control-border-width: 1.5px;
+        --control-border-color: gray;
+        --control-background-hsl: 270 5% 23%;
+        --control-active-background: #27647c;
+
+        --toolbar-item-box-shadow: none;
+        --toolbar-item-backdrop-filter: blur(6px);
+
+        --listbox-background: hsl(0, 0%, 10%);
+
+        --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+
+        scrollbar-color: #959595 #171717;
+    }
+}
+
+:root {
+    text-size-adjust: none;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    overscroll-behavior: none;
+    font: -apple-system-body;
+    font-family: var(--font-family);
+    line-height: 1.25;
+    color: var(--color);
+    background-color: var(--background);
+    box-sizing: border-box;
+
+    & *::selection {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    & * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-weight: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: var(--link-color);
+}
+a:focus {
+    outline: var(--focus-outline);
+}
+a:focus:not(:focus-visible) {
+    outline: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+details summary > * {
+    display: inline;
+}
+
+// Visually hidden, still accessible to screen readers
+.visually-hidden {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+%form-control {
+    font: inherit;
+    color: var(--color);
+    accent-color: var(--accent-color);
+    border: var(--control-border);
+    height: var(--control-height);
+    padding: 0.5em 0.4em;
+    line-height: 1;
+    // text-decoration: none;
+    outline-offset: var(--focus-outline-offset);
+    &:active {
+        outline: none;
+    }
+    &:focus:not(:focus-visible) {
+        outline: none;
+    }
+    &:focus {
+        outline: var(--focus-outline);
+    }
+    &:disabled,
+    &[aria-disabled] {
+        border-color: var(--disabled-color);
+        color: var(--disabled-color);
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25em;
+
+    & svg {
+        display: inline-block;
+        height: 1.2em;
+        width: 1.2em;
+        flex-shrink: 0;
+        // outline: 1px solid red;
+    }
+}
+
+select {
+    @extend %form-control;
+    background: var(--control-background);
+
+    // open arrow
+    appearance: none;
+    background-image: var(--select-arrow-url);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 0.625em);
+    background-position-y: center;
+    background-size: 0.75em;
+    padding-right: 1.625em;
+
+    outline-offset: -1px;
+
+    // &:focus:not(:focus-visible) {
+    //     outline: none;
+    // }
+    // &:focus {
+    //     outline: var(--focus-outline);
+    //     outline: none;
+    // }
+}
+
+input[type="text"],
+input[type="search"],
+input[type="number"] {
+    @extend %form-control;
+    max-width: 100%;
+    background: var(--background);
+    min-width: 6em;
+    appearance: textfield;
+}
+
+input[type="number"] {
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-color);
+    height: var(--control-height);
+
+    &:focus-visible {
+        outline: var(--focus-outline);
+        outline-offset: 2px;
+        outline: 1px dashed gray;
+        -moz-outline-radius: 1em;
+    }
+}
+
+.Button {
+    @extend %form-control;
+    background: var(--control-background);
+    min-width: var(--control-height);
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    user-select: none;
+    white-space: nowrap;
+    cursor: default;
+
+    &:active:not(:disabled):not([aria-disabled]) {
+        background: var(--control-active-background);
+    }
+}
+
+.ButtonLink {
+    background: none;
+    border: none;
+    display: inline-block;
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+    color: var(--link-color);
+    padding: 0;
+
+    &:disabled,
+    &[aria-disabled] {
+        text-decoration: line-through;
+    }
+}
+
+.ToggleButton {
+    @extend %form-control;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    background: var(--control-background);
+    user-select: none;
+    justify-content: center;
+    white-space: nowrap;
+    box-shadow: var(--toolbar-item-box-shadow);
+
+    outline-offset: -4px;
+    &:focus-within {
+        outline: 1px dashed var(--focus-color);
+    }
+    &.ToggleButton--checked:focus-within {
+        outline-color: #b9b9b9;
+    }
+
+    & input {
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    &.ToggleButton--checked {
+        text-decoration: underline;
+        background: var(--accent-color);
+        color: white;
+    }
+}
+
+.RadioButtons {
+    box-shadow: inset 0 0 3px 1px hsla(0, 0%, 0%, 0.5);
+    // border: var(--control-border);
+    border: none;
+    padding: 0;
+    margin: 0;
+    // padding: 3px;
+
+    overflow: auto;
+    display: flex;
+
+    & .RadioButtons-button {
+        @extend %form-control;
+        flex: 1 0;
+        border: none;
+        user-select: none;
+
+        display: flex;
+        justify-content: center;
+        gap: 0.25em;
+
+        outline-offset: var(--focus-outline-offset);
+        &:focus-within {
+            outline: 1px dashed var(--focus-color);
+        }
+        &.RadioButtons-button--checked:focus-within {
+        }
+        &.RadioButtons-button--checked {
+            background: var(--control-background);
+            border: var(--control-border);
+            box-shadow: var(--toolbar-item-box-shadow);
+        }
+        &:active {
+            background: var(--control-active-background);
+        }
+
+        & input {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+    }
+}
+
+@import "App.scss";
+@import "Book.scss";
+@import "Dialog.scss";
+@import "FindDialog.scss";
+@import "IndexPanel.scss";
+@import "SearchPanel.scss";
+@import "Hymn.scss";
+@import "ManageDialog.scss";
+@import "AppMenu.scss";
+@import "OptionsDialog.scss";
+@import "Toolbar.scss";
+
+@import "fonts.scss";

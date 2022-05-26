@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { useNavigate } from "@tanstack/react-location";
 
 import * as types from "../types";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
-import { useMatchMedia } from "../util/useMatchMedia";
 import A11yMenu from "../util/A11yMenu";
+import { useAppState } from "../state";
 
 function useA11yMenuInstance<E extends HTMLElement>(buttonId: string) {
     let [instance, setInstance] = React.useState<A11yMenu | null>(null);
@@ -43,88 +42,54 @@ function useA11yMenuInstance<E extends HTMLElement>(buttonId: string) {
 
 export const APP_MENU_BUTTON_ID = "app-menu-button";
 
-export function AppMenu({
-    documentId,
-    documents,
-}: {
-    documentId: types.DocumentId;
-    documents: types.Metadata[];
-}) {
-    let navigate = useNavigate();
-
+export function AppMenu() {
+    let [installedBooks] = useAppState("app/installedBooks");
     let [, menuRef] = useA11yMenuInstance<HTMLDivElement>(APP_MENU_BUTTON_ID);
-
     let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
 
-    let toolbarOnBottom = useMatchMedia("(max-width: 29rem)");
-
-    let installButton = (
-        <button
-            role="menuitem"
-            onClick={promptToInstall}
-            aria-disabled={!isPromptable}
-            accessKey="i"
-        >
-            <u>I</u>nstall to Home Screen
-        </button>
-    );
-    let manageLink = (
-        <button
-            role="menuitem"
-            onClick={() => navigate({ to: "/manage" })}
-            accessKey="m"
-        >
-            <u>M</u>anage Books...
-        </button>
-    );
-    let documentList = (
-        <div role="group">
-            {/* {documents.map(d => (
-                <Link
-                    key={d.id}
-                    to={"/" + d.id}
-                    role="menuitemradio"
-                    aria-checked={d.id === documentId}
-                >
-                    {d.id === documentId && "✓"} {d.title}
-                </Link>
-            ))} */}
-            {documents.map(d => (
-                <button
-                    key={d.id}
-                    role="menuitemradio"
-                    aria-checked={d.id === documentId}
-                    onClick={() => {
-                        if (documentId !== d.id) navigate({ to: "/" + d.id });
-                        console.log("/" + d.id);
-                    }}
-                >
-                    {d.id === documentId && "✓"} {d.title}
-                </button>
-            ))}
-        </div>
-    );
-    let separator = <div role="separator"></div>;
-
-    let menu = (
+    return ReactDOM.createPortal(
         <div id="app-menu" role="menu" ref={menuRef} aria-hidden>
-            {toolbarOnBottom ? (
-                <>
-                    {installButton}
-                    {manageLink}
-                    {separator}
-                    {documentList}
-                </>
-            ) : (
-                <>
-                    {documentList}
-                    {separator}
-                    {manageLink}
-                    {installButton}
-                </>
-            )}
-        </div>
-    );
+            <button
+                role="menuitem"
+                onClick={promptToInstall}
+                aria-disabled={!isPromptable}
+                accessKey="i"
+            >
+                <u>I</u>nstall to Home Screen
+            </button>
+            <button
+                role="menuitem"
+                accessKey="m"
+                data-super-dialog-toggle="manage-dialog"
+            >
+                <u>M</u>anage Books...
+            </button>
 
-    return ReactDOM.createPortal(menu, document.body);
+            {installedBooks.length > 0 && <div role="separator" />}
+            {installedBooks.sort().map(bookId => (
+                <Entry key={bookId} bookId={bookId} />
+            ))}
+        </div>,
+        document.getElementById("root")!
+    );
+}
+
+function Entry({ bookId }: { bookId: types.DocumentId }) {
+    let [currentBookId, setCurrentBookId] = useAppState("app/currentBook");
+    let [title] = useAppState(`book/${bookId}/title`);
+    let isCurrent = bookId === currentBookId;
+    return (
+        <button
+            key={bookId}
+            role="menuitemradio"
+            aria-checked={isCurrent}
+            onClick={() => {
+                if (!isCurrent) {
+                    setCurrentBookId(bookId, false); // push new location to history stack
+                }
+            }}
+        >
+            {isCurrent && "✓"} {title}
+        </button>
+    );
 }

@@ -18,12 +18,22 @@ export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
         title: evaluateString("/hymnal/@title", xmlDocument),
         publisher: evaluateString("/hymnal/@publisher", xmlDocument) || null,
         language: evaluateString("/hymnal/@language", xmlDocument),
+        indices: Object.fromEntries(
+            evaluateNodes("/hymnal/indices/index", xmlDocument)
+                .map(index => ({
+                    type: evaluateString("@type", index),
+                    name: evaluateString("@name", index),
+                    hasDefaultSort: evaluateBoolean("@has-default-sort", index),
+                }))
+                .map(index => [index.type, index])
+        ),
         languages: objectFromEntries(
             evaluateNodes("/hymnal/languages/language", xmlDocument).map(language => ({
                 id: evaluateString("@id", language),
                 name: evaluateString("@name", language),
             }))
         ),
+
         topics: objectFromEntries(
             evaluateNodes("/hymnal/topics/topic", xmlDocument).map(topic => ({
                 id: evaluateString("@id", topic),
@@ -33,7 +43,7 @@ export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
         calendar: objectFromEntries(
             evaluateNodes("/hymnal/calendar/day", xmlDocument).map(day => ({
                 id: evaluateString("@id", day),
-                shortName: evaluateString("@shortName", day),
+                shortName: evaluateString("@shortName", day) || undefined,
                 name: evaluateString("@name", day),
             }))
         ),
@@ -54,14 +64,14 @@ export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
                 isRestricted: evaluateBoolean("@restricted", hymn),
                 topics: evaluateStrings("topic/@ref", hymn),
                 tunes: evaluateStrings("tune/@ref", hymn),
-                origin: evaluateString("origin", hymn),
+                origin: evaluateString("origin", hymn) || null,
                 authors: evaluateNodes("author", hymn).map(author => ({
-                    name: (author as Node).textContent ?? "",
+                    name: (author as Node).textContent ?? null,
                     year: evaluateString("@year", author),
                     note: evaluateString("@note", author),
                 })),
                 translators: evaluateNodes("translator", hymn).map(translator => ({
-                    name: (translator as Node).textContent ?? "",
+                    name: (translator as Node).textContent ?? null,
                     year: evaluateString("@year", translator),
                     note: evaluateString("@note", translator),
                 })),

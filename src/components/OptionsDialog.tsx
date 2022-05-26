@@ -1,9 +1,12 @@
 import React from "react";
+import ReactDOM from "react-dom";
 
-import { useOptions } from "../options";
-import { Dialog } from "./Dialog";
+import c from "../util/c";
+import { useAppState } from "../state";
+import { useMatchMedia } from "../util/useMatchMedia";
+import { SuperDialogElement } from "./SuperDialogElement";
 
-let fonts = [
+const fonts = [
     { name: "Raleway", value: "raleway" },
     { name: "Charter", value: "Charter, 'Times New Roman', Times, Georgia, serif" },
     {
@@ -12,37 +15,77 @@ let fonts = [
     },
 ];
 
-export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => void }) {
-    let [options, setDisplayOption] = useOptions();
+const ROOT = document.documentElement;
 
-    return (
-        <Dialog id="options-dialog" title="Settings" className="OptionsDialog">
-            <div>
-                Tap the header to{" "}
-                <button className="ButtonLink" onClick={toggleFullscreen}>
-                    toggle full screen
-                </button>
-                .
-            </div>
+export function OptionsDialog() {
+    let [repeatRefrain, setRepeatRefrain] = useAppState("hymn/repeatRefrain");
+    let [repeatChorus, setRepeatChorus] = useAppState("hymn/repeatChorus");
+    let [expandRepeatedLines, setExpandRepeatedLines] = useAppState(
+        "hymn/expandRepeatedLines"
+    );
+
+    let [colorScheme, setColorScheme] = useAppState("app/colorScheme");
+    let systemColorScheme = useMatchMedia("(prefers-color-scheme: dark)")
+        ? ("dark" as const)
+        : ("light" as const);
+    React.useLayoutEffect(() => {
+        ROOT.setAttribute(
+            "data-color-scheme",
+            colorScheme === "system" ? systemColorScheme : colorScheme
+        );
+    }, [colorScheme, systemColorScheme]);
+
+    let [fontSize, setFontSize] = useAppState("app/fontSize");
+    React.useLayoutEffect(() => {
+        ROOT.style.setProperty("--ui-scale-factor", fontSize.toString());
+    }, [fontSize]);
+
+    let [fontFamily, setFontFamily] = useAppState("app/fontFamily");
+    React.useLayoutEffect(() => {
+        ROOT.style.setProperty("--font-family", fontFamily);
+    }, [fontFamily]);
+
+    let [mode, setMode] = useAppState("app/mode");
+
+    let dialogRef = React.useRef<SuperDialogElement>(null!);
+
+    React.useEffect(() => {
+        let dialog = dialogRef.current;
+
+        function onToggle(event: Event) {
+            if ((event.target as SuperDialogElement).open) setMode("options", false);
+            else setMode("read");
+        }
+
+        dialog.addEventListener("toggle", onToggle);
+        return () => dialog.removeEventListener("toggle", onToggle);
+    });
+
+    let dialog = (
+        <super-dialog
+            ref={dialogRef}
+            open={mode === "options" ? "" : null}
+            class="Dialog OptionsDialog"
+            id="options-dialog"
+            aria-label="settings"
+        >
             <div className="OptionsDialog-toggles">
                 <ToggleButton
-                    checked={options.repeatRefrain}
-                    onChange={checked => setDisplayOption("repeat_refrain", checked)}
+                    checked={repeatRefrain}
+                    onChange={checked => setRepeatRefrain(checked)}
                 >
                     Repeat Refrain
                 </ToggleButton>
                 <ToggleButton
-                    checked={options.repeatChorus}
-                    onChange={checked => setDisplayOption("repeat_chorus", checked)}
+                    checked={repeatChorus}
+                    onChange={checked => setRepeatChorus(checked)}
                 >
                     Repeat Chorus
                 </ToggleButton>
 
                 <ToggleButton
-                    checked={options.expandRepeatedLines}
-                    onChange={checked =>
-                        setDisplayOption("expand_repeated_lines", checked)
-                    }
+                    checked={expandRepeatedLines}
+                    onChange={checked => setExpandRepeatedLines(checked)}
                 >
                     Expand Repeated Lines
                 </ToggleButton>
@@ -51,13 +94,8 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
             <RadioButtons
                 label="Color Scheme"
                 name="color-scheme"
-                value={options.colorScheme}
-                onChange={value =>
-                    setDisplayOption(
-                        "color_scheme",
-                        value as "dark" | "light" | "system"
-                    )
-                }
+                value={colorScheme}
+                onChange={value => setColorScheme(value as "light" | "dark" | "system")}
                 values={[
                     { name: "Auto", value: "system" },
                     { name: "Light", value: "light" },
@@ -68,8 +106,8 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
             <RadioButtons
                 label="Font Family"
                 name="font-family"
-                value={options.fontFamily}
-                onChange={value => setDisplayOption("font_family", value)}
+                value={fontFamily}
+                onChange={value => setFontFamily(value)}
                 values={fonts.map(({ name, value }) => ({
                     name: <span style={{ fontFamily: value }}>{name}</span>,
                     value,
@@ -81,17 +119,34 @@ export function OptionsDialog({ toggleFullscreen }: { toggleFullscreen: () => vo
                     aria-label="font size"
                     title="Font Size"
                     type="range"
-                    value={options.fontSize * 10}
-                    onChange={e =>
-                        setDisplayOption("font_size", parseInt(e.target.value, 10) / 10)
-                    }
+                    value={fontSize * 10}
+                    onChange={e => setFontSize(parseInt(e.target.value, 10) / 10)}
+                    // onChange={e =>
+                    //     setDisplayOption("font_size", parseInt(e.target.value, 10) / 10)
+                    // }
                     min="5"
                     max="20"
                     step="any"
                 />
             </div>
-        </Dialog>
+
+            <button data-super-dialog-close className="Dialog-closeButton">
+                Close dialog
+            </button>
+        </super-dialog>
     );
+
+    return ReactDOM.createPortal(dialog, document.getElementById("root")!);
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement)
+        document.body.requestFullscreen({ navigationUI: "show" }).catch(err => {
+            console.error(
+                `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
+            );
+        });
+    else if (document.fullscreenElement) document.exitFullscreen();
 }
 
 function ToggleButton({
@@ -154,9 +209,4 @@ function RadioButtons({
             ))}
         </fieldset>
     );
-}
-
-function c(className: string, include: boolean) {
-    if (!include) return "";
-    return " " + className;
 }

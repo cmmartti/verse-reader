@@ -1,74 +1,83 @@
 import React from "react";
-import { ReactLocation, Router, useMatch, Navigate } from "@tanstack/react-location";
+import * as idb from "idb-keyval";
 
-import { ManagePage } from "./ManagePage";
-import { MainPage } from "./MainPage";
-import { OptionsProvider } from "../options";
-import { getDocumentList, setLastOpened } from "../db";
+import "../styles/index.scss";
+
 import * as types from "../types";
+import { useAppState } from "../state";
+import { useLoader } from "../util/useLoader";
+import { Toolbar } from "./Toolbar";
+import { AppMenu } from "./AppMenu";
+import { OptionsDialog } from "./OptionsDialog";
+import { ManageDialog } from "./ManageDialog";
+import { Book } from "./Book";
+import { FindDialog } from "./Find/FindDialog";
 
-import { useViewportHeight } from "../util/useViewportWidth";
-import { useCSSVar } from "../util/useCSSVar";
-import useLoader from "../util/useLoader";
-
-import "./index.scss";
-
-const location = new ReactLocation();
+const root = document.documentElement;
 
 export function App() {
-    let viewportHeight = useViewportHeight();
-    useCSSVar("--vh100", viewportHeight + "px");
+    React.useLayoutEffect(() => {
+        // https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+        let setVar = () => root.style.setProperty("--vh100", window.innerHeight + "px");
+        setVar();
+        window.addEventListener("resize", setVar);
+        return () => window.removeEventListener("resize", setVar);
+    }, []);
 
-    let listLoader = useLoader(getDocumentList, {pendingMs: 100, pendingMinMs: 300 });
+    let [bookId, setCurrentBookId] = useAppState("app/currentBook");
+    let [installedBooks] = useAppState("app/installedBooks");
+
+    // If a book is installed for the first time, open it immediately
+    React.useEffect(() => {
+        if (bookId === null && installedBooks[0]) {
+            setCurrentBookId(installedBooks[0]);
+        }
+    }, [bookId, setCurrentBookId, installedBooks]);
+
+    let bookLoader = useLoader({
+        key: `book/${bookId}`,
+        loader: React.useCallback(async () => {
+            if (bookId === null) return null;
+            let book = await idb.get<types.HymnalDocument>(`book/${bookId}`);
+            if (book === undefined) {
+                // error
+            }
+            return book as types.HymnalDocument;
+        }, [bookId]),
+        pendingMs: 100,
+        pendingMinMs: 300,
+    });
+
+    let book = bookLoader.mode === "success" ? bookLoader.value : null;
 
     return (
-        <OptionsProvider>
-            {listLoader.loading && <p>Loading...</p>}
-            {listLoader.ready && (
-                <Router
-                    location={location}
-                    useErrorBoundary
-                    routes={[
-                        {
-                            path: "/",
-                            element: <NavigateToMRU list={listLoader.value} />,
-                        },
-                        {
-                            path: "manage",
-                            element: <ManagePage list={listLoader.value} />,
-                        },
-                        {
-                            path: ":bookId/",
-                            element: <RedirectWithPosition list={listLoader.value} />,
-                        },
-                        {
-                            path: ":bookId/:position",
-                            element: <MainPage list={listLoader.value} />,
-                            onMatch: match => {
-                                setLastOpened(match.params.bookId, Date.now());
-                            },
-                        },
-                    ]}
-                />
+        <main className="App">
+            <Toolbar book={bookLoader.mode === "success" ? bookLoader.value : null} />
+
+            {bookLoader.mode === "loading" && (
+                <div className="loading">
+                    <p>Loading...</p>
+                </div>
             )}
-        </OptionsProvider>
-    );
-}
+            {bookLoader.mode === "success" &&
+                (bookLoader.value !== null ? (
+                    <Book book={bookLoader.value} />
+                ) : (
+                    <div className="loading">
+                        <p>No books installed.</p>
+                    </div>
+                ))}
 
-function NavigateToMRU({ list }: { list: types.Metadata[] }) {
-    // Find most-recently-used document
-    let mru = list.sort((a, b) => b.lastOpened - a.lastOpened)[0]?.id;
-    if (mru) return <Navigate to={mru} />;
-    return <Navigate to="/manage" />;
-}
+            {bookLoader.mode === "idle" && (
+                <div className="loading">
+                    <p>That book is not installed.</p>
+                </div>
+            )}
 
-function RedirectWithPosition({ list }: { list: types.Metadata[] }) {
-    let { params } = useMatch();
-
-    return (
-        <Navigate
-            to={list.find(doc => doc.id === params.bookId)?.lastPosition ?? "1"}
-            replace
-        />
+            <AppMenu />
+            <ManageDialog />
+            <OptionsDialog />
+            <FindDialog book={book} />
+        </main>
     );
 }

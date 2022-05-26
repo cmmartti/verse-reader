@@ -11,9 +11,9 @@ export function useDebounceCallback<CallbackArgs extends any[]>(
     return React.useCallback(
         (...args) => {
             // Call on leading edge
-            if (timeout.current === void 0 && leading) {
+            if (timeout.current === undefined && leading) {
                 timeout.current = setTimeout(() => {
-                    timeout.current = void 0;
+                    timeout.current = undefined;
                 }, wait);
                 return storedCallback.current(...args);
             }
@@ -23,14 +23,14 @@ export function useDebounceCallback<CallbackArgs extends any[]>(
 
             // Wait until the timeout has completed before invoking the callback
             timeout.current = setTimeout(() => {
-                timeout.current = void 0;
+                timeout.current = undefined;
                 storedCallback.current(...args);
             }, wait);
 
-            // Clean up pending timeouts when the deps change
+            // Clean up pending timeouts when the dependencies change
             return () => {
                 timeout.current && clearTimeout(timeout.current);
-                timeout.current = void 0;
+                timeout.current = undefined;
             };
         },
         [wait, leading, storedCallback]

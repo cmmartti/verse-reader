@@ -1,0 +1,82 @@
+.FindDialog {
+    height: 100vh;
+    display: grid;
+    gap: var(--toolbar-gap);
+    padding: var(--toolbar-gap);
+    @media (min-width: 29rem) {
+        width: 25rem;
+        grid-template:
+            "header"
+            "tabpanel" 1fr;
+    }
+    @media (max-width: 29rem) {
+        grid-template:
+            "tabpanel" 1fr
+            "header";
+    }
+
+    & > .header {
+        // font-size: calc(var(--toolbar-scale-factor) * 1rem);
+        display: flex;
+        gap: var(--toolbar-gap);
+
+        & [role="tablist"] {
+            overflow-x: auto;
+            width: 100%;
+            margin: 0;
+            box-shadow: inset 0 0 3px 1px hsla(0, 0%, 0%, 0.5);
+            // --box-shadow-border: inset 0 0 0 0 var(--control-border-color);
+            // box-shadow: inset 0 0 7px hsla(0, 0%, 0%, 0.3), var(--box-shadow-border);
+            // border: 1px solid var(--control-border-color);
+            // background: var(--control-background);
+            // padding: 3px;
+
+            display: flex;
+
+            & [role="tab"] {
+                flex: 1 0;
+                text-align: center;
+                list-style: none;
+                color: var(--color);
+                font: inherit;
+                background: none;
+                border: var(--control-border);
+
+                &[aria-selected] {
+                    z-index: 2;
+                    background: var(--control-background);
+                    box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.3);
+                    box-shadow: var(--toolbar-item-box-shadow);
+                    font-weight: bold;
+                }
+                &:not([aria-selected]) {
+                    border-color: transparent;
+                }
+                &:active {
+                    background: var(--control-active-background);
+                }
+                &:focus:not(:focus-visible) {
+                    outline: none;
+                }
+                &:focus {
+                    outline-offset: var(--focus-outline-offset);
+                    outline: var(--focus-outline);
+                }
+            }
+        }
+    }
+
+    & > [role="tabpanel"] {
+        grid-area: tabpanel;
+        overflow: auto;
+        flex: 1;
+        &[aria-hidden] {
+            display: none;
+        }
+
+        display: flex;
+        & > * {
+            flex: 1;
+        }
+    }
+}
