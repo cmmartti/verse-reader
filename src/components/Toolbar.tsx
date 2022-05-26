@@ -8,10 +8,12 @@ import { useAppState } from "../state";
 
 export function Toolbar({ book }: { book: types.HymnalDocument | null }) {
     let [bookId] = useAppState("app/currentBook");
-    let [title] = useAppState(`book/${bookId}/title`, book?.id ?? "Menu");
+    let [title] = useAppState(`book/${bookId}/title`, book?.id);
     let [loc, setLoc] = useAppState(`book/${bookId}/loc`);
+
     let [inputValue, setInputValue] = React.useState(loc ?? "");
 
+    // If the page/location changes, reset the input to reflect the change
     React.useEffect(() => {
         setInputValue(loc ?? "");
     }, [loc]);
@@ -20,7 +22,7 @@ export function Toolbar({ book }: { book: types.HymnalDocument | null }) {
         <div className="Toolbar">
             <button className="ToolbarButton" type="button" id={APP_MENU_BUTTON_ID}>
                 <MenuIcon aria-hidden />{" "}
-                {title && <span className="menuTitle">{title}</span>}
+                <span className="menuTitle">{title || "Menu"}</span>
             </button>
             <form
                 className="goto"

@@ -25,6 +25,7 @@ export function App() {
     }, []);
 
     let [bookId, setCurrentBookId] = useAppState("app/currentBook");
+    let [title] = useAppState(`book/${bookId}/title`, bookId ?? "");
     let [installedBooks] = useAppState("app/installedBooks");
 
     // If a book is installed for the first time, open it immediately
@@ -51,33 +52,39 @@ export function App() {
     let book = bookLoader.mode === "success" ? bookLoader.value : null;
 
     return (
-        <main className="App">
-            <Toolbar book={bookLoader.mode === "success" ? bookLoader.value : null} />
+        <>
+            <main className="App">
+                <h1 className="title">{title}</h1>
 
-            {bookLoader.mode === "loading" && (
-                <div className="loading">
-                    <p>Loading...</p>
-                </div>
-            )}
-            {bookLoader.mode === "success" &&
-                (bookLoader.value !== null ? (
-                    <Book book={bookLoader.value} />
-                ) : (
+                <Toolbar
+                    book={bookLoader.mode === "success" ? bookLoader.value : null}
+                />
+
+                {bookLoader.mode === "loading" && (
                     <div className="loading">
-                        <p>No books installed.</p>
+                        <p>Loading...</p>
                     </div>
-                ))}
+                )}
+                {bookLoader.mode === "success" &&
+                    (bookLoader.value !== null ? (
+                        <Book book={bookLoader.value} />
+                    ) : (
+                        <div className="loading">
+                            <p>No books installed.</p>
+                        </div>
+                    ))}
 
-            {bookLoader.mode === "idle" && (
-                <div className="loading">
-                    <p>That book is not installed.</p>
-                </div>
-            )}
+                {bookLoader.mode === "idle" && (
+                    <div className="loading">
+                        <p>That book is not installed.</p>
+                    </div>
+                )}
+            </main>
 
             <AppMenu />
             <ManageDialog />
             <OptionsDialog />
             <FindDialog book={book} />
-        </main>
+        </>
     );
 }

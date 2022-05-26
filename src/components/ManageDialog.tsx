@@ -70,7 +70,7 @@ export function ManageDialog() {
         return () => dialog.removeEventListener("toggle", onToggle);
     });
 
-    let dialog = (
+    return (
         <super-dialog
             ref={dialogRef}
             id="manage-dialog"
@@ -118,8 +118,6 @@ export function ManageDialog() {
             </div>
         </super-dialog>
     );
-
-    return ReactDOM.createPortal(dialog, document.getElementById("root")!);
 }
 
 function handleDelete(bookId: string, title: string) {

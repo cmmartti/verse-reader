@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 
 import * as types from "../../types";
 import A11yTabs from "../../util/A11yTabs";
@@ -58,7 +57,7 @@ export function FindDialog({ book }: { book: types.HymnalDocument | null }) {
         return () => dialog.removeEventListener("toggle", onToggle);
     });
 
-    let dialog = (
+    return (
         <super-dialog
             id="find-dialog"
             ref={dialogRef}
@@ -116,6 +115,4 @@ export function FindDialog({ book }: { book: types.HymnalDocument | null }) {
             </div>
         </super-dialog>
     );
-
-    return ReactDOM.createPortal(dialog, document.getElementById("root")!);
 }

@@ -44,7 +44,7 @@ export class SuperDialogElement extends HTMLElement {
                 this.#previouslyFocused = document.activeElement as HTMLElement;
 
                 // Focus the dialog, or the first autofocus element (if one exists)
-                let autofocus = this.querySelector("[autofocus]") as HTMLElement;
+                let autofocus = this.querySelector("[autofocus]") as HTMLElement | null;
                 if (autofocus && autofocus.focus) autofocus.focus();
                 else this.focus();
             } else {
@@ -52,11 +52,9 @@ export class SuperDialogElement extends HTMLElement {
 
                 // If there was a focused element before the dialog was opened,
                 // restore the focus back to it (if it has a focus method)
-                if (this.#previouslyFocused && this.#previouslyFocused.focus) {
+                if (this.#previouslyFocused && this.#previouslyFocused.focus)
                     this.#previouslyFocused.focus();
-                } else {
-                    document.body.focus();
-                }
+                else document.body.focus();
             }
         }
     }

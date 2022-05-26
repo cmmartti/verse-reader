@@ -41,17 +41,14 @@ export function Book({ book }: { book: types.HymnalDocument }) {
     });
 
     return (
-        <>
-            <h1 className="title">{book.title}</h1>
-            <ul className="Book" ref={scrollerRef} tabIndex={-1}>
-                {locs.map(loc => (
-                    <li key={loc} id={loc} tabIndex={-1}>
-                        {visiblePages.includes(loc) ? (
-                            <Hymn hymn={book.hymns[loc]!} document={book} />
-                        ) : null}
-                    </li>
-                ))}
-            </ul>
-        </>
+        <ul className="Book" ref={scrollerRef} tabIndex={-1}>
+            {locs.map(loc => (
+                <li key={loc} id={loc} tabIndex={-1}>
+                    {visiblePages.includes(loc) ? (
+                        <Hymn hymn={book.hymns[loc]!} document={book} />
+                    ) : null}
+                </li>
+            ))}
+        </ul>
     );
 }

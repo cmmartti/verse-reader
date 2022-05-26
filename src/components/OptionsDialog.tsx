@@ -61,7 +61,7 @@ export function OptionsDialog() {
         return () => dialog.removeEventListener("toggle", onToggle);
     });
 
-    let dialog = (
+    return (
         <super-dialog
             ref={dialogRef}
             open={mode === "options" ? "" : null}
@@ -135,8 +135,6 @@ export function OptionsDialog() {
             </button>
         </super-dialog>
     );
-
-    return ReactDOM.createPortal(dialog, document.getElementById("root")!);
 }
 
 function toggleFullscreen() {

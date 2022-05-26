@@ -47,7 +47,7 @@ export function AppMenu() {
     let [, menuRef] = useA11yMenuInstance<HTMLDivElement>(APP_MENU_BUTTON_ID);
     let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
 
-    return ReactDOM.createPortal(
+    return (
         <div id="app-menu" role="menu" ref={menuRef} aria-hidden>
             <button
                 role="menuitem"
@@ -69,8 +69,7 @@ export function AppMenu() {
             {installedBooks.sort().map(bookId => (
                 <Entry key={bookId} bookId={bookId} />
             ))}
-        </div>,
-        document.getElementById("root")!
+        </div>
     );
 }
 
