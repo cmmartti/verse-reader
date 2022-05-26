@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./components/SuperDialogElement";
-import SuperDialogElement, { ADialogElementAttributes } from "./components/SuperDialogElement";
+import {
+    SuperDialogElement,
+    ADialogElementAttributes,
+} from "./components/SuperDialogElement";
 
 import { App } from "./components/App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
