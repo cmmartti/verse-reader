@@ -1,8 +1,10 @@
-export type ADialogElementAttributes = {
+export type DialogElementAttributes = {
     open?: string | null;
 };
 
-export class SuperDialogElement extends HTMLElement {
+export default class DialogElement extends HTMLElement {
+    static TOGGLE_EVENT = "super-dialog-toggle";
+
     connectedCallback() {
         if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
         if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "-1");
@@ -10,30 +12,25 @@ export class SuperDialogElement extends HTMLElement {
 
         if (!this.open) this.setAttribute("aria-hidden", "true");
 
-        document.addEventListener("click", this.#documentClick);
         document.addEventListener("keydown", this.#documentKeydown);
-        document.addEventListener("mousedown", this.#documentMousedown);
         document.body.addEventListener("focus", this.#maintainFocus, true);
     }
 
     disconectedCallback() {
-        document.removeEventListener("click", this.#documentClick);
         document.removeEventListener("keydown", this.#documentKeydown);
-        document.removeEventListener("mousedown", this.#documentMousedown);
         document.body.removeEventListener("focus", this.#maintainFocus, true);
     }
 
-    static observedAttributes = ["open"];
-
     #previouslyFocused: HTMLElement | null = null;
 
+    static observedAttributes = ["open"];
     attributeChangedCallback(
         name: string,
         oldValue: string | null,
         newValue: string | null
     ) {
         if (name === "open") {
-            if (newValue !== null && newValue !== oldValue) {
+            if (newValue !== null) {
                 // Block duplicate calls to prevent polluting #previouslyFocused
                 // with the wrong element
                 if (newValue === oldValue) return;
@@ -69,6 +66,27 @@ export class SuperDialogElement extends HTMLElement {
     }
 
     /**
+     * Imperatively toggle the dialog open/closed. Will also dispatch a TOGGLE_EVENT.
+     * (Manually opening or closing the dialog by setting the `open` property will
+     * not dispatch events.)
+     * @param open Whether the dialog should open or close
+     */
+    toggle(open: boolean) {
+        this.open = open;
+        this.#dispatchEvent();
+    }
+
+    #dispatchEvent(sourceEvent?: Event) {
+        this.dispatchEvent(
+            new CustomEvent(DialogElement.TOGGLE_EVENT, {
+                bubbles: true,
+                cancelable: false,
+                detail: sourceEvent,
+            })
+        );
+    }
+
+    /**
      * Keydown event handler for the document:
      *
      * Listen for Escape to hide the dialog, and Tab to trap focus within the dialog.
@@ -82,67 +100,12 @@ export class SuperDialogElement extends HTMLElement {
         if (key === "Escape" && this.getAttribute("role") !== "alertdialog") {
             event.preventDefault();
             this.open = false;
-            this.dispatchEvent(new CustomEvent("toggle", { detail: event }));
+            this.#dispatchEvent(event);
         }
 
         // When Tab is used to move focus, make sure the focus never leaves the dialog
         else if (key === "Tab") {
             trapTabKey(this, event);
-        }
-    };
-
-    /**
-     * Click event handler for the document:
-     *
-     * Listen for click events on open/close/toggle buttons.
-     * (Event delegation allows such buttons to be created at any time).
-     */
-    #documentClick = (event: Event) => {
-        if (event.target === null) return;
-        let target = event.target as HTMLElement;
-
-        // Is the target a "close" button?
-        if (this.open) {
-            if (
-                this.contains(target.closest("[data-super-dialog-close]")) ||
-                (this.id && target.closest(`[data-super-dialog-close="${this.id}"]`)) ||
-                (this.id && target.closest(`[data-super-dialog-toggle="${this.id}"]`))
-            ) {
-                this.open = false;
-                this.dispatchEvent(new CustomEvent("toggle", { detail: event }));
-            }
-        }
-
-        // Is the target an "open" button?
-        else if (!this.open) {
-            if (
-                (this.id && target.closest(`[data-super-dialog-open="${this.id}"]`)) ||
-                (this.id && target.closest(`[data-super-dialog-toggle="${this.id}"]`))
-            ) {
-                this.open = true;
-                this.dispatchEvent(new CustomEvent("toggle", { detail: event }));
-            }
-        }
-    };
-
-    /**
-     * Mousedown event handler for the document:
-     *
-     * Hide the dialog if a mousedown occurs outside the dialog (see exceptions
-     * in the source code).
-     */
-    #documentMousedown = (event: Event) => {
-        if (!this.open) return;
-
-        let target = event.target as Element;
-        if (
-            this.getAttribute("role") !== "alertdialog" &&
-            !target.closest(`[data-super-dialog-toggle="${this.id}"]`) &&
-            !target.closest(`[data-super-dialog-hide="${this.id}"]`) &&
-            !this.contains(target)
-        ) {
-            this.open = false;
-            this.dispatchEvent(new CustomEvent("toggle", { detail: event }));
         }
     };
 
@@ -210,5 +173,3 @@ function trapTabKey(node: Element, event: Event) {
         event.preventDefault();
     }
 }
-
-customElements.define("super-dialog", SuperDialogElement);

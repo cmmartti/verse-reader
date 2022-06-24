@@ -37,13 +37,9 @@ export function useFilePicker<E extends HTMLElement = HTMLElement>(
     >
 ) {
     let fileInputRef = React.useRef<HTMLInputElement>(null);
-    let [isOver, _setIsOver] = React.useState(false);
+    let [isOver, setIsOver] = React.useState(false);
 
     let containerRef = React.useRef<E>(null);
-
-    function setIsOver(value: boolean) {
-        _setIsOver(value);
-    }
 
     return {
         innerRef: containerRef,
@@ -63,24 +59,21 @@ export function useFilePicker<E extends HTMLElement = HTMLElement>(
         promptForFiles: () => fileInputRef.current?.click(),
         isOver,
         innerProps: {
-            onDragEnter: e => {
-                e.stopPropagation();
-                e.preventDefault();
+            onDragEnter: event => {
+                event.preventDefault();
                 setIsOver(true);
             },
             onDragLeave: () => {
                 setIsOver(false);
             },
-            onDragOver: e => {
-                e.stopPropagation();
-                e.preventDefault();
+            onDragOver: event => {
+                event.preventDefault();
                 setIsOver(true);
             },
-            onDrop: e => {
-                e.stopPropagation();
-                e.preventDefault();
-                handleFiles(e.dataTransfer.files);
+            onDrop: event => {
+                event.preventDefault();
                 setIsOver(false);
+                handleFiles(event.dataTransfer.files);
             },
             style: {
                 cursorEvents: isOver ? "none" : "",

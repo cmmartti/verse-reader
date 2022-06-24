@@ -27,3 +27,13 @@
         width: fit-content;
     }
 }
+
+.OptionsDialog-closeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    &:not(:focus) {
+        pointer-events: none;
+        opacity: 0;
+    }
+}

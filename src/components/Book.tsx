@@ -6,9 +6,11 @@ import { useCurrentPage } from "../util/useCurrentPage";
 import { useVisibleRange } from "../util/useVisibleRange";
 import { useAppState } from "../state";
 
-export function Book({ book }: { book: types.HymnalDocument }) {
+let getKey = (element: HTMLElement) => element.getAttribute("data-page")!;
+
+export function Book({ book }: { book: types.Hymnal }) {
     let locs = React.useMemo(
-        () => Object.values(book.hymns).map(hymn => hymn.id),
+        () => Object.values(book.pages).map(page => page.id),
         [book]
     );
 
@@ -22,7 +24,7 @@ export function Book({ book }: { book: types.HymnalDocument }) {
         if (locIsInvalid) setCurrentLoc(defaultLoc);
     }, [locIsInvalid, setCurrentLoc, defaultLoc]);
 
-    let scrollerRef = React.useRef<HTMLUListElement>(null!);
+    let scrollerRef = React.useRef<HTMLDivElement>(null!);
 
     // Unload the contents of off-screen pages to improve scrolling performance
     let visiblePages = useVisibleRange({
@@ -30,6 +32,7 @@ export function Book({ book }: { book: types.HymnalDocument }) {
         keys: locs,
         overscan: 3,
         ref: scrollerRef,
+        getKey,
     });
 
     // Track which page(s) are currently on-screen, and which is the "current" one
@@ -38,17 +41,23 @@ export function Book({ book }: { book: types.HymnalDocument }) {
         keys: locs,
         ref: scrollerRef,
         onChange: setCurrentLoc,
+        getKey,
     });
 
     return (
-        <ul className="Book" ref={scrollerRef} tabIndex={-1}>
+        <div className="Book" ref={scrollerRef} tabIndex={-1}>
             {locs.map(loc => (
-                <li key={loc} id={loc} tabIndex={-1}>
+                <div
+                    key={loc}
+                    data-page={loc}
+                    tabIndex={-1}
+                    // aria-hidden={currentLoc !== loc}
+                >
                     {visiblePages.includes(loc) ? (
-                        <Hymn hymn={book.hymns[loc]!} document={book} />
+                        <Hymn hymn={book.pages[loc]!} book={book} />
                     ) : null}
-                </li>
+                </div>
             ))}
-        </ul>
+        </div>
     );
 }

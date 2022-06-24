@@ -19,5 +19,5 @@
         "noUncheckedIndexedAccess": true,
         "useUnknownInCatchVariables": true
     },
-    "include": ["src", "src/focusable-selectors.d.ts"]
+    "include": ["src", "src/customElements.d.ts"]
 }

@@ -2,6 +2,7 @@
     height: 100%;
     max-height: 100%;
     line-height: 1.5;
+    // overflow: hidden;
 
     display: flex;
     flex-direction: column;
@@ -14,21 +15,11 @@
     & .title {
         font-size: 1rem;
         text-align: center;
+        padding: 0.1em;
         background: var(--control-background);
         border-bottom: var(--control-border);
         box-shadow: var(--toolbar-item-box-shadow);
         z-index: 1;
-        @media (min-width: 29rem) {
-            // Visually hidden, still accessible to screen readers
-            position: absolute;
-            overflow: hidden;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            border: 0;
-            clip: rect(0 0 0 0);
-            white-space: nowrap;
-        }
     }
 
     & .loading {
@@ -36,7 +27,103 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        // align-items: flex-end;
         text-align: center;
+    }
+}
+
+.Toolbar {
+    z-index: 2;
+    font-size: calc(var(--toolbar-scale-factor) * 1rem);
+    position: fixed;
+    @media (min-width: 29rem) {
+        top: 0;
+    }
+    @media (max-width: 29rem) {
+        bottom: 0;
+    }
+
+    // Click-through transparent background
+    pointer-events: none;
+    & * {
+        pointer-events: all;
+    }
+
+    overflow-x: auto;
+
+    padding: var(--toolbar-gap);
+    gap: var(--toolbar-gap);
+    @media (min-width: 29rem) {
+        display: flex;
+        justify-content: start;
+        // align-items: start;
+        flex-direction: column;
+    }
+    @media (max-width: 29rem) {
+        width: 100%;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+    }
+
+    & > * {
+        box-shadow: var(--toolbar-item-box-shadow);
+    }
+
+    & > .goto {
+        min-width: var(--control-height);
+        display: flex;
+
+        & > input {
+            font-weight: bold;
+            text-align: center;
+            width: 3em;
+            flex: 1;
+            min-width: 0;
+        }
+    }
+}
+
+.ToolbarButton {
+    font: inherit;
+    line-height: 1;
+    height: var(--control-height);
+    min-width: var(--control-height);
+    color: var(--color);
+    border: var(--control-border);
+    background: var(--toolbar-item-background);
+    backdrop-filter: var(--toolbar-item-backdrop-filter);
+    @media (min-width: 29rem) {
+        padding: 0 0.75em;
+    }
+    user-select: none;
+    &:focus:not(:focus-visible) {
+        outline: none;
+    }
+    outline-offset: var(--focus-outline-offset);
+    &:focus {
+        outline: var(--focus-outline);
+    }
+    &:disabled,
+    &[aria-disabled] {
+        border-color: var(--disabled-color);
+        color: var(--disabled-color);
+    }
+    &:active:not(:disabled):not([aria-disabled]) {
+        background: var(--control-active-background);
+    }
+    &[aria-expanded] {
+        background: var(--control-active-background);
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25em;
+
+    & svg {
+        display: inline-block;
+        height: 1.2em;
+        width: 1.2em;
+        flex-shrink: 0;
     }
 }

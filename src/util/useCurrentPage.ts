@@ -1,15 +1,15 @@
 import React from "react";
 
-let getKeyDefault = (element: Element) => element.id;
+let getKeyDefault = (element: HTMLElement) => element.id;
 
 /**
  * Call the `onChange` callback whenever the scroll position of `ref` changes, passing
  * the key of the current child element to the callback. The key is determined by the
- * supplied `getKey` function, which extracts a unique key from the child Element.
+ * supplied `getKey` function, which extracts a unique key from the child element.
  *
  * Upon first render, the scroll position will be set to the element with a key of `initialPage`.
  */
-export function useCurrentPage<E extends Element>({
+export function useCurrentPage<E extends HTMLElement>({
     initialPage,
     keys,
     getKey = getKeyDefault,
@@ -18,7 +18,7 @@ export function useCurrentPage<E extends Element>({
 }: {
     initialPage: string | null;
     keys: string[];
-    getKey?: (element: Element) => string;
+    getKey?: (element: HTMLElement) => string;
     onChange?: (page: string) => void;
     ref: React.MutableRefObject<E>;
 }) {
@@ -28,7 +28,7 @@ export function useCurrentPage<E extends Element>({
         // Only scroll if the page change was not triggered by the user scrolling
         if (initialPage !== latestPageRef.current) {
             [...ref.current.children]
-                .find(element => getKey(element) === initialPage)
+                .find(element => getKey(element as HTMLElement) === initialPage)
                 ?.scrollIntoView({ inline: "start" });
         }
     }, [initialPage, getKey, ref]);

@@ -1,4 +1,5 @@
 :root {
+    text-size-adjust: none;
     font-weight: 400;
     --font-family: Charter, Georgia, "Times New Roman", Times, serif;
 
@@ -10,7 +11,7 @@
     --accent-color: rebeccapurple;
     --hover-color: #008cff;
     --focus-color: rebeccapurple;
-    --disabled-color: hsl(0, 0%, 50%);
+    --disabled-color: hsl(0, 0%, 0%, 0.3);
     --link-color: #003c8b;
     --focus-outline: var(--focus-outline-width) solid var(--focus-color);
     --focus-outline-width: 2px;
@@ -18,7 +19,7 @@
 
     --control-height: 2.25em;
     --control-active-background: #b7e3f0;
-    --control-disabled-background: hsl(0 0% 70%);
+    --control-disabled-background: hsl(0 0% 80%);
     --control-background: hsl(var(--control-background-hsl));
     --control-background-hsl: 0 0% 92%;
     --control-border-width: 1.5px;
@@ -56,40 +57,46 @@
     --listbox-background: hsl(0, 0%, 93%);
 
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
-
-    &[data-color-scheme="dark"] {
-        font-weight: 300;
-
-        --background: black;
-        --color: white;
-        --accent-color: rebeccapurple;
-        --hover-color: yellow;
-        --link-color: #aed1ff;
-        --disabled-color: #666666;
-        --focus-color: #bd7b00;
-        --focus-outline-width: 1.5px;
-
-        --dialog-background-opacity: 1;
-        --dialog-background-hsl: 216 0% 13%;
-
-        --control-border-width: 1.5px;
-        --control-border-color: gray;
-        --control-background-hsl: 270 5% 23%;
-        --control-active-background: #27647c;
-
-        --toolbar-item-box-shadow: none;
-        --toolbar-item-backdrop-filter: blur(6px);
-
-        --listbox-background: hsl(0, 0%, 10%);
-
-        --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
-
-        scrollbar-color: #959595 #171717;
-    }
 }
 
-:root {
-    text-size-adjust: none;
+:root[data-color-scheme="sepia"] {
+    --background: hsl(21, 15%, 73%);
+    --color: hsl(30, 8%, 9%);
+    --dialog-background: hsl(20, 6%, 63%);
+    --control-background-hsl: 23 24% 85%;
+    --listbox-background: hsl(23, 38%, 92%);
+    scrollbar-color: #959595 hsl(23, 38%, 92%);
+    // scrollbar-color: #959595 transparent;
+}
+
+:root[data-color-scheme="dark"] {
+    font-weight: 300;
+
+    --background: black;
+    --color: white;
+    --accent-color: rebeccapurple;
+    --hover-color: yellow;
+    --link-color: #aed1ff;
+    --disabled-color: #666666;
+    --focus-color: #bd7b00;
+    --focus-outline-width: 1.5px;
+
+    --dialog-background-opacity: 1;
+    --dialog-background-hsl: 216 0% 13%;
+
+    --control-border-width: 1.5px;
+    --control-border-color: gray;
+    --control-background-hsl: 270 5% 23%;
+    --control-active-background: #27647c;
+
+    --toolbar-item-box-shadow: none;
+    --toolbar-item-backdrop-filter: blur(6px);
+
+    --listbox-background: hsl(0, 0%, 10%);
+
+    --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+
+    scrollbar-color: #959595 #171717;
 }
 
 html,
@@ -132,7 +139,7 @@ h6 {
 }
 
 a {
-    text-decoration: none;
+    // text-decoration: none;
     color: var(--link-color);
 }
 a:focus {
@@ -149,16 +156,18 @@ details summary > * {
     display: inline;
 }
 
-// Visually hidden, still accessible to screen readers
+// Visually hidden, still accessible to screen readers.
+// Parent element may need `position: relative` to avoid breaking nested scrolling layouts.
 .visually-hidden {
     position: absolute;
     overflow: hidden;
     width: 1px;
     height: 1px;
-    padding: 0;
-    border: 0;
     clip: rect(0 0 0 0);
-    white-space: nowrap;
+
+    // Keep leading and trailing white-space so that screen reader prompts can be
+    // inserted anywhere without being munged together with adjacent text
+    white-space: pre;
 }
 
 %form-control {
@@ -182,8 +191,9 @@ details summary > * {
     }
     &:disabled,
     &[aria-disabled] {
-        border-color: var(--disabled-color);
+        // border-color: var(--disabled-color);
         color: var(--disabled-color);
+        user-select: none;
     }
 
     display: flex;
@@ -226,6 +236,7 @@ select {
 
 input[type="text"],
 input[type="search"],
+input[type="url"],
 input[type="number"] {
     @extend %form-control;
     max-width: 100%;
@@ -361,16 +372,110 @@ input[type="range"] {
     }
 }
 
+super-menu {
+    &:not([open]) {
+        display: none;
+    }
+    border: var(--control-border);
+    background: var(--control-background);
+    box-shadow: var(--dialog-box-shadow);
+    backdrop-filter: var(--dialog-backdrop-filter);
+    user-select: none;
+    &:focus {
+        outline: none;
+    }
+
+    overflow: auto;
+    z-index: 2;
+    position: fixed;
+    max-height: calc(var(--vh100) - var(--toolbar-height) - 2 * var(--toolbar-gap));
+    max-width: calc(100vw - 2 * var(--toolbar-gap));
+    @media (max-width: 29rem) {
+        inset-inline-start: var(--toolbar-gap);
+        inset-block-end: calc(var(--toolbar-height) + var(--toolbar-gap));
+    }
+    @media (min-width: 29rem) {
+        // inset-inline-start: var(--toolbar-gap);
+        // inset-block-start: calc(var(--toolbar-height) + var(--toolbar-gap));
+        inset-inline-start: calc(4em + var(--toolbar-gap));
+        inset-block-start: var(--toolbar-gap);
+    }
+
+    display: flex;
+    flex-direction: column;
+    padding: 0.15em 0;
+
+    & > [role="group"] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    & > [role="separator"] {
+        border-top: var(--control-border);
+        margin: 0.15em 0;
+    }
+
+    & > [role^="menuitem"] {
+        @media (max-width: 29rem) {
+            font-size: 1.1em;
+        }
+        padding: 0.25em 0.5em;
+        border: none;
+        font: inherit;
+        background: none;
+        color: inherit;
+        text-decoration: none;
+        text-align: start;
+        &:focus {
+            background: var(--control-border-color);
+            color: var(--background);
+            outline: none;
+        }
+        &[disabled],
+        &[aria-disabled] {
+            color: var(--disabled-color);
+            &:focus {
+                background: var(--control-disabled-background);
+            }
+        }
+    }
+}
+
+super-dialog {
+    &:not([open]) {
+        opacity: 0;
+        pointer-events: none;
+        display: none;
+    }
+    // transition: opacity 30ms ease-in-out;
+    z-index: 10;
+    margin: auto;
+    position: relative;
+    font-size: 1rem;
+    background: var(--dialog-background);
+    box-shadow: var(--dialog-box-shadow);
+    backdrop-filter: var(--dialog-backdrop-filter);
+    user-select: contain;
+
+    @media (max-width: 29rem) {
+        position: fixed;
+        inset: auto 0 0 0;
+        max-height: var(--vh100);
+    }
+    @media (min-width: 29rem) {
+        border: var(--control-border);
+
+        position: fixed;
+        max-height: calc(var(--vh100) - 2 * var(--toolbar-gap));
+        inset-inline-start: calc(4em + var(--toolbar-gap));
+        inset-block-start: var(--toolbar-gap);
+    }
+}
+
 @import "App.scss";
 @import "Book.scss";
-@import "Dialog.scss";
 @import "FindDialog.scss";
-@import "IndexPanel.scss";
-@import "SearchPanel.scss";
 @import "Hymn.scss";
 @import "ManageDialog.scss";
-@import "AppMenu.scss";
 @import "OptionsDialog.scss";
-@import "Toolbar.scss";
-
 @import "fonts.scss";

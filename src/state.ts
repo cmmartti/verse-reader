@@ -10,27 +10,29 @@ import * as types from "./types";
 type ID = types.DocumentId;
 type IndexType = types.IndexType;
 
+export type IndexState = {
+    sort: string;
+    scrollPosition: string | null;
+    defaultExpand: boolean;
+    expandedCategories: Record<string, boolean>;
+};
+
 type AppState = {
     "app/currentBook": ID | null;
-    "app/installedBooks": ID[];
-    "app/mode": "find" | "options" | "manage" | "read";
+    "app/mode": "find" | "find1" | "options" | "manage" | "read";
     "app/findTab": "index-tab" | "search-tab" | "lists-tab";
-    "app/colorScheme": "light" | "dark" | "system";
+    "app/colorScheme": "sepia" | "light" | "dark" | "system";
     "app/fontSize": number;
     "app/fontFamily": string;
     "hymn/repeatRefrain": boolean;
     "hymn/repeatChorus": boolean;
     "hymn/expandRepeatedLines": boolean;
-    [key: `book/${ID}/title`]: string;
-    [key: `book/${ID}/year`]: string;
-    [key: `book/${ID}/publisher`]: string | null;
     [key: `book/${ID}/loc`]: types.HymnId | null;
-    [key: `book/${ID}/currentIndex`]: IndexType;
+    [key: `book/${ID}/currentIndex`]: IndexType | null;
     [key: `book/${ID}/search`]: string;
     [key: `book/${ID}/index/${IndexType}/sort`]: string;
     [key: `book/${ID}/index/${IndexType}/scrollPosition`]: string | null;
-    [key: `book/${ID}/index/${IndexType}/defaultExpand`]: boolean;
-    [key: `book/${ID}/index/${IndexType}/expandedEntries`]: Record<string, boolean>;
+    [key: `book/${ID}/index/${IndexType}/expand`]: { all: boolean; except: string[] };
 };
 
 function getLocationFromState(state: AppState): To {
@@ -51,12 +53,6 @@ function getLocationFromState(state: AppState): To {
     let mode = state["app/mode"];
     if (mode === "find" || mode === "manage" || mode === "options")
         params.set("mode", mode);
-
-    if (mode === "find") {
-        if (state["app/findTab"] === "index-tab") params.set("tab", "index");
-        if (state["app/findTab"] === "search-tab") params.set("tab", "search");
-        if (state["app/findTab"] === "lists-tab") params.set("tab", "lists");
-    }
 
     return { pathname, search: params.toString() };
 }
@@ -82,12 +78,6 @@ function getStateFromLocation(location: Location, mergeWith: AppState): AppState
         state["app/mode"] = mode;
     } else state["app/mode"] = "read";
 
-    if (state["app/mode"] === "find") {
-        if (params.get("tab") === "index") state["app/findTab"] = "index-tab";
-        if (params.get("tab") === "search") state["app/findTab"] = "search-tab";
-        if (params.get("tab") === "lists") state["app/findTab"] = "lists-tab";
-    }
-
     return state;
 }
 
@@ -97,7 +87,6 @@ let store = createStore<AppState>(() => {
         "app/mode": "read",
         "app/findTab": "index-tab",
         "app/currentBook": null,
-        "app/installedBooks": [],
         "app/colorScheme": "light",
         "app/fontSize": 1.2,
         "app/fontFamily": "raleway",
@@ -119,7 +108,9 @@ history.listen(event => {
     }
 });
 
-export function setStateAndNavigate(newState: FnUpdate<AppState>, replace = true) {
+type UpdateFn<T> = ((prevValue: T) => T) | T;
+
+export function setStateAndNavigate(newState: UpdateFn<AppState>, replace = true) {
     store.setState(prevState => {
         if (newState instanceof Function) newState = newState(prevState);
 
@@ -135,7 +126,7 @@ export function setStateAndNavigate(newState: FnUpdate<AppState>, replace = true
 
 export function setAppState<K extends keyof AppState>(
     key: K,
-    newValue: FnUpdate<AppState[K]>,
+    newValue: UpdateFn<AppState[K]>,
     replace?: boolean
 ) {
     setStateAndNavigate(prevState => {
@@ -149,25 +140,24 @@ export function setAppState<K extends keyof AppState>(
 
 let useStore = createUseStore(store);
 
+export type SetState<V> = (newValue: UpdateFn<V>, replace?: boolean | undefined) => void;
+
 export function useAppState<K extends keyof AppState>(
     key: K,
     initialState?: AppState[K]
-) {
+): [AppState[K], SetState<AppState[K]>] {
     // Get the current state, if any, from the store.
     // Also, re-render the component whenever this value changes.
     let state = useStore(state => state[key]);
 
     let setState = React.useCallback(
-        (newValue: FnUpdate<AppState[K]>, replace?: boolean) =>
+        (newValue: UpdateFn<AppState[K]>, replace?: boolean) =>
             setAppState(key, newValue, replace),
         [key]
     );
 
     if (state === undefined && initialState !== undefined) {
-        return [initialState, setState] as const;
+        return [initialState, setState];
     }
-
-    return [state, setState] as const;
+    return [state, setState];
 }
-
-type FnUpdate<T> = T | ((prevValue: T) => T);

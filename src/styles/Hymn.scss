@@ -3,16 +3,14 @@
     // transition: font-size 0.15s;
     padding: 1rem 0.75rem 0.75rem 0.75rem;
     min-height: 100%;
+
+    // For the .visually-hidden class
+    position: relative;
+
     display: flex;
     flex-direction: column;
     background: var(--background);
-
-    & > * {
-        margin-top: 0;
-    }
-    & > * + * {
-        margin-top: 0.5em;
-    }
+    gap: 0.5em;
 }
 
 .Hymn-header {

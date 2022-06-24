@@ -1,31 +1,33 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import "./components/SuperDialogElement";
-import {
-    SuperDialogElement,
-    ADialogElementAttributes,
-} from "./components/SuperDialogElement";
+import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "react-query";
 
+import "./styles/index.scss";
 import { App } from "./components/App";
+import { registerElements } from "./elements/registerElements";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "super-dialog": React.DetailedHTMLProps<
-                React.HTMLAttributes<HTMLElement>,
-                SuperDialogElement
-            > &
-                ADialogElementAttributes & { class?: string };
-        }
-    }
-}
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: Infinity,
+            retry: false,
+            refetchOnWindowFocus: false,
+        },
+    },
+});
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container!);
+
+registerElements();
+
+root.render(
     <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-    document.getElementById("root")
+        <QueryClientProvider client={queryClient}>
+            <App />
+        </QueryClientProvider>
+    </React.StrictMode>
 );
 
 serviceWorkerRegistration.register();

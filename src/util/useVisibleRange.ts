@@ -1,6 +1,6 @@
 import React from "react";
 
-let getKeyDefault = (element: Element) => element.id;
+let getKeyDefault = (element: HTMLElement) => element.id;
 
 export function useVisibleRange({
     initialPage,
@@ -11,9 +11,9 @@ export function useVisibleRange({
 }: {
     initialPage: string;
     keys: string[];
-    getKey?: (element: Element) => string;
+    getKey?: (element: HTMLElement) => string;
     overscan?: number;
-    ref: React.MutableRefObject<Element>;
+    ref: React.MutableRefObject<HTMLElement>;
 }) {
     let [range, setRange] = React.useState(() =>
         extractRange({ keys, start: initialPage, end: initialPage, overscan })
@@ -23,11 +23,15 @@ export function useVisibleRange({
         let ratios = new Map<string, number>();
 
         let callback: IntersectionObserverCallback = entries => {
-            entries.forEach(e => ratios.set(getKey(e.target), e.intersectionRatio));
+            entries.forEach(e =>
+                ratios.set(getKey(e.target as HTMLElement), e.intersectionRatio)
+            );
 
             let start: string | undefined;
             let end: string | undefined;
-            let keys = [...ref.current.children].map(getKey);
+            let keys = [...ref.current.children].map(element =>
+                getKey(element as HTMLElement)
+            );
             for (let id of keys) {
                 if ((ratios.get(id) || 0) > 0) {
                     if (!start) start = id;

@@ -1,10 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
 
 import c from "../util/c";
 import { useAppState } from "../state";
 import { useMatchMedia } from "../util/useMatchMedia";
-import { SuperDialogElement } from "./SuperDialogElement";
+import DialogElement from "../elements/DialogElement";
+import { mergeRefs } from "../util/megeRefs";
 
 const fonts = [
     { name: "Raleway", value: "raleway" },
@@ -17,7 +17,12 @@ const fonts = [
 
 const ROOT = document.documentElement;
 
-export function OptionsDialog() {
+export let OptionsDialog = React.forwardRef<
+    DialogElement,
+    { open?: boolean; onToggle?: (open: boolean) => void }
+>((props, outerRef) => {
+    let { open = false, onToggle } = props;
+
     let [repeatRefrain, setRepeatRefrain] = useAppState("hymn/repeatRefrain");
     let [repeatChorus, setRepeatChorus] = useAppState("hymn/repeatChorus");
     let [expandRepeatedLines, setExpandRepeatedLines] = useAppState(
@@ -45,27 +50,20 @@ export function OptionsDialog() {
         ROOT.style.setProperty("--font-family", fontFamily);
     }, [fontFamily]);
 
-    let [mode, setMode] = useAppState("app/mode");
-
-    let dialogRef = React.useRef<SuperDialogElement>(null!);
+    let dialogRef = React.useRef<DialogElement>(null!);
 
     React.useEffect(() => {
         let dialog = dialogRef.current;
-
-        function onToggle(event: Event) {
-            if ((event.target as SuperDialogElement).open) setMode("options", false);
-            else setMode("read");
-        }
-
-        dialog.addEventListener("toggle", onToggle);
-        return () => dialog.removeEventListener("toggle", onToggle);
+        let fn = (event: Event) => onToggle?.((event.target as DialogElement).open);
+        dialog.addEventListener("super-dialog-toggle", fn);
+        return () => dialog.removeEventListener("super-dialog-toggle", fn);
     });
 
     return (
         <super-dialog
-            ref={dialogRef}
-            open={mode === "options" ? "" : null}
-            class="Dialog OptionsDialog"
+            ref={mergeRefs([outerRef, dialogRef])}
+            open={open ? "" : null}
+            class="OptionsDialog"
             id="options-dialog"
             aria-label="settings"
         >
@@ -95,11 +93,14 @@ export function OptionsDialog() {
                 label="Color Scheme"
                 name="color-scheme"
                 value={colorScheme}
-                onChange={value => setColorScheme(value as "light" | "dark" | "system")}
+                onChange={value =>
+                    setColorScheme(value as "sepia" | "light" | "dark" | "system")
+                }
                 values={[
                     { name: "Auto", value: "system" },
-                    { name: "Light", value: "light" },
-                    { name: "Dark", value: "dark" },
+                    { name: "White", value: "light" },
+                    { name: "Sepia", value: "sepia" },
+                    { name: "Black", value: "dark" },
                 ]}
             />
 
@@ -121,31 +122,21 @@ export function OptionsDialog() {
                     type="range"
                     value={fontSize * 10}
                     onChange={e => setFontSize(parseInt(e.target.value, 10) / 10)}
-                    // onChange={e =>
-                    //     setDisplayOption("font_size", parseInt(e.target.value, 10) / 10)
-                    // }
                     min="5"
                     max="20"
                     step="any"
                 />
             </div>
 
-            <button data-super-dialog-close className="Dialog-closeButton">
+            <button
+                onClick={() => dialogRef.current.toggle(false)}
+                className="OptionsDialog-closeButton"
+            >
                 Close dialog
             </button>
         </super-dialog>
     );
-}
-
-function toggleFullscreen() {
-    if (!document.fullscreenElement)
-        document.body.requestFullscreen({ navigationUI: "show" }).catch(err => {
-            console.error(
-                `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
-            );
-        });
-    else if (document.fullscreenElement) document.exitFullscreen();
-}
+});
 
 function ToggleButton({
     checked,
@@ -183,9 +174,7 @@ function RadioButtons({
 }) {
     return (
         <fieldset className="RadioButtons" title={label}>
-            <legend style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}>
-                {label}
-            </legend>
+            <legend className="visually-hidden">{label}</legend>
             {values.map(({ name: buttonText, value: buttonValue }) => (
                 <label
                     key={buttonValue}

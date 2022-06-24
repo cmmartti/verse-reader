@@ -6,12 +6,12 @@ import {
     evaluateXPathToBoolean as evaluateBoolean,
 } from "fontoxpath";
 
-import { HymnalDocument, Line, RepeatLines } from "./types";
+import { Hymnal, Line, RepeatLines } from "./types";
 
 let objectFromEntries = <T extends { id: string }>(entries: T[]) =>
     Object.fromEntries(entries.map(entry => [entry.id, entry]));
 
-export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
+export function parseXML(xmlDocument: XMLDocument): Hymnal {
     return {
         id: evaluateString("/hymnal/@id", xmlDocument),
         year: evaluateString("/hymnal/@year", xmlDocument),
@@ -33,17 +33,29 @@ export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
                 name: evaluateString("@name", language),
             }))
         ),
-
+        contributors: objectFromEntries(
+            evaluateNodes("/hymnal/contributors/contributor", xmlDocument).map(
+                topic => ({
+                    id: evaluateString("@id", topic),
+                    name: evaluateString("@name", topic),
+                })
+            )
+        ),
         topics: objectFromEntries(
             evaluateNodes("/hymnal/topics/topic", xmlDocument).map(topic => ({
                 id: evaluateString("@id", topic),
                 name: evaluateString("@name", topic),
             }))
         ),
-        calendar: objectFromEntries(
-            evaluateNodes("/hymnal/calendar/day", xmlDocument).map(day => ({
+        origins: objectFromEntries(
+            evaluateNodes("/hymnal/origins/origin", xmlDocument).map(day => ({
                 id: evaluateString("@id", day),
-                shortName: evaluateString("@shortName", day) || undefined,
+                name: evaluateString("@name", day),
+            }))
+        ),
+        days: objectFromEntries(
+            evaluateNodes("/hymnal/days/day", xmlDocument).map(day => ({
+                id: evaluateString("@id", day),
                 name: evaluateString("@name", day),
             }))
         ),
@@ -53,53 +65,51 @@ export function parseXML(xmlDocument: XMLDocument): HymnalDocument {
                 name: evaluateString("@name", tune),
             }))
         ),
-        hymns: objectFromEntries(
-            evaluateNodes("/hymnal/hymns/hymn", xmlDocument).map(hymn => ({
-                id: evaluateString("@id", hymn),
-                title: (evaluateNode("title", hymn) as Node)?.textContent ?? "",
+        pages: objectFromEntries(
+            evaluateNodes("/hymnal/pages/page", xmlDocument).map(page => ({
+                id: evaluateString("@id", page),
+                title: (evaluateNode("title", page) as Node)?.textContent ?? "",
                 language:
-                    evaluateString("@language", hymn) ||
+                    evaluateString("@language", page) ||
                     evaluateString("/hymnal/@language", xmlDocument),
-                isDeleted: evaluateBoolean("@deleted", hymn),
-                isRestricted: evaluateBoolean("@restricted", hymn),
-                topics: evaluateStrings("topic/@ref", hymn),
-                tunes: evaluateStrings("tune/@ref", hymn),
-                origin: evaluateString("origin", hymn) || null,
-                authors: evaluateNodes("author", hymn).map(author => ({
-                    name: (author as Node).textContent ?? null,
-                    year: evaluateString("@year", author),
-                    note: evaluateString("@note", author),
+                isDeleted: evaluateBoolean("@deleted", page),
+                isRestricted: evaluateBoolean("@restricted", page),
+                topics: evaluateStrings("topic/@ref", page),
+                tunes: evaluateStrings("tune/@ref", page),
+                origin: evaluateString("origin/@ref", page),
+                contributors: evaluateNodes("contributor", page).map(contributor => ({
+                    type: evaluateString("@type", contributor) as
+                        | "translator"
+                        | "author",
+                    id: evaluateString("@ref", contributor) ?? null,
+                    year: evaluateString("@year", contributor),
+                    note: evaluateString("@note", contributor),
                 })),
-                translators: evaluateNodes("translator", hymn).map(translator => ({
-                    name: (translator as Node).textContent ?? null,
-                    year: evaluateString("@year", translator),
-                    note: evaluateString("@note", translator),
-                })),
-                days: evaluateStrings("day/@ref", hymn),
-                links: evaluateNodes("link", hymn).map(link => ({
+                days: evaluateStrings("day/@ref", page),
+                links: evaluateNodes("link", page).map(link => ({
                     book: evaluateString("@book", link),
                     edition: evaluateString("@edition", link),
                     id: evaluateString("@id", link),
                 })),
-                verses: evaluateNodes("verses/verse", hymn).map(verse => ({
+                verses: evaluateNodes("verses/verse", page).map(verse => ({
                     isDeleted: evaluateBoolean("@deleted", verse),
                     lines: getLines("line|repeat", verse as Node),
                 })),
-                refrain: evaluateNode("verses/refrain", hymn)
+                refrain: evaluateNode("verses/refrain", page)
                     ? {
-                          isDeleted: evaluateBoolean("verses/refrain/@deleted", hymn),
+                          isDeleted: evaluateBoolean("verses/refrain/@deleted", page),
                           lines: getLines(
                               "verses/refrain/line|verses/refrain/repeat",
-                              hymn as Node
+                              page as Node
                           ),
                       }
                     : null,
-                chorus: evaluateNode("verses/chorus", hymn)
+                chorus: evaluateNode("verses/chorus", page)
                     ? {
-                          isDeleted: evaluateBoolean("verses/chorus/@deleted", hymn),
+                          isDeleted: evaluateBoolean("verses/chorus/@deleted", page),
                           lines: getLines(
                               "verses/chorus/line|verses/chorus/repeat",
-                              hymn as Node
+                              page as Node
                           ),
                       }
                     : null,

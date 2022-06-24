@@ -1,22 +1,26 @@
 export type DocumentId = string;
 export type LanguageId = string;
 export type HymnId = string;
+export type ContributorId = string;
 export type TopicId = string;
 export type TuneId = string;
+export type OriginId = string;
 export type DayId = string;
 export type IndexType = string;
 
-export type HymnalDocument = {
+export type Hymnal = {
     id: DocumentId;
     year: string;
     title: string;
     publisher: string | null;
     language: LanguageId;
     languages: Record<LanguageId, Language>;
+    contributors: Record<ContributorId, Contributor> | null;
     topics: Record<TopicId, Topic> | null;
-    calendar: Record<DayId, Day> | null;
+    origins: Record<OriginId, Origin> | null;
+    days: Record<DayId, Day> | null;
     tunes: Record<TuneId, Tune> | null;
-    hymns: Record<HymnId, Hymn>;
+    pages: Record<HymnId, Hymn>;
     indices: Record<IndexType, Index>;
 };
 export type Index = {
@@ -32,9 +36,16 @@ export type Topic = {
     id: TopicId;
     name: string;
 };
+export type Contributor = {
+    id: TopicId;
+    name: string;
+};
+export type Origin = {
+    id: DayId;
+    name: string;
+};
 export type Day = {
     id: DayId;
-    shortName?: string;
     name: string;
 };
 export type Tune = {
@@ -50,13 +61,9 @@ export type Hymn = {
     topics: TopicId[];
     tunes: TuneId[];
     origin: string | null;
-    authors: {
-        name: string | null;
-        year: string;
-        note: string;
-    }[];
-    translators: {
-        name: string | null;
+    contributors: {
+        type: "author" | "translator";
+        id: string | null;
         year: string;
         note: string;
     }[];
@@ -82,4 +89,13 @@ export type RepeatLines = {
     kind: "repeat";
     times: number;
     lines: Line[];
+};
+
+export type Summary = {
+    id: DocumentId;
+    title: Hymnal["title"];
+    publisher: Hymnal["publisher"];
+    year: Hymnal["year"];
+    language: Hymnal["language"];
+    pageCount: number;
 };

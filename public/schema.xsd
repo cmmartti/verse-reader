@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:hr="hymnalreader.net"
+    targetNamespace="hymnalreader.net"
+    elementFormDefault="qualified"
+>
+    <element name="hymnal">
+        <complexType>
+            <sequence>
+                <element name="languages">
+                    <complexType>
+                        <sequence>
+                            <element maxOccurs="unbounded" name="language">
+                                <complexType>
+                                    <attribute name="id" type="NCName" />
+                                    <attribute name="name" type="string" use="required" />
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="indices" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="index" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="type" type="string" use="required" />
+                                    <attribute name="name" type="string" use="required" />
+                                    <attribute name="has-default-sort" type="boolean" />
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="contributors" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="contributor" minOccurs="0" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="id" type="NMTOKEN" />
+                                    <attribute name="name" type="string" use="required"/>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="topics" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="topic" minOccurs="0" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="id" type="NMTOKEN" />
+                                    <attribute name="name" type="string" use="required"/>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="origins" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="origin" minOccurs="0" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="id" type="NMTOKEN" />
+                                    <attribute name="name" type="string" use="required"/>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="tunes" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="tune" minOccurs="0" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="id" type="NMTOKEN" />
+                                    <attribute name="name" type="string" use="required"/>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="days" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element name="day" minOccurs="0" maxOccurs="unbounded">
+                                <complexType>
+                                    <attribute name="id" type="NMTOKEN" />
+                                    <attribute name="name" type="string" use="required"/>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="pages">
+                    <complexType>
+                        <sequence>
+                            <element name="page" type="hr:page" maxOccurs="unbounded"/>
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+            <attribute name="id" use="required" type="NCName" />
+            <attribute name="language" use="required" type="NCName" />
+            <attribute name="title" use="required" />
+            <attribute name="year" use="required" type="integer" />
+            <attribute name="publisher" />
+        </complexType>
+    </element>
+    <complexType name="page">
+        <sequence>
+            <element name="contributor" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="type">
+                        <simpleType>
+                            <restriction base="NCName">
+                                <enumeration value="author" />
+                                <enumeration value="translator" />
+                            </restriction>
+                        </simpleType>
+                    </attribute>
+                    <attribute name="ref" type="NCName" />
+                    <attribute name="year" type="string" use="optional"/>
+                    <attribute name="note" type="string" use="optional"/>
+                </complexType>
+            </element>
+            <element name="topic" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="ref" type="NCName" />
+                </complexType>
+            </element>
+            <element name="origin" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="ref" type="NCName" />
+                </complexType>
+            </element>
+            <element name="tune" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="ref" type="NCName" />
+                </complexType>
+            </element>
+            <element name="day" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="ref" type="NCName" />
+                    <attribute name="alternate" type="boolean"/>
+                </complexType>
+            </element>
+            <element name="link" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="book" type="string" use="required" />
+                    <attribute name="edition" type="string" use="required" />
+                    <attribute name="id" type="string" use="required" />
+                </complexType>
+            </element>
+            <element name="title" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="verses" minOccurs="0">
+                <complexType>
+                    <sequence maxOccurs="unbounded">
+                        <element name="verse" type="hr:verse-contents" minOccurs="1" maxOccurs="1"/>
+                        <choice>
+                            <element name="refrain" type="hr:verse-contents" minOccurs="0" maxOccurs="1"/>
+                            <element name="chorus" type="hr:verse-contents" minOccurs="0" maxOccurs="1"/>
+                        </choice>
+                        <element name="verse" type="hr:verse-contents" minOccurs="0" maxOccurs="unbounded"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </sequence>
+        <attribute name="language" type="NCName" default="en"/>
+        <attribute name="id" use="required" type="positiveInteger"/>
+        <attribute name="restricted" use="optional" type="boolean"/>
+        <attribute name="deleted" use="optional" type="boolean"/>
+    </complexType>
+    <complexType name="verse-contents">
+        <sequence>
+            <choice minOccurs="0" maxOccurs="unbounded">
+                <element name="line" type="string" minOccurs="0" maxOccurs="unbounded" />
+                <element name="repeat" minOccurs="0" maxOccurs="1">
+                    <complexType>
+                        <sequence>
+                            <element name="line" type="string" maxOccurs="unbounded" />
+                        </sequence>
+                        <attribute name="times" default="2" type="positiveInteger" />
+                    </complexType>
+                </element>
+            </choice>
+        </sequence>
+        <attribute name="deleted" use="optional" type="boolean"/>
+    </complexType>
+</schema>
