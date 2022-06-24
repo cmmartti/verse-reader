@@ -48,7 +48,10 @@ export function useCurrentPage<E extends HTMLElement>({
 
         let callback: IntersectionObserverCallback = entries => {
             entries.forEach(e =>
-                ratios.set(getKey_ref.current(e.target), e.intersectionRatio)
+                ratios.set(
+                    getKey_ref.current(e.target as HTMLElement),
+                    e.intersectionRatio
+                )
             );
 
             let newPage = keys.reduce(compareRatios);

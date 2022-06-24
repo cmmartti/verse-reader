@@ -54,8 +54,8 @@
     gap: var(--toolbar-gap);
     @media (min-width: 29rem) {
         display: flex;
-        justify-content: start;
-        // align-items: start;
+        justify-content: flex-start;
+        // align-items: flex-start;
         flex-direction: column;
     }
     @media (max-width: 29rem) {
