@@ -8,8 +8,9 @@ export default class DialogElement extends HTMLElement {
     connectedCallback() {
         if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
         if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "-1");
-        if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
 
+        // if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
+        // else this.setAttribute("aria-modal", "false");
         if (!this.open) this.setAttribute("aria-hidden", "true");
 
         document.addEventListener("keydown", this.#documentKeydown);
@@ -37,13 +38,18 @@ export default class DialogElement extends HTMLElement {
 
                 this.removeAttribute("aria-hidden");
 
-                // Keep a reference to the current focused element so we can restore it later
+                // Keep a reference to the current focused element to restore later
                 this.#previouslyFocused = document.activeElement as HTMLElement;
 
-                // Focus the dialog, or the first autofocus element (if one exists)
-                let autofocus = this.querySelector("[autofocus]") as HTMLElement | null;
-                if (autofocus && autofocus.focus) autofocus.focus();
-                else this.focus();
+                // Focus the dialog, or the first autofocus element (if one exists),
+                // on the next tick (to prevent keyup events, etc. from stealing focus)
+                setTimeout(() => {
+                    let autofocus = this.querySelector(
+                        "[autofocus]"
+                    ) as HTMLElement | null;
+                    if (autofocus && autofocus.focus) autofocus.focus();
+                    else this.focus();
+                }, 0);
             } else {
                 this.setAttribute("aria-hidden", "true");
 
@@ -59,7 +65,6 @@ export default class DialogElement extends HTMLElement {
     get open() {
         return this.hasAttribute("open");
     }
-
     set open(open: boolean) {
         if (open) this.setAttribute("open", "");
         else this.removeAttribute("open");
@@ -93,6 +98,11 @@ export default class DialogElement extends HTMLElement {
      */
     #documentKeydown = (event: Event) => {
         if (!this.open) return;
+        if (
+            this.getAttribute("aria-modal") !== "true" &&
+            !this.contains(document.activeElement)
+        )
+            return;
 
         let key = (event as KeyboardEvent).key;
 
@@ -112,45 +122,24 @@ export default class DialogElement extends HTMLElement {
     /**
      * Focus event handler for the body:
      *
-     * If the focus leaves the open dialog for whatever reason, force it back.
+     * If the focus leaves an open, modal dialog for whatever reason, force it back.
      */
     #maintainFocus = (event: Event) => {
         if (this.open) {
             let target = event.target as HTMLElement | null;
-            if (target && !target.closest('[aria-modal="true"]')) {
-                this.focus();
+            if (target && !target.closest('[role="dialog"]')) {
+                console.log("focus", target);
+                if (this.getAttribute("aria-modal") === "true") this.focus();
             }
         }
     };
 }
 
-const focusableSelectors = [
-    'a[href]:not([tabindex^="-"])',
-    'area[href]:not([tabindex^="-"])',
-    'input:not([type="hidden"]):not([type="radio"]):not([disabled]):not([tabindex^="-"])',
-    'input[type="radio"]:not([disabled]):not([tabindex^="-"])',
-    'select:not([disabled]):not([tabindex^="-"])',
-    'textarea:not([disabled]):not([tabindex^="-"])',
-    'button:not([disabled]):not([tabindex^="-"])',
-    'iframe:not([tabindex^="-"])',
-    'audio[controls]:not([tabindex^="-"])',
-    'video[controls]:not([tabindex^="-"])',
-    '[contenteditable]:not([tabindex^="-"])',
-    '[tabindex]:not([tabindex^="-"])',
-];
-
 /**
  * Trap the focus inside the given element.
  */
 function trapTabKey(node: Element, event: Event) {
-    let focusableChildren = [...node.querySelectorAll(focusableSelectors.join(","))]
-        .map(child => child as HTMLElement)
-        .filter(
-            child =>
-                child.offsetWidth > 0 ||
-                child.offsetHeight > 0 ||
-                child.getClientRects().length > 0
-        ) as HTMLElement[];
+    let focusableChildren = getFocusableChildren(node);
 
     let focusedItemIndex = document.activeElement
         ? focusableChildren.indexOf(document.activeElement as HTMLElement)
@@ -172,4 +161,30 @@ function trapTabKey(node: Element, event: Event) {
         focusableChildren[0]?.focus();
         event.preventDefault();
     }
+}
+
+const focusableSelectors = [
+    'a[href]:not([tabindex^="-"])',
+    'area[href]:not([tabindex^="-"])',
+    'input:not([type="hidden"]):not([type="radio"]):not([disabled]):not([tabindex^="-"])',
+    'input[type="radio"]:not([disabled]):not([tabindex^="-"])',
+    'select:not([disabled]):not([tabindex^="-"])',
+    'textarea:not([disabled]):not([tabindex^="-"])',
+    'button:not([disabled]):not([tabindex^="-"])',
+    'iframe:not([tabindex^="-"])',
+    'audio[controls]:not([tabindex^="-"])',
+    'video[controls]:not([tabindex^="-"])',
+    '[contenteditable]:not([tabindex^="-"])',
+    '[tabindex]:not([tabindex^="-"])',
+];
+
+function getFocusableChildren(node: Element) {
+    return [...node.querySelectorAll(focusableSelectors.join(","))]
+        .map(child => child as HTMLElement)
+        .filter(
+            child =>
+                child.offsetWidth > 0 ||
+                child.offsetHeight > 0 ||
+                child.getClientRects().length > 0
+        ) as HTMLElement[];
 }

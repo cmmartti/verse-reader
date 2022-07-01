@@ -5,18 +5,10 @@ import * as types from "../types";
 import * as bookService from "../bookService";
 import { useAppState } from "../state";
 import { useFilePicker } from "../util/useFilePicker";
-import DialogElement from "../elements/DialogElement";
 
-import { ReactComponent as BackIcon } from "../icons/arrow_back.svg";
 import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
-import { mergeRefs } from "../util/megeRefs";
 
-export let ManageDialog = React.forwardRef<
-    DialogElement,
-    { open?: boolean; onToggle?: (open: boolean) => void }
->((props, outerRef) => {
-    let { open = false, onToggle } = props;
-
+export let ManageDialog = () => {
     let queryClient = useQueryClient();
 
     let uploadMutation = useMutation(bookService.uploadBook, {
@@ -36,38 +28,10 @@ export let ManageDialog = React.forwardRef<
         { accept: "text/xml", multiple: true }
     );
 
-    let dialogRef = React.useRef<DialogElement>(null!);
-
-    React.useEffect(() => {
-        let dialog = dialogRef.current;
-        let fn = (event: Event) => onToggle?.((event.target as DialogElement).open);
-        dialog.addEventListener("super-dialog-toggle", fn);
-        return () => dialog.removeEventListener("super-dialog-toggle", fn);
-    });
-
     let [inputValue, setInputValue] = React.useState("");
 
     return (
-        <super-dialog
-            ref={mergeRefs([outerRef, dialogRef])}
-            id="manage-dialog"
-            aria-labelledby="manage-dialog-title"
-            open={open ? "" : null}
-            class="ManageDialog"
-        >
-            <div className="header">
-                <button
-                    className="Button backButton"
-                    onClick={() => dialogRef.current.toggle(false)}
-                    aria-label="close dialog"
-                >
-                    <BackIcon />
-                </button>
-                <h1 id="manage-dialog-title" className="title">
-                    Manage Books
-                </h1>
-            </div>
-
+        <div className="ManageDialog">
             <div className="controls">
                 <button className="Button" onClick={filepicker.promptForFiles}>
                     Add book(s)...
@@ -125,9 +89,9 @@ export let ManageDialog = React.forwardRef<
                     </p>
                 </div>
             </div>
-        </super-dialog>
+        </div>
     );
-});
+};
 
 function BookList({ isLoading }: { isLoading: boolean }) {
     let [currentBook, setCurrentBook] = useAppState("app/currentBook");

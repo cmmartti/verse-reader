@@ -1,49 +1,103 @@
-.FindDialog {
-    display: flex;
+.FindPanel {
+    display: grid;
+    height: 100%;
+    grid-template:
+        "index"
+        "search"
+        "results" 1fr;
     @media (max-width: 29rem) {
-        flex-direction: column-reverse;
+        grid-template:
+            "index"
+            "results" 1fr
+            "search";
+        // flex-direction: column-reverse;
+    }
+    padding-inline: 0.325rem;
+    padding-block: 0 0.325rem;
+
+    gap: 0.325rem;
+}
+
+.FindPanel-toolbar {
+    grid-area: index;
+    display: flex;
+    gap: 0.325rem;
+    // justify-content: space-between;
+    align-items: stretch;
+    background: var(--toolbar-background);
+    // border: 1px solid red;
+    font-size: var(--sidebar-font-size);
+    // padding: 0.25rem;
+    // height: var(--toolbar-height);
+    @media (max-width: 29rem) {
+        // border-bottom: var(--control-border);
+    }
+
+    & select {
+        flex: 1;
+        font-weight: bold;
+    }
+}
+
+.FindPanel-search {
+    grid-area: search;
+    font-size: var(--sidebar-font-size);
+    background: var(--dialog-background);
+    // padding: 0.25rem;
+    gap: 0.325rem;
+    @media (max-width: 29rem) {
+        // border-top: var(--control-border);
     }
     @media (min-width: 29rem) {
-        flex-direction: column;
-        width: 24rem;
+        // border-bottom: var(--control-border);
     }
-    height: 100vh;
-    padding: var(--toolbar-gap);
-    gap: var(--toolbar-gap);
+    display: flex;
 
-    & > .row {
-        display: flex;
-        align-items: center;
-        gap: var(--toolbar-gap);
-
-        & > .expand {
-            flex: 1;
-        }
-    }
-
-    & > .content {
+    & input {
         flex: 1;
-        overflow: auto;
+        width: 0;
+    }
+}
+
+.FindPanel-results {
+    grid-area: results;
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--listbox-background);
+    border: var(--control-border);
+    &:focus {
+        outline: none;
+    }
+
+    &::after {
+        flex: 1;
+        content: "~";
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        padding: 0.25rem;
+        border-top: var(--control-border);
     }
 }
 
 .IndexAccordion {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    gap: var(--toolbar-gap);
-    @media (max-width: 29rem) {
-        flex-direction: column-reverse;
-    }
 
     & > .status {
-        padding-inline: 0.25em;
+        padding-inline: 0.25rem;
+        padding-block: 0.5rem;
+        text-align: center;
+        border-bottom: var(--control-border);
+        // background: var(--background);
     }
 
     & > .row {
         display: flex;
         align-items: center;
-        gap: var(--toolbar-gap);
+        gap: 0.5rem;
 
         & > .expand {
             flex: 1;
@@ -52,46 +106,35 @@
 
     & > .sections {
         flex: 1;
-        border: var(--control-border);
-        background: var(--background);
-
-        overflow: auto;
-        // scrollbar-gutter: stable;
-        // scrollbar-gutter: stable both-edges;
         display: flex;
         flex-direction: column;
 
-        & > .clear {
-            flex: 1;
-            padding: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
         & > details:not(:last-child) {
             border-bottom: var(--control-border);
+            border-bottom: 1px solid gray;
         }
 
         & > details > summary:focus {
             outline: none;
         }
-        & > details > summary:focus-visible > .label {
+        & > details > summary:focus-visible {
             outline: var(--focus-outline);
             outline-offset: -0.25rem;
         }
         & > details > summary {
             display: block;
             user-select: none;
+            background: var(--background);
 
             display: flex;
             align-items: center;
             position: relative;
         }
         & > details > summary > .label {
-            padding-block: 0.25rem;
+            flex: 1;
+            padding-block: 0.325rem;
             padding-inline: 0 0.5rem;
-            font-size: 1.15em;
+            // font-size: 1.05em;
             font-weight: inherit;
 
             display: flex;
@@ -99,7 +142,7 @@
         }
 
         & > details > summary > .meta {
-            flex: 1;
+            // flex: 1;
             padding-inline-end: 0.5rem;
 
             display: flex;
@@ -116,12 +159,12 @@
             overflow: hidden;
             color: transparent;
         }
-        & > details > summary > .label > .openIndicator {
+        & > details > summary > .openIndicator {
             flex-shrink: 0;
             transition: transform ease-in-out 50ms;
             border-radius: 100%;
         }
-        & > details[open] > summary > .label > .openIndicator {
+        & > details[open] > summary > .openIndicator {
             transform: rotate(90deg);
         }
     }
@@ -130,20 +173,19 @@
 .AllList {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    // gap: var(--toolbar-gap);
-    @media (max-width: 29rem) {
-        flex-direction: column-reverse;
-    }
 
     & > .status {
-        padding: 0.25em;
+        // background: var(--background);
+        padding-inline: 0.25rem;
+        padding-block: 0.5rem;
+        text-align: center;
+        border-bottom: var(--control-border);
     }
 
     & > .row {
         display: flex;
         align-items: center;
-        gap: var(--toolbar-gap);
+        gap: 0.5rem;
 
         & > .expand {
             flex: 1;
@@ -152,10 +194,6 @@
 
     & > .content {
         flex: 1;
-        border: var(--control-border);
-        background: var(--listbox-background);
-        overflow: auto;
-        scrollbar-gutter: stable;
     }
 }
 
@@ -165,8 +203,9 @@ ul.ReferenceList {
     padding: 0;
     background: var(--listbox-background);
 
+    line-height: 1.2;
     display: grid;
-    grid-template-columns: minmax(1.5rem, auto) 1fr;
+    grid-template-columns: minmax(2.6rem, auto) 1fr;
 
     // Reference
     & > li {
@@ -183,22 +222,21 @@ ul.ReferenceList {
         grid-template-areas:
             "id title"
             "id lines";
-        grid-template-columns: minmax(2.5rem, auto) 1fr; // fallback
+        grid-template-columns: minmax(2.65rem, auto) 1fr; // fallback
         grid-template-columns: subgrid;
     }
 
     & > li > .reference-id {
+        grid-area: id;
         text-decoration: none;
         font-weight: bold;
         text-align: end;
-        padding-block: 0.25rem;
-        padding-inline: 0.35rem;
+        padding: 0.2rem;
+        border-inline-end: 1px solid var(--control-border-color);
     }
     & > li > .reference-title {
         flex: 1;
-        border-inline-start: 1px solid var(--control-border-color);
-        padding-block: 0.25rem;
-        padding-inline: 0.35rem 0.25rem;
+        padding: 0.2rem;
         color: var(--link-color);
         text-decoration: none;
         font: inherit;
@@ -224,12 +262,12 @@ ul.ReferenceList {
         margin: 0;
         padding: 0;
         list-style: none;
-        border-left: 1px solid var(--control-border-color);
+        // border-left: 1px solid var(--control-border-color);
 
         & > li {
-            font-size: 0.9em;
+            font-size: 0.8em;
             padding-inline: 0.35rem;
-            padding-block: 0.15rem;
+            padding-block: 0.1rem;
             border-top: 1px dashed var(--control-border-color);
         }
     }

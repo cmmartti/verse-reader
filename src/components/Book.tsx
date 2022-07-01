@@ -44,6 +44,50 @@ export function Book({ book }: { book: types.Hymnal }) {
         getKey,
     });
 
+    React.useEffect(() => {
+        let startTouch: Touch;
+
+        function touchStartHandler(event: TouchEvent) {
+            if (event.touches.length === 1) {
+                startTouch = event.touches[0]!;
+                scroller.addEventListener("touchend", touchEndHandler);
+            }
+        }
+
+        function touchEndHandler(event: TouchEvent) {
+            if (event.changedTouches.length === 1) {
+                let endTouch = event.changedTouches[0]!;
+
+                if (
+                    startTouch.clientX === endTouch.clientX &&
+                    startTouch.clientY === endTouch.clientY
+                ) {
+                    // console.log(scroller)
+                    let ratio = startTouch.clientX / scroller.clientWidth;
+                    if (ratio <= 0.33) {
+                        console.log("left");
+                        event.preventDefault();
+                    } else if (ratio > 0.33 && ratio < 0.66) {
+                        console.log("middle");
+                    } else if (ratio >= 0.33) {
+                        console.log("right");
+                        event.preventDefault();
+                    } else {
+                        console.log("??");
+                    }
+                    scroller.removeEventListener("touchend", touchEndHandler);
+                }
+            }
+        }
+
+        let scroller = scrollerRef.current;
+        scroller.addEventListener("touchstart", touchStartHandler);
+        return () => {
+            scroller.removeEventListener("touchstart", touchStartHandler);
+            scroller.removeEventListener("touchend", touchEndHandler);
+        };
+    }, []);
+
     return (
         <div className="Book" ref={scrollerRef} tabIndex={-1}>
             {locs.map(loc => (
@@ -51,7 +95,7 @@ export function Book({ book }: { book: types.Hymnal }) {
                     key={loc}
                     data-page={loc}
                     tabIndex={-1}
-                    // aria-hidden={currentLoc !== loc}
+                    // data-visible={visiblePages.includes(loc) ? "" : null}
                 >
                     {visiblePages.includes(loc) ? (
                         <Hymn hymn={book.pages[loc]!} book={book} />

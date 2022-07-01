@@ -14,20 +14,10 @@ import { useDebounceCallback } from "../util/useDebounceCallback";
 import { ReactComponent as FoldIcon } from "../icons/fold.svg";
 import { ReactComponent as UnfoldIcon } from "../icons/unfold.svg";
 import { ReactComponent as ChevronIcon } from "../icons/chevron_right.svg";
-import DialogElement from "../elements/DialogElement";
 
 type IndexReference = { id: types.HymnId; lines: string[] };
 
-export let FindDialog = React.forwardRef<
-    DialogElement,
-    {
-        book: types.Hymnal;
-        open?: boolean;
-        onToggle: (open: boolean) => void;
-    }
->((props, ref) => {
-    let { book, open, onToggle } = props;
-
+export let FindDialog = ({ book }: { book: types.Hymnal }) => {
     let [indexType, setIndexType] = useAppState(`book/${book.id}/currentIndex`, null);
     let [search, setSearch] = useAppState(`book/${book.id}/search`, "");
     let [loc] = useAppState(`book/${book.id}/loc`);
@@ -89,23 +79,19 @@ export let FindDialog = React.forwardRef<
 
     return (
         <FindDialogBase
-            open={open}
-            onToggle={onToggle}
             allIndexes={allIndexes}
             initialIndex={activeIndex}
             onIndexChange={index => setIndexType(index?.type ?? null)}
             search={search}
             onSearchChange={onSearchChange}
-            ref={ref}
         >
             {activeIndex ? (
                 <Categories
                     book={book}
                     index={activeIndex}
                     references={references}
-                    search={search}
-                    onSearchChange={onSearchChange}
                     status={status}
+                    activeSearch={search.length >= 3}
                 />
             ) : (
                 <div className="AllList">
@@ -115,7 +101,10 @@ export let FindDialog = React.forwardRef<
                         aria-live="polite"
                         aria-atomic="true"
                     >
-                        {status || `${references.length} hymns`}
+                        {status ||
+                            `${references.length} hymn${
+                                references.length !== 1 ? "s" : ""
+                            }`}
                     </p>
                     <div className="content">
                         <ul className="ReferenceList">
@@ -134,22 +123,20 @@ export let FindDialog = React.forwardRef<
             )}
         </FindDialogBase>
     );
-});
+};
 
 function Categories({
     book,
     index,
     references,
-    search,
-    onSearchChange,
     status,
+    activeSearch,
 }: {
     book: types.Hymnal;
     index: types.Index;
     references: IndexReference[];
-    search: string;
-    onSearchChange: (type: string) => void;
     status?: string;
+    activeSearch: boolean;
 }) {
     let [loc] = useAppState(`book/${book.id}/loc`);
     let [sort, setSort] = useAppState(`book/${book.id}/index/${index.type}/sort`);
@@ -242,30 +229,33 @@ function Categories({
                                     .includes(loc)
                         )}
                         open={
+                            activeSearch ||
                             expand.all ||
                             (!expand.all && expand.except.includes(category.id))
                         }
                         onToggle={event => {
-                            let open = (event.target as HTMLDetailsElement).open;
-                            setExpand(prev => {
-                                if ((prev.all && !open) || (!prev.all && open)) {
+                            if (!activeSearch) {
+                                let open = (event.target as HTMLDetailsElement).open;
+                                setExpand(prev => {
+                                    if ((prev.all && !open) || (!prev.all && open)) {
+                                        return {
+                                            all: prev.all,
+                                            except: [...prev.except, category.id],
+                                        };
+                                    }
                                     return {
                                         all: prev.all,
-                                        except: [...prev.except, category.id],
+                                        except: prev.except.filter(
+                                            e => e !== category.id
+                                        ),
                                     };
-                                }
-                                return {
-                                    all: prev.all,
-                                    except: prev.except.filter(e => e !== category.id),
-                                };
-                            });
+                                });
+                            }
                         }}
                     >
                         <summary>
-                            <span className="label">
-                                <ChevronIcon aria-hidden className="openIndicator" />{" "}
-                                {category.name}
-                            </span>
+                            <ChevronIcon aria-hidden className="openIndicator" />{" "}
+                            <span className="label">{category.name}</span>
                             <span className="meta">
                                 {loc !== null &&
                                     category.references
@@ -302,14 +292,6 @@ function Categories({
                         </ul>
                     </details>
                 ))}
-
-                {search.length > 0 && (
-                    <div className="clear">
-                        <button className="Button" onClick={() => onSearchChange("")}>
-                            Clear Search
-                        </button>
-                    </div>
-                )}
             </div>
 
             <div className="row">
@@ -532,6 +514,8 @@ function searchBook(book: types.Hymnal, indexOfLines: lunr.Index, searchString: 
                     case "lang":
                         if (!value) return true;
                         return page.language === value;
+                    case "deleted":
+                        return page.isDeleted;
                     case "refrain":
                         return value === "yes" || value === undefined
                             ? page.refrain

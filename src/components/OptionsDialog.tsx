@@ -2,9 +2,6 @@ import React from "react";
 
 import c from "../util/c";
 import { useAppState } from "../state";
-import { useMatchMedia } from "../util/useMatchMedia";
-import DialogElement from "../elements/DialogElement";
-import { mergeRefs } from "../util/megeRefs";
 
 const fonts = [
     { name: "Raleway", value: "raleway" },
@@ -15,58 +12,16 @@ const fonts = [
     },
 ];
 
-const ROOT = document.documentElement;
-
-export let OptionsDialog = React.forwardRef<
-    DialogElement,
-    { open?: boolean; onToggle?: (open: boolean) => void }
->((props, outerRef) => {
-    let { open = false, onToggle } = props;
-
+export let OptionsDialog = () => {
     let [repeatRefrain, setRepeatRefrain] = useAppState("hymn/repeatRefrain");
     let [repeatChorus, setRepeatChorus] = useAppState("hymn/repeatChorus");
-    let [expandRepeatedLines, setExpandRepeatedLines] = useAppState(
-        "hymn/expandRepeatedLines"
-    );
-
+    let [expandRepeated, setExpandRepeated] = useAppState("hymn/expandRepeatedLines");
     let [colorScheme, setColorScheme] = useAppState("app/colorScheme");
-    let systemColorScheme = useMatchMedia("(prefers-color-scheme: dark)")
-        ? ("dark" as const)
-        : ("light" as const);
-    React.useLayoutEffect(() => {
-        ROOT.setAttribute(
-            "data-color-scheme",
-            colorScheme === "system" ? systemColorScheme : colorScheme
-        );
-    }, [colorScheme, systemColorScheme]);
-
     let [fontSize, setFontSize] = useAppState("app/fontSize");
-    React.useLayoutEffect(() => {
-        ROOT.style.setProperty("--ui-scale-factor", fontSize.toString());
-    }, [fontSize]);
-
     let [fontFamily, setFontFamily] = useAppState("app/fontFamily");
-    React.useLayoutEffect(() => {
-        ROOT.style.setProperty("--font-family", fontFamily);
-    }, [fontFamily]);
-
-    let dialogRef = React.useRef<DialogElement>(null!);
-
-    React.useEffect(() => {
-        let dialog = dialogRef.current;
-        let fn = (event: Event) => onToggle?.((event.target as DialogElement).open);
-        dialog.addEventListener("super-dialog-toggle", fn);
-        return () => dialog.removeEventListener("super-dialog-toggle", fn);
-    });
 
     return (
-        <super-dialog
-            ref={mergeRefs([outerRef, dialogRef])}
-            open={open ? "" : null}
-            class="OptionsDialog"
-            id="options-dialog"
-            aria-label="settings"
-        >
+        <div className="OptionsDialog">
             <div className="OptionsDialog-toggles">
                 <ToggleButton
                     checked={repeatRefrain}
@@ -82,8 +37,8 @@ export let OptionsDialog = React.forwardRef<
                 </ToggleButton>
 
                 <ToggleButton
-                    checked={expandRepeatedLines}
-                    onChange={checked => setExpandRepeatedLines(checked)}
+                    checked={expandRepeated}
+                    onChange={checked => setExpandRepeated(checked)}
                 >
                     Expand Repeated Lines
                 </ToggleButton>
@@ -100,7 +55,7 @@ export let OptionsDialog = React.forwardRef<
                     { name: "Auto", value: "system" },
                     { name: "White", value: "light" },
                     { name: "Sepia", value: "sepia" },
-                    { name: "Black", value: "dark" },
+                    { name: "Dark", value: "dark" },
                 ]}
             />
 
@@ -127,16 +82,9 @@ export let OptionsDialog = React.forwardRef<
                     step="any"
                 />
             </div>
-
-            <button
-                onClick={() => dialogRef.current.toggle(false)}
-                className="OptionsDialog-closeButton"
-            >
-                Close dialog
-            </button>
-        </super-dialog>
+        </div>
     );
-});
+};
 
 function ToggleButton({
     checked,

@@ -1,9 +1,8 @@
 import React from "react";
 
-import DialogElement from "../elements/DialogElement";
-import { ReactComponent as BackIcon } from "../icons/arrow_back.svg";
 import { ReactComponent as SearchOffIcon } from "../icons/search_off.svg";
-import { mergeRefs } from "../util/megeRefs";
+import { ReactComponent as MoreIcon } from "../icons/more_vert.svg";
+import { ReactComponent as CloseIcon } from "../icons/arrow_back.svg";
 
 export type Index = {
     type: string;
@@ -11,26 +10,18 @@ export type Index = {
     hasDefaultSort?: boolean;
 };
 
-export let FindDialogBase = React.forwardRef<
-    DialogElement,
-    {
-        open?: boolean;
-        onToggle?: (open: boolean) => void;
+export let FindDialogBase = (props: {
+    allIndexes?: Index[];
+    initialIndex?: Index | null;
+    onIndexChange?: (type: Index | null) => void;
 
-        allIndexes?: Index[];
-        initialIndex?: Index | null;
-        onIndexChange?: (type: Index | null) => void;
+    search?: string;
+    onSearchChange?: (search: string) => void;
+    onSearchSubmit?: (search: string) => void;
 
-        search?: string;
-        onSearchChange?: (search: string) => void;
-        onSearchSubmit?: (search: string) => void;
-
-        children?: React.ReactNode;
-    }
->((props, outerRef) => {
+    children?: React.ReactNode;
+}) => {
     let {
-        open = false,
-        onToggle,
         allIndexes = [],
         initialIndex = null,
         onIndexChange,
@@ -46,41 +37,16 @@ export let FindDialogBase = React.forwardRef<
         onIndexChange?.(type);
     }
 
-    let wellRef = React.useRef<HTMLDivElement>(null!);
     let inputRef = React.useRef<HTMLInputElement>(null!);
-
-    let dialogRef = React.useRef<DialogElement>(null!);
-    React.useEffect(() => {
-        let handler = (event: Event) => {
-            if (typeof onToggle === "function")
-                onToggle((event.target as DialogElement).open);
-        };
-
-        let dialog = dialogRef.current;
-        dialog.addEventListener("super-dialog-toggle", handler);
-        return () => dialog.removeEventListener("super-dialog-toggle", handler);
-    });
+    let resultsRef = React.useRef<HTMLDivElement>(null!);
 
     return (
-        <super-dialog
-            id="find-dialog"
-            ref={mergeRefs([outerRef, dialogRef])}
-            open={open ? "" : null}
-            class="FindDialog"
-            aria-label="find"
-        >
-            <div className="row">
-                <button
-                    className="Button"
-                    onClick={() => dialogRef.current.toggle(false)}
-                    aria-label="close dialog"
-                >
-                    <BackIcon aria-hidden />
-                </button>
-
+        <div className="FindPanel">
+            <div className="FindPanel-toolbar">
+                {/* <button className="Button">
+                    <CloseIcon />
+                </button> */}
                 <select
-                    className="expand"
-                    style={{ fontWeight: "bold" }}
                     aria-label="index"
                     title="Index"
                     value={currentIndex?.type ?? "_none"}
@@ -99,26 +65,46 @@ export let FindDialogBase = React.forwardRef<
                         </option>
                     ))}
                 </select>
+                <super-menu-button for="find-menu" class="Button">
+                    <MoreIcon />
+                </super-menu-button>
             </div>
 
+            <super-menu id="find-menu">
+                <button role="menuitem">Expand All</button>
+                <button role="menuitem">Collapse All</button>
+                <div role="separator" />
+                <button role="menuitemradio" aria-checked={true}>
+                    ✓ Default Sort
+                </button>
+                <button role="menuitemradio" aria-checked={false}>
+                    Sort Alphabetically
+                </button>
+                <button role="menuitemradio" aria-checked={false}>
+                    Sort By Count
+                </button>
+            </super-menu>
+
             <form
-                className="row"
+                className="FindPanel-search"
                 onSubmit={event => {
                     event.preventDefault();
+                    resultsRef.current.focus();
                     onSearchSubmit?.(search);
                 }}
             >
                 <input
                     ref={inputRef}
-                    className="expand"
                     aria-label="search"
                     type="search"
                     value={search}
-                    onChange={event => onSearchChange?.(event.target.value)}
+                    onChange={event => {
+                        resultsRef.current.scrollTo({ top: 0 });
+                        onSearchChange?.(event.target.value);
+                    }}
                     placeholder="Search"
                     // onFocus={e => e.target.select()}
                     autoComplete="off"
-                    autoFocus
                 />
                 <button
                     type="button"
@@ -143,15 +129,15 @@ export let FindDialogBase = React.forwardRef<
             </form>
 
             <div
-                className="content"
+                className="FindPanel-results"
                 tabIndex={-1}
-                ref={wellRef}
+                ref={resultsRef}
                 // Set a key so that the content area (and thus scroll position)
                 // is not re-used across indices
                 key={currentIndex?.type ?? "_none"}
             >
                 {children}
             </div>
-        </super-dialog>
+        </div>
     );
-});
+};

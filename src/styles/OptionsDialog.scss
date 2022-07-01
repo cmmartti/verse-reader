@@ -1,15 +1,15 @@
 .OptionsDialog {
-    display: grid;
+    // display: grid;
+    display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
-    gap: var(--toolbar-gap);
-    padding: var(--toolbar-gap);
+    gap: 0.5rem;
+    padding: 0.5rem;
+    padding-top: 0;
     overflow: auto;
 
-    @media (min-width: 29rem) {
-        max-width: 23rem;
-    }
     @media (max-width: 29rem) {
-        border-top: var(--control-border);
+        // border-block-start: var(--control-border);
     }
 }
 
@@ -20,7 +20,7 @@
 .OptionsDialog-toggles {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--toolbar-gap);
+    gap: 0.325rem;
 
     & > * {
         flex: 1 0;

@@ -30,6 +30,14 @@ type AppState = {
     [key: `book/${ID}/loc`]: types.HymnId | null;
     [key: `book/${ID}/currentIndex`]: IndexType | null;
     [key: `book/${ID}/search`]: string;
+    [key: `book/${ID}/indexSettings`]: Record<
+        IndexType,
+        {
+            sort: string;
+            scrollPosition: string | null;
+            expand: { all: boolean; except: string[] };
+        }
+    >;
     [key: `book/${ID}/index/${IndexType}/sort`]: string;
     [key: `book/${ID}/index/${IndexType}/scrollPosition`]: string | null;
     [key: `book/${ID}/index/${IndexType}/expand`]: { all: boolean; except: string[] };
@@ -115,8 +123,10 @@ export function setStateAndNavigate(newState: UpdateFn<AppState>, replace = true
         if (newState instanceof Function) newState = newState(prevState);
 
         let to = getLocationFromState(newState);
-        if (replace) history.replace(to);
-        else history.push(to);
+        setTimeout(() => {
+            if (replace) history.replace(to);
+            else history.push(to);
+        }, 0);
 
         localStorage.setItem("AppState", JSON.stringify(newState));
 

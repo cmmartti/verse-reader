@@ -241,6 +241,7 @@ export default class MenuElement extends HTMLElement {
         switch (event.key) {
             case "Escape":
                 event.preventDefault();
+                event.stopPropagation();
                 this.open = false;
                 this.#dispatchEvent(event);
                 break;
@@ -283,12 +284,14 @@ export default class MenuElement extends HTMLElement {
                 break;
 
             default: {
-                event.preventDefault();
                 // Click the first menuitem that has this key as an accesskey.
                 let menuitem = this.querySelector(
                     `[role^="menuitem"][accesskey="${event.key}"]`
                 );
-                if (menuitem) this.#clickMenuItem(menuitem, event);
+                if (menuitem) {
+                    event.preventDefault();
+                    this.#clickMenuItem(menuitem, event);
+                }
             }
         }
     };

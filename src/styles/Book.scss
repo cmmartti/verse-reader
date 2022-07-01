@@ -5,6 +5,8 @@
     @media (max-width: 560px), (max-height: 500px) {
         scroll-snap-type: x mandatory;
     }
+    font-family: var(--font-family);
+    // line-height: 1.5;
 
     & > * {
         flex: 1 0;
@@ -21,18 +23,16 @@
         // scrollbar-gutter: stable;
 
         overflow-y: auto;
-        // scroll-snap-stop: always;
+        scroll-snap-stop: always;
         scroll-snap-align: start; // align to start so that border-right is hidden off-screen
         box-sizing: content-box; // border should not count in element width
         &:not(:last-child) {
             border-right: 2px solid var(--canvas-background);
         }
-        @media (max-width: 29rem) {
-            padding-bottom: var(--toolbar-height); // bottom toolbar
-        }
-        @media (min-width: 29rem) {
-            scroll-margin: 5rem;
-        }
+    }
+
+    & > *:not([data-visible]) * {
+        // display: none;
     }
 
     // Scroll beyond last page

@@ -12,7 +12,7 @@ export default class MenuButtonElement extends HTMLElement {
         document.addEventListener(MenuElement.TOGGLE_EVENT, this.#onToggle);
         this.addEventListener("mousedown", this.#onMousedown);
         this.addEventListener("mouseup", this.#onMouseup);
-        this.addEventListener("keyup", this.#onKeyup);
+        this.addEventListener("keydown", this.#onKeydown);
         document.addEventListener("mousedown", this.#documentMousedown);
     }
 
@@ -20,7 +20,7 @@ export default class MenuButtonElement extends HTMLElement {
         document.removeEventListener(MenuElement.TOGGLE_EVENT, this.#onToggle);
         this.removeEventListener("mousedown", this.#onMousedown);
         this.removeEventListener("mouseup", this.#onMouseup);
-        this.removeEventListener("keyup", this.#onKeyup);
+        this.removeEventListener("keydown", this.#onKeydown);
         document.removeEventListener("mousedown", this.#documentMousedown);
     }
 
@@ -90,9 +90,9 @@ export default class MenuButtonElement extends HTMLElement {
     };
 
     /**
-     * Show the menu on ArrowDown/Enter/Space keyup, focusing the first menuitem.
+     * Show the menu on ArrowDown/Enter/Space keydown, focusing the first menuitem.
      */
-    #onKeyup = (event: Event) => {
+    #onKeydown = (event: Event) => {
         let menu = this.#menu;
         if (!menu) return;
 
