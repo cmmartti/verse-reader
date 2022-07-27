@@ -32,7 +32,7 @@
         inset-inline: 0;
         inset-block: auto 0;
         max-height: calc(var(--vh100) - var(--titlebar-height));
-        max-height: calc(min(calc(var(--vh100) - var(--titlebar-height)), 50%));
+        // max-height: calc(min(calc(var(--vh100) - var(--titlebar-height)), 50%));
     }
     @media (min-width: 29rem) and (max-width: 55rem) {
         position: fixed;
