@@ -1,8 +1,10 @@
 import React from "react";
 
-import { ReactComponent as SearchOffIcon } from "../icons/search_off.svg";
+import { ReactComponent as SearchOffIcon } from "../icons/close.svg";
+import { ReactComponent as SearchIcon } from "../icons/search.svg";
 import { ReactComponent as MoreIcon } from "../icons/more_vert.svg";
-import { ReactComponent as CloseIcon } from "../icons/arrow_back.svg";
+import { ReactComponent as BackIcon } from "../icons/arrow_back.svg";
+import DialogElement from "../elements/DialogElement";
 
 export type Index = {
     type: string;
@@ -11,6 +13,9 @@ export type Index = {
 };
 
 export let FindDialogBase = (props: {
+    open: boolean;
+    onClose?: () => void;
+
     allIndexes?: Index[];
     initialIndex?: Index | null;
     onIndexChange?: (type: Index | null) => void;
@@ -19,9 +24,16 @@ export let FindDialogBase = (props: {
     onSearchChange?: (search: string) => void;
     onSearchSubmit?: (search: string) => void;
 
+    expandAll?: () => void;
+    collapseAll?: () => void;
+    sort?: string;
+    setSort?: (sort: string) => void;
+
     children?: React.ReactNode;
 }) => {
     let {
+        open,
+        onClose,
         allIndexes = [],
         initialIndex = null,
         onIndexChange,
@@ -29,6 +41,10 @@ export let FindDialogBase = (props: {
         onSearchChange,
         onSearchSubmit,
         children = null,
+        expandAll,
+        collapseAll,
+        sort,
+        setSort,
     } = props;
 
     let [currentIndex, _setCurrentIndex] = React.useState(initialIndex);
@@ -40,16 +56,38 @@ export let FindDialogBase = (props: {
     let inputRef = React.useRef<HTMLInputElement>(null!);
     let resultsRef = React.useRef<HTMLDivElement>(null!);
 
+    let sidebarRef = React.useRef<DialogElement>(null!);
+
+    React.useEffect(() => {
+        let sidebar = sidebarRef.current;
+        if (!sidebar) return;
+
+        let fn = () => {
+            if (typeof onClose === "function" && !sidebar.open) onClose();
+        };
+        if (sidebar.open) sidebar.addEventListener("super-dialog-toggle", fn);
+        return () => sidebar.removeEventListener("super-dialog-toggle", fn);
+    }, [onClose]);
+
     return (
-        <div className="FindPanel">
+        <super-dialog
+            class="FindPanel"
+            ref={sidebarRef}
+            open={open ? "" : null}
+            aria-label="Index"
+        >
             <div className="FindPanel-toolbar">
-                {/* <button className="Button">
-                    <CloseIcon />
-                </button> */}
+                <button
+                    aria-label="close dialog"
+                    className="Button"
+                    onClick={() => sidebarRef.current.toggle(false)}
+                >
+                    <BackIcon aria-hidden />
+                </button>
                 <select
                     aria-label="index"
                     title="Index"
-                    value={currentIndex?.type ?? "_none"}
+                    value={currentIndex?.type}
                     onChange={event => {
                         setCurrentIndex(
                             allIndexes.find(
@@ -58,75 +96,48 @@ export let FindDialogBase = (props: {
                         );
                     }}
                 >
-                    <option value="_none">All Hymns</option>
                     {allIndexes.map(index => (
                         <option key={index.type} value={index.type}>
                             {index.name}
                         </option>
                     ))}
                 </select>
-                <super-menu-button for="find-menu" class="Button">
+
+                <super-menu-button for="find-menu">
                     <MoreIcon />
                 </super-menu-button>
+
+                <super-menu id="find-menu">
+                    <button role="menuitem" onClick={() => expandAll?.()}>
+                        Expand All
+                    </button>
+                    <button role="menuitem" onClick={() => collapseAll?.()}>
+                        Collapse All
+                    </button>
+                    <div role="separator" />
+                    <button
+                        role="menuitemradio"
+                        onClick={() => setSort?.("default")}
+                        aria-checked={sort === "default"}
+                    >
+                        {sort === "default" && "✓"} Default Sort
+                    </button>
+                    <button
+                        role="menuitemradio"
+                        onClick={() => setSort?.("a-z")}
+                        aria-checked={sort === "a-z"}
+                    >
+                        {sort === "a-z" && "✓"} Sort Alphabetically
+                    </button>
+                    <button
+                        role="menuitemradio"
+                        onClick={() => setSort?.("count")}
+                        aria-checked={sort === "count"}
+                    >
+                        {sort === "count" && "✓"} Sort By Count
+                    </button>
+                </super-menu>
             </div>
-
-            <super-menu id="find-menu">
-                <button role="menuitem">Expand All</button>
-                <button role="menuitem">Collapse All</button>
-                <div role="separator" />
-                <button role="menuitemradio" aria-checked={true}>
-                    ✓ Default Sort
-                </button>
-                <button role="menuitemradio" aria-checked={false}>
-                    Sort Alphabetically
-                </button>
-                <button role="menuitemradio" aria-checked={false}>
-                    Sort By Count
-                </button>
-            </super-menu>
-
-            <form
-                className="FindPanel-search"
-                onSubmit={event => {
-                    event.preventDefault();
-                    resultsRef.current.focus();
-                    onSearchSubmit?.(search);
-                }}
-            >
-                <input
-                    ref={inputRef}
-                    aria-label="search"
-                    type="search"
-                    value={search}
-                    onChange={event => {
-                        resultsRef.current.scrollTo({ top: 0 });
-                        onSearchChange?.(event.target.value);
-                    }}
-                    placeholder="Search"
-                    // onFocus={e => e.target.select()}
-                    autoComplete="off"
-                />
-                <button
-                    type="button"
-                    className="Button"
-                    aria-label="clear search"
-                    title="Clear Search"
-                    disabled={search.length === 0}
-                    onClick={event => {
-                        event?.preventDefault();
-                        onSearchChange?.("");
-                        inputRef.current.focus();
-                    }}
-                    // On touch input, don't move the focus when tapping the clear button.
-                    // This is to prevent the keyboard from popping up or down unexpectedly
-                    onTouchEnd={event => {
-                        event.preventDefault();
-                        onSearchChange?.("");
-                    }}
-                >
-                    <SearchOffIcon />
-                </button>
-            </form>
 
             <div
                 className="FindPanel-results"
@@ -138,6 +149,56 @@ export let FindDialogBase = (props: {
             >
                 {children}
             </div>
-        </div>
+
+            <form
+                className="FindPanel-toolbar"
+                onSubmit={event => {
+                    event.preventDefault();
+                    resultsRef.current.focus();
+                    onSearchSubmit?.(search);
+                }}
+            >
+                <div className="FindPanel-search">
+                    <input
+                        ref={inputRef}
+                        aria-label="search"
+                        type="search"
+                        value={search}
+                        onChange={event => {
+                            resultsRef.current.scrollTo({ top: 0 });
+                            onSearchChange?.(event.target.value);
+                        }}
+                        placeholder="Search..."
+                        // onFocus={e => e.target.select()}
+                        autoComplete="off"
+                    />
+                    {search.length > 0 && (
+                        <button
+                            type="button"
+                            aria-label="clear search"
+                            title="Clear Search"
+                            onClick={event => {
+                                event?.preventDefault();
+                                onSearchChange?.("");
+                                inputRef.current.focus();
+                            }}
+                            // On tap, prevent click events from firing so as to not
+                            // move the focus. This is to prevent the keyboard from
+                            // popping up or down unexpectedly.
+                            onTouchEnd={event => {
+                                event.preventDefault();
+                                onSearchChange?.("");
+                            }}
+                        >
+                            <SearchOffIcon />
+                        </button>
+                    )}
+                </div>
+                <button type="submit" className="Button">
+                    <SearchIcon aria-hidden />
+                    <span className="visually-hidden">Search</span>
+                </button>
+            </form>
+        </super-dialog>
     );
 };

@@ -1,100 +1,59 @@
 :root {
     text-size-adjust: none;
-    font-weight: 400;
-    --font-family: Charter, Georgia, "Times New Roman", Times, serif;
 
     --vh100: 100vh;
+    --titlebar-height: 1.75rem;
+    --page-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+:root[data-color-scheme="light"],
+:root {
+    --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
     --background: white;
-    --canvas-background: gray;
+    --page-background: white;
+    --page-font-weight: 400;
+    --toolbar-background: hsl(250, 7%, 91%);
     --color: black;
-    --accent-color: rebeccapurple;
-    --hover-color: #008cff;
-    --focus-color: rebeccapurple;
-    --disabled-color: hsl(0, 0%, 0%, 0.3);
+    --color2: hsl(0, 0%, 78%);
     --link-color: #003c8b;
-    --focus-outline: var(--focus-outline-width) solid var(--focus-color);
-    --focus-outline-width: 2px;
-    --focus-outline-offset: -5px;
-
-    --control-height: 2em;
-    --control-active-background: #b7e3f0;
-    --control-disabled-background: hsl(0 0% 80%);
-    --control-background: hsl(0 0% 92%);
-    --control-border-width: 1.5px;
-    --control-border-color: black;
-    --control-border: var(--control-border-width) solid var(--control-border-color);
-
-    --toolbar-box-shadow: 0 0 7px hsla(0, 0%, 0%, 0.5);
-    --toolbar-background: hsl(var(0 0% 92%));
-    --toolbar-font-size: 1.1rem;
-    --toolbar-height: 2.1rem;
-    --sidebar-font-size: var(--toolbar-font-size);
-    --sidebar-height: var(--toolbar-height);
-    @media (max-width: 29rem) {
-        // --control-height: 2.25em;
-        --toolbar-font-size: 1.3rem;
-        --toolbar-height: 2.75rem;
-        --sidebar-font-size: 1.1rem;
-        --sidebar-height: 2.1rem;
-    }
-
-    --dialog-background-hsl: 0 0% 80%;
-    --dialog-background-opacity: 1;
-    --dialog-background: hsla(
-        var(--dialog-background-hsl) / var(--dialog-background-opacity)
-    );
-    --dialog-box-shadow: 0 0 7px hsla(0, 0%, 0%, 0.5);
-
-    --listbox-background: hsl(0, 0%, 93%);
-
-    --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+    --accent-color: hsl(250, 50%, 40%);
+    --focus-color: rebeccapurple;
+    --focus-outline: 2px solid var(--focus-color);
+    --selected-background: hsl(39, 100%, 86%);
+    --button-background: hsl(0 0% 97%);
+    --button-active-background: #b7e3f0;
+    --button-disabled-background: hsl(0 0% 80%);
+    --button-disabled-color: hsl(0, 0%, 30%);
+    --input-background: white;
+    --listbox-background: white;
 }
 
-:root[data-color-scheme="sepia"] {
-    --background: hsl(21, 15%, 73%);
-    --color: hsl(30, 8%, 9%);
-    --dialog-background: hsl(20, 6%, 63%);
-    --control-background: hsl(23 24% 85%);
-    --listbox-background: hsl(23, 38%, 92%);
-    scrollbar-color: #959595 hsl(23, 38%, 92%);
-    // scrollbar-color: #959595 transparent;
-}
-
-:root[data-color-scheme="dark"] {
-    font-weight: 300;
-
-    --background: hsl(0, 0%, 15%);
-    --color: white;
-    --accent-color: rebeccapurple;
-    --hover-color: yellow;
-    --link-color: #aed1ff;
-    --disabled-color: #666666;
-    --focus-color: #bd7b00;
-    --focus-outline-width: 1.5px;
-
-    --dialog-background-opacity: 1;
-    --dialog-background: hsl(216 0% 13%);
-
-    --control-border-width: 1.5px;
-    --control-border-color: gray;
-    --control-background: hsl(270 5% 23%);
-    --control-active-background: #27647c;
-
-    --toolbar-box-shadow: none;
-    --toolbar-item-backdrop-filter: blur(6px);
-
-    --listbox-background: hsl(0, 0%, 10%);
-
+:root[data-color-scheme="dark"],
+:root[data-color-scheme="black"] {
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
-    scrollbar-color: #959595 #171717;
+    --background: hsl(0, 0%, 20%);
+    --page-background: hsl(0, 0%, 20%);
+    --page-font-weight: 300;
+    --toolbar-background: #2a2a2a;
+    --color: hsl(0, 0%, 90%);
+    --color2: hsl(0, 0%, 34%);
+    --link-color: #aed1ff;
+    --accent-color: hsl(225, 58%, 54%);
+    --focus-color: rebeccapurple;
+    --focus-outline: 2px solid var(--focus-color);
+    --selected-background: hsl(129, 95%, 15%);
+    --button-background: hsl(250, 4%, 10%);
+    --button-active-background: hsl(194, 20%, 34%);
+    --button-disabled-background: hsl(250, 4%, 12%);
+    --button-disabled-color: hsl(0, 0%, 60%);
+    --input-background: black;
+    --listbox-background: var(--background);
 }
-
-html,
-body,
-#root {
-    height: 100%;
+:root[data-color-scheme="black"] {
+    --page-background: black;
 }
 
 body {
@@ -103,6 +62,10 @@ body {
     font: -apple-system-body;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
         Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    @media (max-width: 29rem) {
+        font-size: 18px;
+    }
     line-height: 1.25;
     color: var(--color);
     background-color: var(--background);
@@ -119,6 +82,11 @@ body {
     }
 }
 
+// Disable font-boosting on Android Chrome
+html * {
+    max-height: 1000000px;
+}
+
 p,
 h1,
 h2,
@@ -132,8 +100,8 @@ h6 {
 }
 
 a {
-    // text-decoration: none;
     color: var(--link-color);
+    text-decoration: none;
 }
 a:focus {
     outline: var(--focus-outline);
@@ -143,10 +111,6 @@ a:focus:not(:focus-visible) {
 }
 a:hover {
     text-decoration: underline;
-}
-
-details summary > * {
-    display: inline;
 }
 
 // Visually hidden, still accessible to screen readers.
@@ -167,12 +131,10 @@ details summary > * {
     font: inherit;
     color: var(--color);
     accent-color: var(--accent-color);
-    border: var(--control-border);
-    height: var(--control-height);
-    padding: 0 0.4em;
-    // border-radius: 0.25rem;
+    border: none;
+    padding: 0.325em;
+    border-radius: 0.15em;
     line-height: 1;
-    outline-offset: var(--focus-outline-offset);
     &:active {
         outline: none;
     }
@@ -184,7 +146,7 @@ details summary > * {
     }
     &:disabled,
     &[aria-disabled] {
-        color: var(--disabled-color);
+        color: var(--button-disabled-color);
         user-select: none;
     }
 
@@ -201,9 +163,17 @@ details summary > * {
     }
 }
 
+input,
+button,
+select {
+    accent-color: var(--accent-color);
+    color: var(--color);
+}
+
 select {
     @extend %form-control;
-    background: var(--control-background);
+    background: var(--button-background);
+    color: var(--color);
 
     // open arrow
     appearance: none;
@@ -215,14 +185,6 @@ select {
     padding-right: 1.625em;
 
     outline-offset: -1px;
-
-    // &:focus:not(:focus-visible) {
-    //     outline: none;
-    // }
-    // &:focus {
-    //     outline: var(--focus-outline);
-    //     outline: none;
-    // }
 }
 
 input[type="text"],
@@ -231,9 +193,16 @@ input[type="url"],
 input[type="number"] {
     @extend %form-control;
     max-width: 100%;
-    background: var(--background);
+    background: var(--input-background);
+    color: var(--color);
     min-width: 6em;
     appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 input[type="number"] {
@@ -247,7 +216,6 @@ input[type="number"] {
 input[type="range"] {
     width: 100%;
     accent-color: var(--accent-color);
-    height: var(--control-height);
 
     &:focus-visible {
         outline: var(--focus-outline);
@@ -259,8 +227,8 @@ input[type="range"] {
 
 .Button {
     @extend %form-control;
-    background: var(--control-background);
-    // min-width: var(--control-height);
+    background: var(--button-background);
+    color: var(--color);
     padding-left: 0.5em;
     padding-right: 0.5em;
     user-select: none;
@@ -268,98 +236,7 @@ input[type="range"] {
     cursor: default;
 
     &:active:not(:disabled):not([aria-disabled]) {
-        background: var(--control-active-background);
-    }
-}
-
-.ButtonLink {
-    background: none;
-    border: none;
-    display: inline-block;
-    text-decoration: underline;
-    font: inherit;
-    cursor: pointer;
-    color: var(--link-color);
-    padding: 0;
-
-    &:disabled,
-    &[aria-disabled] {
-        text-decoration: line-through;
-    }
-}
-
-.ToggleButton {
-    @extend %form-control;
-    padding-left: 0.75em;
-    padding-right: 0.75em;
-    background: var(--control-background);
-    user-select: none;
-    justify-content: center;
-    white-space: nowrap;
-    box-shadow: 0 0 7px hsla(0, 0%, 0%, 0.3);
-
-    outline-offset: -4px;
-    &:focus-within {
-        outline: 1px dashed var(--focus-color);
-    }
-    &.ToggleButton--checked:focus-within {
-        outline-color: #b9b9b9;
-    }
-
-    & input {
-        opacity: 0;
-        position: absolute;
-        pointer-events: none;
-    }
-
-    &.ToggleButton--checked {
-        text-decoration: underline;
-        background: var(--accent-color);
-        color: white;
-    }
-}
-
-.RadioButtons {
-    box-shadow: inset 0 0 3px 1px hsla(0, 0%, 0%, 0.5);
-    // border: var(--control-border);
-    border: none;
-    padding: 0;
-    margin: 0;
-    // padding: 3px;
-
-    overflow: auto;
-    display: flex;
-
-    & .RadioButtons-button {
-        @extend %form-control;
-        flex: 1 0;
-        border: none;
-        user-select: none;
-
-        display: flex;
-        justify-content: center;
-        gap: 0.25em;
-
-        outline-offset: var(--focus-outline-offset);
-        &:focus-within {
-            outline: 1px dashed var(--focus-color);
-        }
-        &.RadioButtons-button--checked:focus-within {
-        }
-        &.RadioButtons-button--checked {
-            background: var(--control-background);
-            border: var(--control-border);
-            box-shadow: 0 0 7px hsla(0, 0%, 0%, 0.3);
-        }
-        &:active {
-            background: var(--control-active-background);
-        }
-
-        & input {
-            opacity: 0;
-            position: absolute;
-            pointer-events: none;
-        }
+        background: var(--button-active-background);
     }
 }
 
@@ -367,27 +244,16 @@ super-menu {
     &:not([open]) {
         display: none;
     }
-    border: var(--control-border);
-    background: var(--control-background);
+    color: var(--color);
+    border: 1px solid var(--color2);
+    border-radius: 0.2rem;
+    background: var(--button-background);
     user-select: none;
     &:focus {
         outline: none;
     }
 
     overflow: auto;
-    z-index: 1;
-    position: fixed;
-    max-height: calc(var(--vh100) - var(--toolbar-height));
-    max-width: 100vw;
-    @media (max-width: 29rem) {
-        inset-block-end: var(--toolbar-height);
-        border-block-end: none;
-        border-inline-start: none;
-        // box-shadow: var(--dialog-box-shadow);
-    }
-    @media (min-width: 29rem) {
-        inset-block-start: calc(var(--toolbar-height) - var(--control-border-width));
-    }
 
     display: flex;
     flex-direction: column;
@@ -399,16 +265,15 @@ super-menu {
     }
 
     & > [role="separator"] {
-        border-top: var(--control-border);
+        border-top: 1px solid var(--color2);
         margin: 0.15em 0;
     }
 
     & > [role^="menuitem"] {
+        padding: 0.25em 0.5em;
         @media (max-width: 29rem) {
-            font-size: 1.1em;
             padding: 0.5em 0.75em;
         }
-        padding: 0.25em 0.5em;
         border: none;
         font: inherit;
         background: none;
@@ -416,25 +281,22 @@ super-menu {
         text-decoration: none;
         text-align: start;
         &:focus {
-            background: var(--control-border-color);
-            color: var(--background);
+            background: hsla(0, 0%, 0%, 0.1);
             outline: none;
         }
         &[disabled],
         &[aria-disabled] {
-            color: var(--disabled-color);
+            color: var(--button-disabled-color);
             &:focus {
-                background: var(--control-disabled-background);
+                background: var(--button-disabled-background);
             }
         }
     }
 }
 
 @import "App.scss";
-@import "Sidebar.scss";
-@import "Book.scss";
 @import "FindPanel.scss";
 @import "Hymn.scss";
 @import "ManageDialog.scss";
-@import "OptionsDialog.scss";
+@import "OptionsPanel.scss";
 @import "fonts.scss";

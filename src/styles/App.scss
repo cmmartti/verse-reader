@@ -1,163 +1,164 @@
 .App {
-    height: 100%;
-    max-height: 100%;
-    line-height: 1.4;
-    // overflow: hidden;
+    height: var(--vh100);
+    background: var(--page-background);
 
-    display: grid;
-    grid-template:
-        "title"
-        "content" 1fr
-        "toolbar";
+    display: flex;
 
-    @media (min-width: 29rem) {
-        grid-template:
-            "toolbar title   blank"
-            "content content content" 1fr
-            / auto auto 1fr;
-
-        &[data-sidebar-open="true"] {
-            grid-template:
-                "toolbar title   blank   sidebar"
-                "content content content sidebar" 1fr
-                / auto auto 1fr 24rem;
-        }
-
-        &[data-sidebar-open="false"] .App-sidebar {
-            display: none;
-        }
-    }
-
-    & > .Book {
-        grid-area: content;
-    }
-
-    & > .Sidebar {
-        grid-area: sidebar;
-    }
-
-    & > .title {
-        grid-area: title;
-        font-size: 1.1rem;
-        padding-inline: 0.75em;
-        z-index: 1;
-        display: flex;
+    @media (max-width: 29rem) {
         flex-direction: column;
-        justify-content: center;
-        text-align: center;
-        @media (max-width: 29rem) {
-            height: 2rem;
-            // box-shadow: var(--toolbar-box-shadow);
-            background: var(--control-background);
-            border-block-end: var(--control-border);
-        }
-        font-weight: bold;
-        @media (min-width: 29rem) {
-            background: var(--background);
-            border-inline: var(--control-border);
-        }
     }
+}
 
-    @media (min-width: 29rem) {
-        &::after {
-            content: "";
-            grid-area: blank;
-            background: var(--control-background);
-            border-bottom: var(--control-border);
+.Sidebar,
+.OptionsPanel,
+.FindPanel,
+.ManageDialog {
+    flex: 0 1 24rem;
+}
+
+.App-canvas {
+    flex: 1;
+    overflow: auto;
+    // scrollbar-gutter: stable;
+
+    display: flex;
+    flex-direction: column;
+}
+
+super-menu#app-menu {
+    z-index: 1;
+    position: fixed;
+    max-height: calc(var(--vh100) - var(--titlebar-height));
+    inset-block-start: var(--titlebar-height);
+    max-width: 100vw;
+}
+
+.Titlebar {
+    // flex: 0 0 var(--titlebar-height);
+    min-height: var(--titlebar-height);
+    font-size: 1rem;
+    font-weight: bold;
+    background: var(--toolbar-background);
+    text-align: center;
+
+    & super-menu-button {
+        flex: 1;
+        font: inherit;
+        min-width: 3.5rem;
+        height: 100%;
+        line-height: 1;
+        color: var(--color);
+        border: none;
+        background: none;
+        padding-block: 0.25em;
+        padding-inline: 0.5em;
+        user-select: none;
+        outline-offset: -0.25rem;
+        &:focus:not(:focus-visible) {
+            outline: none;
         }
-    }
+        &:focus {
+            outline: var(--focus-outline);
+        }
+        &[aria-expanded="true"] {
+            // background: var(--button-active-background);
+        }
 
-    & .loading {
-        grid-area: content;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 0.325em;
 
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
+        & svg {
+            height: 1.2em;
+            width: 1.2em;
+            pointer-events: none;
+        }
     }
 }
 
 .Toolbar {
-    grid-area: toolbar;
     z-index: 1;
-    height: var(--toolbar-height);
-    font-size: var(--toolbar-font-size);
-    @media (max-width: 29rem) {
-        border-block-start: var(--control-border);
-        // box-shadow: var(--toolbar-box-shadow);
-    }
-    @media (min-width: 29rem) {
-        border-bottom: var(--control-border);
-    }
+    flex: 0 0;
+    max-width: 100%;
+    position: sticky;
+    bottom: 0;
+    background: var(--toolbar-background);
 
-    gap: var(--control-border-width);
-    background: var(--control-border-color);
+    display: flex;
+    justify-content: center;
+}
 
+.StatusMessage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.Page {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+
+    font-weight: var(--page-font-weight);
+    font-family: var(--page-font-family);
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    overflow-x: auto;
-
-    & > .expand {
-        flex: 1;
-    }
+    grid-template: 1fr / 1fr;
 }
 
 .Toolbar-input {
     display: flex;
-    background: var(--background);
-    font-weight: bold;
-    text-align: center;
 
     & input {
-        border-radius: 0;
+        padding: 0.25rem 0;
         flex: 1;
         font: inherit;
-        font-size: 1.2em;
-        text-align: inherit;
+        font-size: 1.75em;
+        font-weight: bold;
+        line-height: 1;
+        text-align: center;
         border: none;
-        background: none;
-        padding: 0;
+        border-radius: 0;
         min-width: 0;
-        width: 3em;
+        width: 2.5em;
         height: 100%;
-        outline-offset: -4px;
-        @media (max-width: 29rem) {
-            font-size: 1.2em;
+        background: var(--input-background);
+        outline-offset: 0;
+        &:focus:not(:focus-visible) {
+            outline: none;
+        }
+        &:focus {
+            outline: 3px solid var(--focus-color);
+            z-index: 1;
         }
     }
 }
 
 .Toolbar-button {
     font: inherit;
-    min-width: 3.5rem;
-    height: 100%;
+    font-size: 1.25em;
+    min-width: 2.5rem;
     line-height: 1;
+    padding-inline: 1.5rem;
+    padding-block: 0.25em;
     color: var(--color);
     border: none;
-    background: var(--control-background);
-    @media (min-width: 29rem) {
-        padding: 0 0.75em;
-    }
+    background: none;
+    // background: var(--button-background);
     user-select: none;
     &:focus:not(:focus-visible) {
         outline: none;
     }
-    outline-offset: var(--focus-outline-offset);
-    outline-offset: calc(-1 * var(--focus-outline-width));
     &:focus {
-        outline: var(--focus-outline);
-    }
-    &:disabled,
-    &[aria-disabled] {
-        border-color: var(--disabled-color);
-        color: var(--disabled-color);
+        outline: 3px solid var(--focus-color);
+        z-index: 1;
     }
     &:active:not(:disabled):not([aria-disabled]) {
-        background: var(--control-active-background);
+        background: var(--button-active-background);
     }
     &[aria-expanded="true"] {
-        background: var(--control-active-background);
+        // background: var(--button-active-background);
     }
 
     display: flex;
@@ -166,9 +167,8 @@
     gap: 0.5em;
 
     & svg {
-        display: inline-block;
-        height: 1.2em;
-        width: 1.2em;
+        height: 1.25em;
+        width: 1.25em;
         flex-shrink: 0;
         pointer-events: none;
     }

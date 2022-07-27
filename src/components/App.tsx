@@ -1,25 +1,22 @@
 import React from "react";
 import { useQuery } from "react-query";
 
-import { OptionsDialog } from "./OptionsDialog";
+import { OptionsPanel } from "./OptionsPanel";
 import { ManageDialog } from "./ManageDialog";
-import { Book } from "./Book";
+import { Page } from "./Page";
 
 import * as types from "../types";
 import * as bookService from "../bookService";
 import { useAppState } from "../state";
-import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
-import { useOnMouseDownOutside } from "../util/useOnMouseDownOutside";
 
 import { ReactComponent as MenuIcon } from "../icons/menu.svg";
-import { ReactComponent as SearchIcon } from "../icons/search.svg";
-import { ReactComponent as SettingsIcon } from "../icons/settings.svg";
+import { ReactComponent as TOCIcon } from "../icons/toc.svg";
 import { FindDialogBase } from "./FindDialogBase";
 import { FindDialog } from "./FindDialog";
 import { usePending } from "../util/usePending";
-import DialogElement from "../elements/DialogElement";
-import { Sidebar } from "./Sidebar";
-import { useMatchMedia } from "../util/useMatchMedia";
+import { useLocationState } from "../locationState";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { fonts } from "../fonts";
 
 const ROOT = document.documentElement;
 
@@ -35,15 +32,9 @@ export function App() {
     }, []);
 
     let [colorScheme] = useAppState("app/colorScheme");
-    let systemColorScheme = useMatchMedia("(prefers-color-scheme: dark)")
-        ? ("dark" as const)
-        : ("light" as const);
     React.useLayoutEffect(() => {
-        ROOT.setAttribute(
-            "data-color-scheme",
-            colorScheme === "system" ? systemColorScheme : colorScheme
-        );
-    }, [colorScheme, systemColorScheme]);
+        ROOT.setAttribute("data-color-scheme", colorScheme);
+    }, [colorScheme]);
 
     let [fontSize] = useAppState("app/fontSize");
     React.useLayoutEffect(() => {
@@ -52,12 +43,16 @@ export function App() {
 
     let [fontFamily] = useAppState("app/fontFamily");
     React.useLayoutEffect(() => {
-        ROOT.style.setProperty("--font-family", fontFamily);
+        ROOT.style.setProperty(
+            "--page-font-family",
+            (fonts.find(font => font.id === fontFamily) ?? fonts[0]!).value
+        );
     }, [fontFamily]);
 
-    let [bookId, setCurrentBookId] = useAppState("app/currentBook");
+    let [bookId, setCurrentBookId] = useLocationState("book");
+    let [sidebar, setSidebar] = useLocationState("sidebar");
+    let [manage, setManage] = useLocationState("manage");
 
-    let [mode, setMode] = useAppState("app/mode");
     let summaries = useQuery("summaries", bookService.getAllSummaries);
 
     let book = useQuery<types.Hymnal | null, Error>(["book", bookId], async () => {
@@ -65,7 +60,7 @@ export function App() {
         return bookService.getBook(bookId);
     });
 
-    let showBookSpinner = usePending(book.isLoading, 10, 300);
+    let showBookSpinner = usePending(book.isLoading, 100, 300);
 
     React.useEffect(() => {
         if (summaries.data) {
@@ -77,149 +72,113 @@ export function App() {
         }
     }, [bookId, summaries.data, setCurrentBookId]);
 
-    let { isPromptable, promptToInstall } = useAddToHomeScreenPrompt();
-
-    let findDialogRef = React.useRef<DialogElement>(null!);
-    useOnMouseDownOutside(findDialogRef, (dialog, target) => {
-        if (dialog.open && !target?.closest("#toolbar-find-button"))
-            dialog.toggle(false);
-    });
-
-    let optionsDialogRef = React.useRef<DialogElement>(null!);
-    useOnMouseDownOutside(optionsDialogRef, (dialog, target) => {
-        if (dialog.open && !target?.closest("#toolbar-options-button"))
-            dialog.toggle(false);
-    });
-
     return (
-        <>
-            <main
-                className="App"
-                data-sidebar-open={
-                    mode === "find" || mode === "manage" || mode === "options"
-                }
-            >
-                <nav className="Toolbar">
-                    <super-menu-button
-                        for="app-menu"
-                        class="Toolbar-button"
-                        aria-label="book switcher menu"
-                        title="Menu"
-                    >
-                        <MenuIcon aria-hidden />
-                        {/* File */}
-                    </super-menu-button>
+        <ErrorBoundary>
+            <main className="App">
+                <div className="App-canvas">
+                    <h1 className="Titlebar">
+                        <super-menu-button
+                            for="app-menu"
+                            class="App-switcher"
+                            aria-label="book switcher menu"
+                            title="Menu"
+                        >
+                            <MenuIcon aria-hidden />
+                            {showBookSpinner
+                                ? ""
+                                : book.data?.title
+                                ? book.data.title + " - Reader"
+                                : "Reader"}
+                        </super-menu-button>
+                    </h1>
 
-                    {bookId === null ? (
-                        <NumberInput disabled />
-                    ) : (
-                        <BoundNumberInput
-                            bookId={bookId}
-                            max={
-                                book.data
-                                    ? Object.keys(book.data.pages).length
-                                    : undefined
+                    <div className="Page">
+                        {showBookSpinner ? (
+                            <div className="StatusMessage">Loading...</div>
+                        ) : book.data ? (
+                            // book.data.id
+                            <Page book={book.data} />
+                        ) : book.isError ? (
+                            <div className="StatusMessage">{book.error.message}</div>
+                        ) : !book.isLoading ? (
+                            <div className="StatusMessage">
+                                There are no books available.
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <nav className="Toolbar">
+                        <button
+                            className="Toolbar-button"
+                            type="button"
+                            aria-label="search index"
+                            title="View Index"
+                            id="toolbar-find-button"
+                            onClick={() =>
+                                sidebar === "find"
+                                    ? setSidebar(null)
+                                    : setSidebar("find", false)
                             }
-                            disabled={!book.data}
-                        />
-                    )}
-                    <button
-                        className="Toolbar-button"
-                        type="button"
-                        aria-label="search index"
-                        title="View Index"
-                        id="toolbar-find-button"
-                        onClick={() =>
-                            mode === "find" ? setMode("read") : setMode("find", false)
-                        }
-                        aria-haspopup
-                        aria-expanded={mode === "find"}
-                    >
-                        <SearchIcon aria-hidden />
-                        {/* Find */}
-                    </button>
-                    <button
-                        className="Toolbar-button"
-                        aria-label="settings"
-                        title="Settings"
-                        onClick={() =>
-                            mode === "options"
-                                ? setMode("read")
-                                : setMode("options", false)
-                        }
-                        id="toolbar-options-button"
-                        aria-haspopup
-                        aria-expanded={mode === "options"}
-                    >
-                        <SettingsIcon aria-hidden />
-                    </button>
-                </nav>
+                            aria-haspopup
+                            aria-expanded={sidebar === "find"}
+                        >
+                            <TOCIcon aria-hidden />
+                        </button>
 
-                <h1 className="title">
-                    {showBookSpinner
-                        ? ""
-                        : book.data?.title
-                        ? book.data.title
-                        : "Hymnal Reader"}
-                </h1>
+                        {bookId === null ? (
+                            <NumberInput disabled />
+                        ) : (
+                            <BoundNumberInput
+                                bookId={bookId}
+                                max={
+                                    book.data
+                                        ? Object.keys(book.data.pages).length
+                                        : undefined
+                                }
+                                disabled={!book.data}
+                            />
+                        )}
 
-                <Sidebar
-                    title="Index"
-                    open={mode === "find"}
-                    onClose={() => setMode("read")}
-                    button="#toolbar-find-button"
-                >
-                    {book.data ? <FindDialog book={book.data} /> : <FindDialogBase />}
-                </Sidebar>
+                        <button
+                            className="Toolbar-button"
+                            aria-label="appearance"
+                            title="Appearance"
+                            onClick={() =>
+                                sidebar === "options"
+                                    ? setSidebar(null)
+                                    : setSidebar("options", false)
+                            }
+                            id="toolbar-options-button"
+                            aria-haspopup
+                            aria-expanded={sidebar === "options"}
+                        >
+                            Aa
+                        </button>
+                    </nav>
+                </div>
 
-                <Sidebar
-                    title="Settings"
-                    open={mode === "options"}
-                    onClose={() => setMode("read")}
-                    button="#toolbar-options-button"
-                    overlayOnMobile
-                >
-                    <OptionsDialog />
-                </Sidebar>
+                {book.data ? (
+                    <FindDialog
+                        book={book.data}
+                        open={sidebar === "find"}
+                        onClose={() => setSidebar(null)}
+                    />
+                ) : (
+                    <FindDialogBase
+                        open={sidebar === "find"}
+                        onClose={() => setSidebar(null)}
+                    />
+                )}
 
-                <Sidebar
-                    title="Manage Books"
-                    open={mode === "manage"}
-                    onClose={() => setMode("read")}
-                >
-                    <ManageDialog />
-                </Sidebar>
-
-                {showBookSpinner ? (
-                    <div className="loading">Loading...</div>
-                ) : book.data ? (
-                    <Book book={book.data} />
-                ) : book.isError ? (
-                    <div className="loading">{book.error.message}</div>
-                ) : !book.isLoading ? (
-                    <div className="loading">There are no books available.</div>
-                ) : null}
+                <OptionsPanel
+                    open={sidebar === "options"}
+                    onClose={() => setSidebar(null)}
+                />
             </main>
 
+            <ManageDialog open={manage} onClose={() => setManage(false)} />
+
             <super-menu id="app-menu">
-                <button
-                    role="menuitem"
-                    onClick={promptToInstall}
-                    aria-disabled={!isPromptable}
-                    accessKey="i"
-                >
-                    <u>I</u>nstall to Home Screen
-                </button>
-                <button
-                    role="menuitem"
-                    accessKey="m"
-                    onClick={() => setMode("manage", false)}
-                >
-                    <u>M</u>anage Books...
-                </button>
-
-                <div role="separator" />
-
                 {summaries.data ? (
                     <>
                         {summaries.data.map(summary => {
@@ -230,10 +189,8 @@ export function App() {
                                     role="menuitemradio"
                                     aria-checked={isCurrent}
                                     onClick={() => {
-                                        if (!isCurrent) {
-                                            // Push new location to history stack
+                                        if (!isCurrent)
                                             setCurrentBookId(summary.id, false);
-                                        }
                                     }}
                                 >
                                     {isCurrent && "✓"} {summary.title}
@@ -252,8 +209,17 @@ export function App() {
                         Loading...
                     </div>
                 )}
+
+                <div role="separator" />
+                <button
+                    role="menuitem"
+                    accessKey="m"
+                    onClick={() => setManage(true, false)}
+                >
+                    <u>M</u>anage Books...
+                </button>
             </super-menu>
-        </>
+        </ErrorBoundary>
     );
 }
 
@@ -266,7 +232,7 @@ function BoundNumberInput({
     max?: number;
     disabled?: boolean;
 }) {
-    let [loc, setLoc] = useAppState(`book/${bookId}/loc`);
+    let [loc, setLoc] = useLocationState(`book/${bookId}/loc`);
     return (
         <NumberInput
             disabled={disabled}
@@ -306,7 +272,6 @@ function NumberInput({
     return (
         <form
             className="Toolbar-input"
-            // role="presentation"
             onSubmit={event => {
                 event.preventDefault();
                 onSubmit?.(inputValue);

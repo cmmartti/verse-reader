@@ -64,7 +64,6 @@ function extractRange(range: {
     let indexOfEnd = range.keys.findIndex(key => key === range.end);
 
     if (indexOfStart === -1 || indexOfEnd === -1) {
-        // console.log([range.start, indexOfStart], [range.end, indexOfEnd], range.keys);
         throw new Error("[useVisibleRange] Range start/end must appear in keys");
     }
 

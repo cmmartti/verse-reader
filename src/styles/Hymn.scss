@@ -1,34 +1,50 @@
 .Hymn {
     font-size: calc(1rem * var(--ui-scale-factor, 1));
-    // transition: font-size 0.15s;
-    padding: 1rem 0.75rem 0.75rem 0.75rem;
+    padding: 0.75rem;
     min-height: 100%;
+    @media (min-width: 55rem) {
+        padding: 1rem;
+    }
 
-    // For the .visually-hidden class
     position: relative;
 
     display: flex;
     flex-direction: column;
-    background: var(--background);
     gap: 0.5em;
 }
 
 .Hymn-header {
-    text-align: center;
-    top: 0;
+    font-size: calc(max(1rem, 0.85em));
+    border-bottom: 1px solid;
+    padding-bottom: 0.5em;
 
-    & > * {
-        margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.25em 1em;
+    @media (max-width: 29rem) {
+        flex-direction: column;
+        align-items: center;
     }
-    & > * + * {
-        margin-top: 0.5em;
+    text-align: center;
+}
+.Hymn-title {
+    font: inherit;
+    font-weight: bold;
+
+    @media (min-width: 29rem) {
+        display: flex;
+        gap: 0.25em;
+        text-align: left;
     }
 }
-.Hymn-number {
-    font-size: 1.625em;
-    line-height: 1;
-    font-weight: bold;
-    scroll-margin-top: 5em;
+.Hymn-topics {
+    font: inherit;
+    @media (min-width: 29rem) {
+        text-align: right;
+    }
+}
+.Hymn-topic {
+    white-space: nowrap;
 }
 .Hymn-asterisk {
     padding: 0 0.1em;
@@ -40,6 +56,9 @@
 }
 .Hymn-tunes {
     font-style: italic;
+    text-align: center;
+    // font-weight: bold;
+    font-size: 0.85em;
 }
 
 .Hymn-chorus,
@@ -56,8 +75,11 @@
 
 .Hymn-verses {
     flex: 1;
-    // text-align: justify;
-    // hyphens: auto;
+    margin-inline: auto;
+    width: 100%;
+
+    columns: 30ch auto;
+    column-gap: 2ch;
 
     & > * {
         margin-top: 0;
@@ -83,6 +105,12 @@
 }
 .Hymn-verse,
 .Hymn-chorus,
+.Hymn-refrain {
+    break-inside: avoid-column;
+}
+
+.Hymn-verse,
+.Hymn-chorus,
 .Hymn-refrain,
 .Hymn-inlineRefrain {
     &.is-deleted .Hymn-line {
@@ -103,8 +131,4 @@
     padding-top: 0.5em;
     font-size: 0.8em;
     line-height: 1.5;
-}
-.Hymn-topics,
-.Hymn-days {
-    font-size: 0.85em;
 }

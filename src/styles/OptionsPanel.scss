@@ -1,0 +1,135 @@
+.OptionsPanel {
+    background: var(--toolbar-background);
+    z-index: 1;
+    user-select: contain;
+    overflow: auto;
+    @media (min-width: 29rem) {
+        &:not([open]) {
+            display: none;
+        }
+    }
+    @media (max-width: 29rem) {
+        &:not([open]) {
+            transform: translateY(100%);
+            pointer-events: none;
+            box-shadow: none;
+            transition: transform 50ms ease-in;
+        }
+        transition: transform 50ms ease-out;
+        // box-shadow: 0 0 0.25rem currentColor;
+        border-top: 2px solid;
+    }
+    &:focus {
+        outline: none;
+    }
+    &:focus-visible .OptionsPanel-titlebar {
+        outline: var(--focus-outline);
+        outline-offset: -0.325rem;
+    }
+
+    @media (max-width: 29rem) {
+        position: fixed;
+        inset-inline: 0;
+        inset-block: auto 0;
+        max-height: calc(var(--vh100) - var(--titlebar-height));
+        max-height: calc(min(calc(var(--vh100) - var(--titlebar-height)), 50%));
+    }
+    @media (min-width: 29rem) and (max-width: 55rem) {
+        position: fixed;
+        inset-inline: 0;
+        inset-block: auto 0;
+        max-height: calc(var(--vh100) - var(--titlebar-height));
+    }
+
+    @media (min-width: 55rem) {
+        border-left: 3px double var(--color2);
+        height: 100%;
+    }
+
+    display: flex;
+    flex-direction: column;
+}
+
+.OptionsPanel-titlebar {
+    flex: 0 0 2.1rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+
+    & > h2 {
+        font: inherit;
+        font-weight: bold;
+        padding-inline: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    & > button {
+        border: none;
+        padding: 0;
+        color: inherit;
+        height: auto;
+        aspect-ratio: 1;
+        background: none;
+        border-radius: 0;
+        &:focus-visible {
+            outline: none;
+        }
+        &:focus-visible svg {
+            outline: var(--focus-outline);
+            border-radius: 0.15em;
+        }
+    }
+}
+
+.OptionsPanel-contents {
+    display: flex;
+    flex-direction: column;
+    // flex-wrap: wrap;
+    // gap: 0.325rem;
+    overflow: auto;
+    // background: var(--background);
+
+    & > * {
+        flex: 1 0 2.5rem;
+    }
+    & > *:not(:last-child) {
+        border-bottom: 1px solid var(--color2) !important;
+    }
+}
+
+.ToggleButton {
+    user-select: none;
+    justify-content: flex-start;
+    white-space: nowrap;
+    border: none;
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.Select {
+    user-select: none;
+    // justify-content: flex-start;
+    white-space: nowrap;
+    border: none;
+    display: flex;
+    gap: 0.25rem;
+
+    & > label {
+        padding: 0.5rem;
+        flex: 1;
+    }
+    & > select {
+        background-color: var(--toolbar-background);
+        text-align: right;
+    }
+}
+
+.OptionsPanel-range {
+    user-select: none;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}

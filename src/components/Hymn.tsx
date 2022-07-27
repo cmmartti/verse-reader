@@ -2,7 +2,8 @@ import React from "react";
 
 import * as types from "../types";
 import c from "../util/c";
-import { setStateAndNavigate, useAppState } from "../state";
+import { useAppState } from "../state";
+import { navigate } from "../locationState";
 
 export let Hymn = React.memo(_Hymn);
 
@@ -15,38 +16,20 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
     return (
         <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
             <header className="Hymn-header">
-                <h2 className="Hymn-number">
-                    <span className="visually-hidden" role="presentation">
-                        Page{" "}
-                    </span>
-                    {hymn.isDeleted && <span className="visually-hidden">deleted</span>}
-                    {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
-                    {hymn.id}
-                    <span className="visually-hidden" role="presentation">
-                        . {hymn.title}
-                    </span>
+                <h2 className="Hymn-title">
+                    <span role="presentation">
+                        <span className="visually-hidden" role="presentation">
+                            Page{" "}
+                        </span>
+                        {hymn.isDeleted && (
+                            <span className="visually-hidden">deleted </span>
+                        )}
+                        {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
+                        {hymn.id}.
+                    </span>{" "}
+                    <span role="presentation">{hymn.title}</span>
                 </h2>
-                {hymn.tunes.length > 0 && (
-                    <div className="Hymn-tunes">
-                        Tune:{" "}
-                        {hymn.tunes
-                            .map(
-                                tuneId =>
-                                    book.tunes?.[tuneId] ?? {
-                                        id: tuneId,
-                                        name: tuneId,
-                                    }
-                            )
-                            .map((tune, index) => {
-                                return (
-                                    <React.Fragment key={tune.id}>
-                                        {tune.name || tune.id}
-                                        {index < hymn.tunes.length - 1 && ", "}
-                                    </React.Fragment>
-                                );
-                            })}
-                    </div>
-                )}
+
                 {hymn.topics.length > 0 && (
                     <p className="Hymn-topics">
                         <span className="visually-hidden" role="presentation">
@@ -62,13 +45,37 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                             )
                             .map((topic, index) => (
                                 <React.Fragment key={topic.id}>
-                                    <span role="presentation">{topic.name}</span>
+                                    <span role="presentation" className="Hymn-topic">
+                                        {topic.name}
+                                    </span>
                                     {index < hymn.topics.length - 1 && ", "}
                                 </React.Fragment>
                             ))}
                     </p>
                 )}
             </header>
+
+            {hymn.tunes.length > 0 && (
+                <div className="Hymn-tunes">
+                    Tune:{" "}
+                    {hymn.tunes
+                        .map(
+                            tuneId =>
+                                book.tunes?.[tuneId] ?? {
+                                    id: tuneId,
+                                    name: tuneId,
+                                }
+                        )
+                        .map((tune, index) => {
+                            return (
+                                <React.Fragment key={tune.id}>
+                                    {tune.name || tune.id}
+                                    {index < hymn.tunes.length - 1 && ", "}
+                                </React.Fragment>
+                            );
+                        })}
+                </div>
+            )}
 
             <div className="Hymn-verses" lang={hymn.language}>
                 {hymn.verses.map((verse, i) => (
@@ -93,9 +100,13 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                                     (year ? ` (${year})` : "")
                             )
                             .join(", ")}
-                        {hymn.origin && ` [${hymn.origin}]`}
                     </p>
                 )}
+
+                {hymn.origin && (
+                    <p>Origin: {book.origins?.[hymn.origin]?.name ?? hymn.origin}</p>
+                )}
+
                 {translators.length > 0 && (
                     <p>
                         {translators.length === 1 ? "Translator: " : "Translators: "}
@@ -107,7 +118,6 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                                     (year ? ` (${year})` : "")
                             )
                             .join(", ")}
-                        {hymn.origin && ` [${hymn.origin}]`}
                     </p>
                 )}
                 {hymn.links.length > 0 && (
@@ -118,10 +128,10 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                                     href={`/en-${link.edition}?loc=${link.id}`}
                                     onClick={event => {
                                         event.preventDefault();
-                                        setStateAndNavigate(
+                                        navigate(
                                             prevState => ({
                                                 ...prevState,
-                                                "app/currentBook": "en-" + link.edition,
+                                                book: "en-" + link.edition,
                                                 [`book/en-${link.edition}/loc`]: link.id,
                                             }),
                                             false
@@ -269,7 +279,13 @@ function Lines({ lines }: { lines: (types.Line | types.RepeatLines)[] }) {
                     case "repeat":
                         return <RepeatLines key={i} repeat={lineOrRepeat} />;
                     case "line":
-                        return <Line key={i} line={lineOrRepeat} />;
+                        return (
+                            <>
+                                <span key={i} className="Hymn-line">
+                                    {lineOrRepeat.text}
+                                </span>{" "}
+                            </>
+                        );
                     default:
                         return null;
                 }
@@ -298,21 +314,5 @@ function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {
                 {/* ({repeat.times}x){" "} */}
             </span>
         </span>
-    );
-}
-
-const EM_DASH = "—";
-const ZERO_WIDTH_SPACE = "\u200B";
-
-function Line({ line }: { line: types.Line }) {
-    let noSpaceAfter = line.text.slice(-1) === EM_DASH;
-    return (
-        <React.Fragment>
-            <span className={"Hymn-line" + c("Hymn-line--nospaceafter", noSpaceAfter)}>
-                {line.text}
-            </span>
-            {/* Allow for line-breaks after em dashes */}
-            {noSpaceAfter ? ZERO_WIDTH_SPACE : " "}
-        </React.Fragment>
     );
 }

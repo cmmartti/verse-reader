@@ -12,6 +12,7 @@ export default class MenuButtonElement extends HTMLElement {
         document.addEventListener(MenuElement.TOGGLE_EVENT, this.#onToggle);
         this.addEventListener("mousedown", this.#onMousedown);
         this.addEventListener("mouseup", this.#onMouseup);
+        this.addEventListener("click", this.#onClick);
         this.addEventListener("keydown", this.#onKeydown);
         document.addEventListener("mousedown", this.#documentMousedown);
     }
@@ -20,6 +21,7 @@ export default class MenuButtonElement extends HTMLElement {
         document.removeEventListener(MenuElement.TOGGLE_EVENT, this.#onToggle);
         this.removeEventListener("mousedown", this.#onMousedown);
         this.removeEventListener("mouseup", this.#onMouseup);
+        this.removeEventListener("click", this.#onClick);
         this.removeEventListener("keydown", this.#onKeydown);
         document.removeEventListener("mousedown", this.#documentMousedown);
     }
@@ -68,13 +70,15 @@ export default class MenuButtonElement extends HTMLElement {
      * button and releasing over the desired menuitem as with classic desktop menus.
      */
     #onMousedown = (event: Event) => {
-        let menu = this.#menu;
-        if (menu && !menu.open) {
-            event.preventDefault(); // allow the menu to take the focus
-            menu.toggle(true);
+        if (this.getAttribute("trigger") === "mousedown") {
+            let menu = this.#menu;
+            if (menu && !menu.open) {
+                event.preventDefault(); // allow the menu to take the focus
+                menu.toggle(true);
 
-            // Prevent the mouseup event from closing the menu again
-            this.#preventMouseupEvent = true;
+                // Prevent the mouseup event from closing the menu again
+                this.#preventMouseupEvent = true;
+            }
         }
     };
 
@@ -84,9 +88,21 @@ export default class MenuButtonElement extends HTMLElement {
      * Hide the menu on mouse up.
      */
     #onMouseup = (event: Event) => {
-        if (this.#preventMouseupEvent) event.preventDefault();
-        else this.#menu?.toggle(false);
-        this.#preventMouseupEvent = false; // reset to false each time
+        if (this.getAttribute("trigger") === "mousedown") {
+            if (this.#preventMouseupEvent) event.preventDefault();
+            else this.#menu?.toggle(false);
+            this.#preventMouseupEvent = false; // reset to false each time
+        }
+    };
+
+    #onClick = (event: Event) => {
+        if (this.getAttribute("trigger") === "click" || !this.hasAttribute("trigger")) {
+            let menu = this.#menu;
+            if (menu) {
+                event.preventDefault(); // allow the menu to take the focus
+                menu.toggle(!menu.open);
+            }
+        }
     };
 
     /**

@@ -1,196 +1,252 @@
 .FindPanel {
-    display: grid;
-    height: 100%;
-    grid-template:
-        "index"
-        "search"
-        "results" 1fr;
-    @media (max-width: 29rem) {
-        grid-template:
-            "index"
-            "results" 1fr
-            "search";
-        // flex-direction: column-reverse;
+    background: var(--background);
+    z-index: 1;
+    user-select: contain;
+    position: relative;
+    @media (min-width: 29rem) {
+        &:not([open]) {
+            display: none;
+        }
     }
-    padding-inline: 0.325rem;
-    padding-block: 0 0.325rem;
+    @media (max-width: 29rem) {
+        &:not([open]) {
+            transform: translateY(100%);
+            pointer-events: none;
+            transition: transform 50ms ease-in;
+        }
+        transition: transform 50ms ease-out;
+    }
+    &:focus {
+        outline: none;
+    }
+    &:focus-visible .OptionsPanel-titlebar {
+        outline: var(--focus-outline);
+        outline-offset: -0.325rem;
+    }
 
-    gap: 0.325rem;
+    @media (max-width: 29rem) {
+        position: fixed;
+        inset-inline: 0;
+        inset-block: auto 0;
+        max-height: calc(var(--vh100) - var(--titlebar-height));
+    }
+    @media (min-width: 29rem) and (max-width: 55rem) {
+        position: fixed;
+        inset-inline: 0;
+        inset-block: auto 0;
+        max-height: calc(var(--vh100) - var(--titlebar-height));
+    }
+
+    @media (min-width: 55rem) {
+        border-left: 3px double var(--color2);
+        height: 100%;
+    }
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.FindPanel super-menu {
+    position: absolute;
+    max-height: 100%;
+    max-width: 100%;
+    inset-block-start: 0.25rem;
+    inset-inline-end: 0.25rem;
 }
 
 .FindPanel-toolbar {
-    grid-area: index;
+    top: 0;
+    padding: 0.325rem;
     display: flex;
     gap: 0.325rem;
-    // justify-content: space-between;
-    align-items: stretch;
     background: var(--toolbar-background);
-    // border: 1px solid red;
-    font-size: var(--sidebar-font-size);
-    // padding: 0.25rem;
-    // height: var(--toolbar-height);
-    @media (max-width: 29rem) {
-        // border-bottom: var(--control-border);
-    }
+    overflow: auto;
 
     & select {
-        flex: 1;
+        flex: 1 1 auto;
         font-weight: bold;
+        min-width: 5em;
+        // background-color: transparent;
+        text-overflow: ellipsis;
+    }
+
+    & > super-menu-button,
+    & > button {
+        color: inherit;
+        border: none;
+        background: none;
+        background: none;
+        font: inherit;
+        padding-inline: 0.5em;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & svg {
+            height: 1.2em;
+            width: 1.2em;
+            flex-shrink: 0;
+        }
+    }
+    & > label {
+        color: inherit;
+        font: inherit;
+        padding-inline: 0.5em;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        & svg {
+            height: 1.2em;
+            width: 1.2em;
+            flex-shrink: 0;
+        }
     }
 }
 
 .FindPanel-search {
-    grid-area: search;
-    font-size: var(--sidebar-font-size);
-    background: var(--dialog-background);
-    // padding: 0.25rem;
-    gap: 0.325rem;
-    @media (max-width: 29rem) {
-        // border-top: var(--control-border);
-    }
-    @media (min-width: 29rem) {
-        // border-bottom: var(--control-border);
-    }
+    flex: 1;
     display: flex;
+    // box-shadow: inset 0 0 2px hsla(0, 0%, 0%, 0.75);
+    &:focus-within {
+        // box-shadow: inset 0 0 2px hsla(0, 0%, 0%, 1);
+    }
+
+    border-radius: 0.15em;
+    background: var(--input-background);
+    color: var(--color);
+    &:focus-within {
+        outline: var(--focus-outline);
+    }
 
     & input {
         flex: 1;
         width: 0;
+        border: none;
+        background: none;
+        &:focus {
+            outline: none;
+        }
+    }
+    & button {
+        color: inherit;
+        border: none;
+        background: none;
+        background: none;
+        font: inherit;
+        padding-inline: 0.5em;
+        &:focus-visible {
+            outline-offset: -0.325em;
+            outline: none;
+        }
+        &:focus-visible svg {
+            border-radius: 0.15em;
+            outline: var(--focus-outline);
+        }
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & svg {
+            height: 1.2em;
+            width: 1.2em;
+            flex-shrink: 0;
+        }
     }
 }
 
 .FindPanel-results {
-    grid-area: results;
     flex: 1;
+    // height: 100%;
     overflow: auto;
+
     display: flex;
     flex-direction: column;
     background: var(--listbox-background);
-    border: var(--control-border);
     &:focus {
         outline: none;
     }
 
-    &::after {
-        flex: 1;
-        content: "~";
+    & > .status {
+        padding-inline: 0.25rem;
+        padding-block: 0.5rem;
         text-align: center;
-        display: flex;
-        justify-content: center;
-        padding: 0.25rem;
-        border-top: var(--control-border);
+        border-bottom: 1px solid var(--color2);
     }
+
+    // &::after {
+    //     flex: 1;
+    //     content: "~";
+    //     text-align: center;
+    //     display: flex;
+    //     justify-content: center;
+    //     padding: 0.25rem;
+    //     border-top: 1px solid var(--color2);
+    // }
 }
 
 .IndexAccordion {
     display: flex;
     flex-direction: column;
 
-    & > .status {
-        padding-inline: 0.25rem;
-        padding-block: 0.5rem;
-        text-align: center;
-        border-bottom: var(--control-border);
-        // background: var(--background);
+    & > details:not(:last-child) {
+        border-bottom: 1px solid;
     }
 
-    & > .row {
+    & > details > summary:focus {
+        outline: none;
+    }
+    & > details > summary:focus-visible .count {
+        outline: var(--focus-outline);
+    }
+    & > details > summary {
+        display: block;
+        user-select: none;
+        padding: 0.325rem;
+        gap: 0.25em;
+
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-
-        & > .expand {
-            flex: 1;
-        }
+        position: relative;
+    }
+    & > details > summary .label {
+        flex: 1;
+        font-weight: 600;
+    }
+    & > details > summary .count {
+        padding: 0 0.2em;
+        background: var(--listbox-background);
+        border: 1px solid;
+        border-radius: 0.2em;
+        font-size: 0.9rem;
+        min-width: 1.5em;
+        text-align: center;
+    }
+    & > details.isCurrent > summary .count {
+        background: var(--selected-background);
     }
 
-    & > .sections {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        & > details:not(:last-child) {
-            border-bottom: var(--control-border);
-            border-bottom: 1px solid gray;
-        }
-
-        & > details > summary:focus {
-            outline: none;
-        }
-        & > details > summary:focus-visible {
-            outline: var(--focus-outline);
-            outline-offset: -0.25rem;
-        }
-        & > details > summary {
-            display: block;
-            user-select: none;
-            background: var(--background);
-
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        & > details > summary > .label {
-            flex: 1;
-            padding-block: 0.325rem;
-            padding-inline: 0 0.5rem;
-            // font-size: 1.05em;
-            font-weight: inherit;
-
-            display: flex;
-            align-items: center;
-        }
-
-        & > details > summary > .meta {
-            // flex: 1;
-            padding-inline-end: 0.5rem;
-
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        & > details > summary > .meta > .status-current {
-            width: 0.85rem;
-            height: 0.85rem;
-            border-radius: 100%;
-            position: relative;
-            border: 4px solid orange;
-            overflow: hidden;
-            color: transparent;
-        }
-        & > details > summary > .openIndicator {
-            flex-shrink: 0;
-            transition: transform ease-in-out 50ms;
-            border-radius: 100%;
-        }
-        & > details[open] > summary > .openIndicator {
-            transform: rotate(90deg);
-        }
+    & > details > summary .openIndicator {
+        flex-shrink: 0;
+        transition: transform ease-in-out 50ms;
+        border-radius: 100%;
+    }
+    & > details[open] > summary {
+        border-bottom: 1px solid var(--color2);
+    }
+    & > details[open] > summary .openIndicator {
+        transform: rotate(90deg);
     }
 }
 
 .AllList {
     display: flex;
     flex-direction: column;
-
-    & > .status {
-        // background: var(--background);
-        padding-inline: 0.25rem;
-        padding-block: 0.5rem;
-        text-align: center;
-        border-bottom: var(--control-border);
-    }
-
-    & > .row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        & > .expand {
-            flex: 1;
-        }
-    }
 
     & > .content {
         flex: 1;
@@ -200,75 +256,67 @@
 ul.ReferenceList {
     list-style: none;
     margin: 0;
-    padding: 0;
-    background: var(--listbox-background);
+    padding-inline: 0;
 
-    line-height: 1.2;
-    display: grid;
-    grid-template-columns: minmax(2.6rem, auto) 1fr;
-
-    // Reference
     & > li {
-        grid-column: 1 / -1;
-        &:not(:last-child) {
-            border-bottom: 1px solid var(--control-border-color);
+        @media (hover: hover) {
+            &:hover {
+                background: hsla(0, 0%, 0%, 0.1);
+            }
         }
-
-        display: flex;
+        &:not(:first-child) {
+            border-top: 1px solid var(--color2);
+        }
+    }
+    & > li > .reference-contents {
+        display: block;
+        padding: 0.325rem 0.5rem;
         text-decoration: none;
         color: inherit;
-
-        display: grid;
-        grid-template-areas:
-            "id title"
-            "id lines";
-        grid-template-columns: minmax(2.65rem, auto) 1fr; // fallback
-        grid-template-columns: subgrid;
-    }
-
-    & > li > .reference-id {
-        grid-area: id;
-        text-decoration: none;
-        font-weight: bold;
-        text-align: end;
-        padding: 0.2rem;
-        border-inline-end: 1px solid var(--control-border-color);
-    }
-    & > li > .reference-title {
-        flex: 1;
-        padding: 0.2rem;
-        color: var(--link-color);
-        text-decoration: none;
-        font: inherit;
-        &:hover {
-            text-decoration: underline;
+        &.is-current {
+            background: var(--selected-background);
         }
-    }
+        &.is-deleted .reference-title {
+            text-decoration: line-through;
+        }
 
-    & > li.is-current > .reference-id {
-        background: orange;
-    }
+        &:focus-visible {
+            outline: none;
+        }
+        &:focus-visible .reference-label {
+            outline: var(--focus-outline);
+            border-radius: 0.1rem;
+            outline-offset: 0.1em;
+        }
 
-    & > li.is-deleted > .reference-title {
-        text-decoration: line-through;
-        &:hover {
-            text-decoration: line-through underline;
+        & > .reference-label {
+            display: flex;
+            gap: 0.15em;
+            justify-content: space-between;
+
+            & > .reference-title {
+                order: 1;
+                color: var(--color);
+            }
+            & > .reference-id {
+                order: 2;
+                font-weight: 600;
+            }
         }
     }
 
     // List of matching lines
-    & > li > ul {
+    & > li ul {
         grid-area: lines;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        // border-left: 1px solid var(--control-border-color);
-
+        // margin: 0;
+        padding-block: 0;
+        padding-inline: 1em;
+        list-style: "•  ";
+        color: hsl(0, 0%, 35%);
+        font-style: italic;
         & > li {
-            font-size: 0.8em;
-            padding-inline: 0.35rem;
-            padding-block: 0.1rem;
-            border-top: 1px dashed var(--control-border-color);
+            font-size: 0.9em;
+            padding-block: 0.15em;
         }
     }
 }

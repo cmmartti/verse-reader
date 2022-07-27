@@ -128,7 +128,6 @@ export default class DialogElement extends HTMLElement {
         if (this.open) {
             let target = event.target as HTMLElement | null;
             if (target && !target.closest('[role="dialog"]')) {
-                console.log("focus", target);
                 if (this.getAttribute("aria-modal") === "true") this.focus();
             }
         }

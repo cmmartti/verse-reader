@@ -3,27 +3,41 @@ import { useQuery } from "react-query";
 
 import * as types from "../types";
 import * as bookService from "../bookService";
-import { useAppState, setStateAndNavigate } from "../state";
+import { useAppState } from "../state";
 import c from "../util/c";
 import { usePending } from "../util/usePending";
+import { ReactComponent as TriangleIcon } from "../icons/triangle.svg";
 
 import { FindDialogBase } from "./FindDialogBase";
 import { searchIndex } from "../search";
 import { useDebounceCallback } from "../util/useDebounceCallback";
 
-import { ReactComponent as FoldIcon } from "../icons/fold.svg";
-import { ReactComponent as UnfoldIcon } from "../icons/unfold.svg";
-import { ReactComponent as ChevronIcon } from "../icons/chevron_right.svg";
+import { navigate, useLocationState } from "../locationState";
 
 type IndexReference = { id: types.HymnId; lines: string[] };
 
-export let FindDialog = ({ book }: { book: types.Hymnal }) => {
-    let [indexType, setIndexType] = useAppState(`book/${book.id}/currentIndex`, null);
-    let [search, setSearch] = useAppState(`book/${book.id}/search`, "");
-    let [loc] = useAppState(`book/${book.id}/loc`);
+export let FindDialog = ({
+    book,
+    open,
+    onClose,
+}: {
+    book: types.Hymnal;
+    open: boolean;
+    onClose?: () => void;
+}) => {
+    let [search, setSearch] = useLocationState(`book/${book.id}/search`, "");
+    let [loc] = useLocationState(`book/${book.id}/loc`);
+
+    let [indexType, setIndexType] = useAppState(`book/${book.id}/currentIndex`, "_all");
+    let [sort, setSort] = useAppState(`book/${book.id}/index/${indexType}/sort`);
+    let [expand, setExpand] = useAppState(`book/${book.id}/index/${indexType}/expand`, {
+        all: false,
+        except: [],
+    });
 
     let allIndexes = React.useMemo(() => getIndexes(book), [book]);
-    let activeIndex = allIndexes.find(index => index.type === indexType) ?? null;
+    let activeIndex =
+        allIndexes.find(index => index.type === indexType) ?? allIndexes[0]!;
 
     let indexOfLines = useQuery(["indexOfLines", book.id], () =>
         bookService.getIndexOfLines(book.id)
@@ -34,8 +48,74 @@ export let FindDialog = ({ book }: { book: types.Hymnal }) => {
         () => Object.keys(book.pages).map(id => ({ id, lines: [] as string[] })),
         [book]
     );
-
     let [references, setReferences] = React.useState(allReferences);
+
+    // Group references by category, according to the current index type
+    let categories = React.useMemo(() => {
+        if (!activeIndex) return [];
+
+        type Category = {
+            id: string;
+            name: string | null;
+            references: IndexReference[];
+        };
+
+        // Explicitly defined categories
+        let definedCategories = Object.fromEntries(
+            getIndexCategories(book, activeIndex.type).map(category => [
+                category.id,
+                { id: category.id, name: category.name, references: [] } as Category,
+            ])
+        );
+
+        // Any new ad-hoc categories that don't have a referenced definition
+        let adhoc = {} as Record<string, Category>;
+
+        // "Other" category for uncategorized references
+        let other = { id: "---", name: "(Uncategorized)", references: [] } as Category;
+
+        for (let ref of references) {
+            let page = book.pages[ref.id];
+            if (!page) break;
+            let categoryIds = getPageCategories(activeIndex.type, page);
+
+            if (categoryIds.length === 0) other.references.push(ref);
+            for (let id of categoryIds) {
+                if (definedCategories[id]) {
+                    definedCategories[id]!.references.push(ref);
+                } else {
+                    let newCategory = adhoc[id] ?? { id, name: null, references: [] };
+                    adhoc[id] = newCategory;
+                    newCategory.references.push(ref);
+                }
+            }
+        }
+
+        // Remove empty categories and put adhoc categories at the end by default
+        let categories = [
+            ...Object.values(definedCategories).filter(c => c.references.length > 0),
+            ...Object.values(adhoc).sort((a, b) => a.id.localeCompare(b.id)),
+        ];
+
+        // If the categories aren't ordered by default, sort them alphabetically
+        if (!activeIndex.hasDefaultSort || sort === "a-z")
+            categories.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
+
+        if (sort === "count")
+            categories.sort((a, b) => b.references.length - a.references.length);
+
+        // The "other" category always goes at the end
+        if (other.references.length > 0) categories.push(other);
+
+        // Use "[ID]" as the category name if the category is un-named
+        let listWithNames = categories.map(({ id, name, references }) => ({
+            id,
+            name: name ?? `[${id}]`,
+            references,
+        }));
+
+        return listWithNames;
+    }, [book, sort, references, activeIndex]);
 
     let updateResults = React.useCallback(
         (searchString: string) => {
@@ -68,272 +148,167 @@ export let FindDialog = ({ book }: { book: types.Hymnal }) => {
 
     let waitingForInput = usePending(search.length > 0 && search.length < 3, 1500, 300);
 
-    let status =
-        search.length > 0 && indexOfLinesIsLoading
-            ? "Loading search index..."
-            : indexOfLines.isError
-            ? "Error loading search index"
-            : waitingForInput
-            ? "Type at least 3 letters to search"
-            : undefined;
+    let status = "";
+
+    if (search.length > 0 && indexOfLinesIsLoading) {
+        status = "Loading search index...";
+    } else if (indexOfLines.isError) {
+        status = "Error loading search index";
+    } else if (waitingForInput) {
+        status = "Type at least 3 letters to search";
+    } else if (search.length > 3) {
+        status = `${references.length} match${references.length !== 1 ? "es" : ""}`;
+        if (indexType !== "_all") {
+            status += ` in ${categories.length} categories`;
+        }
+    }
+
+    let activeSearch = search.length >= 3;
 
     return (
         <FindDialogBase
+            open={open}
+            onClose={onClose}
             allIndexes={allIndexes}
             initialIndex={activeIndex}
             onIndexChange={index => setIndexType(index?.type ?? null)}
             search={search}
             onSearchChange={onSearchChange}
+            sort={sort}
+            setSort={setSort}
+            expandAll={() => setExpand({ all: true, except: [] })}
+            collapseAll={() => setExpand({ all: false, except: [] })}
         >
-            {activeIndex ? (
-                <Categories
-                    book={book}
-                    index={activeIndex}
-                    references={references}
-                    status={status}
-                    activeSearch={search.length >= 3}
-                />
+            {status && (
+                <p
+                    className="status"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                >
+                    {status}
+                </p>
+            )}
+
+            {indexType === "_all" ? (
+                <ul className="ReferenceList">
+                    {references.map((reference, i) => (
+                        <Reference
+                            key={reference.id}
+                            page={book.pages[reference.id]}
+                            bookId={book.id}
+                            lines={reference.lines}
+                            isCurrent={loc === reference.id}
+                        />
+                    ))}
+                </ul>
             ) : (
-                <div className="AllList">
-                    <p
-                        className="status"
-                        role="status"
-                        aria-live="polite"
-                        aria-atomic="true"
-                    >
-                        {status ||
-                            `${references.length} hymn${
-                                references.length !== 1 ? "s" : ""
-                            }`}
-                    </p>
-                    <div className="content">
-                        <ul className="ReferenceList">
-                            {references.map((reference, i) => (
-                                <Reference
-                                    key={reference.id}
-                                    page={book.pages[reference.id]}
-                                    bookId={book.id}
-                                    lines={reference.lines}
-                                    isCurrent={loc === reference.id}
-                                />
-                            ))}
-                        </ul>
-                    </div>
+                <div className="IndexAccordion">
+                    {categories.map(category => {
+                        let isCurrent =
+                            loc !== null &&
+                            category.references
+                                .map(reference => reference.id)
+                                .includes(loc);
+                        return (
+                            <details
+                                key={category.id}
+                                className={c("isCurrent", isCurrent)}
+                                open={
+                                    activeSearch ||
+                                    expand.all ||
+                                    (!expand.all && expand.except.includes(category.id))
+                                }
+                                onToggle={event => {
+                                    if (!activeSearch) {
+                                        let open = (event.target as HTMLDetailsElement)
+                                            .open;
+
+                                        if (
+                                            (expand.all && !open) ||
+                                            (!expand.all && open)
+                                        ) {
+                                            setExpand({
+                                                all: expand.all,
+                                                except: [...expand.except, category.id],
+                                            });
+                                        } else {
+                                            setExpand({
+                                                all: expand.all,
+                                                except: expand.except.filter(
+                                                    e => e !== category.id
+                                                ),
+                                            });
+                                        }
+
+                                        // setExpand(prev => {
+                                        //     if (
+                                        //         (prev.all && !open) ||
+                                        //         (!prev.all && open)
+                                        //     ) {
+                                        //         return {
+                                        //             all: prev.all,
+                                        //             except: [
+                                        //                 ...prev.except,
+                                        //                 category.id,
+                                        //             ],
+                                        //         };
+                                        //     }
+                                        //     return {
+                                        //         all: prev.all,
+                                        //         except: prev.except.filter(
+                                        //             e => e !== category.id
+                                        //         ),
+                                        //     };
+                                        // });
+                                    }
+                                }}
+                            >
+                                <summary>
+                                    <TriangleIcon
+                                        aria-hidden
+                                        className="openIndicator"
+                                    />
+                                    <span className="label">{category.name}</span>
+                                    {isCurrent && (
+                                        <span
+                                            className="visually-hidden"
+                                            role="presentation"
+                                        >
+                                            Contains current page
+                                        </span>
+                                    )}
+                                    <span className="count" aria-hidden>
+                                        {category.references.length}
+                                    </span>
+                                    <span
+                                        role="presentation"
+                                        className="visually-hidden"
+                                    >
+                                        {" "}
+                                        contains {category.references.length} item
+                                        {category.references.length !== 1 && "s"}
+                                    </span>
+                                </summary>
+                                <ul className="ReferenceList">
+                                    {category.references.map(reference => (
+                                        <Reference
+                                            key={reference.id}
+                                            page={book.pages[reference.id]!}
+                                            bookId={book.id}
+                                            lines={reference.lines}
+                                            isCurrent={loc === reference.id}
+                                        />
+                                    ))}
+                                </ul>
+                            </details>
+                        );
+                    })}
                 </div>
             )}
         </FindDialogBase>
     );
 };
-
-function Categories({
-    book,
-    index,
-    references,
-    status,
-    activeSearch,
-}: {
-    book: types.Hymnal;
-    index: types.Index;
-    references: IndexReference[];
-    status?: string;
-    activeSearch: boolean;
-}) {
-    let [loc] = useAppState(`book/${book.id}/loc`);
-    let [sort, setSort] = useAppState(`book/${book.id}/index/${index.type}/sort`);
-    let [expand, setExpand] = useAppState(`book/${book.id}/index/${index.type}/expand`, {
-        all: false,
-        except: [],
-    });
-
-    // Group references by category, according to the current index type
-    let categories = React.useMemo(() => {
-        type Category = {
-            id: string;
-            name: string | null;
-            references: IndexReference[];
-        };
-
-        // Explicitly defined categories
-        let definedCategories = Object.fromEntries(
-            getIndexCategories(book, index.type).map(category => [
-                category.id,
-                { id: category.id, name: category.name, references: [] } as Category,
-            ])
-        );
-
-        // Any new ad-hoc categories that don't have a referenced definition
-        let adhoc = {} as Record<string, Category>;
-
-        // "Other" category for uncategorized references
-        let other = { id: "---", name: "(Uncategorized)", references: [] } as Category;
-
-        for (let ref of references) {
-            let page = book.pages[ref.id];
-            if (!page) break;
-            let categoryIds = getPageCategories(index.type, page);
-
-            if (categoryIds.length === 0) other.references.push(ref);
-            for (let id of categoryIds) {
-                if (definedCategories[id]) {
-                    definedCategories[id]!.references.push(ref);
-                } else {
-                    let newCategory = adhoc[id] ?? { id, name: null, references: [] };
-                    adhoc[id] = newCategory;
-                    newCategory.references.push(ref);
-                }
-            }
-        }
-
-        // Remove empty categories and put adhoc categories at the end by default
-        let categories = [
-            ...Object.values(definedCategories).filter(c => c.references.length > 0),
-            ...Object.values(adhoc).sort((a, b) => a.id.localeCompare(b.id)),
-        ];
-
-        // If the categories aren't ordered by default, sort them alphabetically
-        if (!index.hasDefaultSort || sort === "a-z")
-            categories.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
-
-        if (sort === "count")
-            categories.sort((a, b) => b.references.length - a.references.length);
-
-        // The "other" category always goes at the end
-        if (other.references.length > 0) categories.push(other);
-
-        // Use "[ID]" as the category name if the category is un-named
-        let listWithNames = categories.map(({ id, name, references }) => ({
-            id,
-            name: name ?? `[${id}]`,
-            references,
-        }));
-
-        return listWithNames;
-    }, [book, index, references, sort]);
-
-    return (
-        <div className="IndexAccordion">
-            <p className="status" role="status" aria-live="polite" aria-atomic="true">
-                {status ||
-                    `${references.length} hymns in ${categories.length} categories`}
-            </p>
-
-            <div className="sections">
-                {categories.map(category => (
-                    <details
-                        key={category.id}
-                        className={c(
-                            "isCurrent",
-                            loc !== null &&
-                                category.references
-                                    .map(reference => reference.id)
-                                    .includes(loc)
-                        )}
-                        open={
-                            activeSearch ||
-                            expand.all ||
-                            (!expand.all && expand.except.includes(category.id))
-                        }
-                        onToggle={event => {
-                            if (!activeSearch) {
-                                let open = (event.target as HTMLDetailsElement).open;
-                                setExpand(prev => {
-                                    if ((prev.all && !open) || (!prev.all && open)) {
-                                        return {
-                                            all: prev.all,
-                                            except: [...prev.except, category.id],
-                                        };
-                                    }
-                                    return {
-                                        all: prev.all,
-                                        except: prev.except.filter(
-                                            e => e !== category.id
-                                        ),
-                                    };
-                                });
-                            }
-                        }}
-                    >
-                        <summary>
-                            <ChevronIcon aria-hidden className="openIndicator" />{" "}
-                            <span className="label">{category.name}</span>
-                            <span className="meta">
-                                {loc !== null &&
-                                    category.references
-                                        .map(reference => reference.id)
-                                        .includes(loc) && (
-                                        <span
-                                            className="status-current"
-                                            title="Contains current page"
-                                        >
-                                            Contains current page
-                                        </span>
-                                    )}
-
-                                <span className="count" aria-hidden>
-                                    {category.references.length}
-                                </span>
-                                <span role="presentation" className="visually-hidden">
-                                    {" "}
-                                    contains {category.references.length} item
-                                    {category.references.length !== 1 && "s"}
-                                </span>
-                            </span>
-                        </summary>
-                        <ul className="ReferenceList">
-                            {category.references.map(reference => (
-                                <Reference
-                                    key={reference.id}
-                                    page={book.pages[reference.id]!}
-                                    bookId={book.id}
-                                    lines={reference.lines}
-                                    isCurrent={loc === reference.id}
-                                />
-                            ))}
-                        </ul>
-                    </details>
-                ))}
-            </div>
-
-            <div className="row">
-                <button
-                    className="Button"
-                    onClick={() => {
-                        setExpand({ all: true, except: [] });
-                    }}
-                    aria-label="expand all"
-                    title="Expand All"
-                >
-                    <UnfoldIcon aria-hidden />
-                </button>
-                <button
-                    className="Button"
-                    onClick={() => {
-                        setExpand({ all: false, except: [] });
-                    }}
-                    aria-label="collapse all"
-                    title="Collapse All"
-                >
-                    <FoldIcon aria-hidden />
-                </button>
-
-                <div className="expand" />
-
-                <label htmlFor="sort-select">Sort:</label>
-                <select
-                    id="sort-select"
-                    aria-label="Sort"
-                    className="sortSelect"
-                    value={sort}
-                    onChange={event => setSort(event.target.value)}
-                >
-                    {index.hasDefaultSort && <option value="default">Default</option>}
-                    <option value="a-z">A–Z</option>
-                    <option value="count">Count</option>
-                </select>
-            </div>
-        </div>
-    );
-}
 
 function Reference({
     page,
@@ -349,48 +324,57 @@ function Reference({
     if (!page) return null;
 
     return (
-        <li className={c("is-current", isCurrent) + c("is-deleted", page.isDeleted)}>
-            <span className="reference-id">
-                {/* {page.topics[0] !== topic.id && "+"} */}
-                {page.isRestricted && <span aria-label="restricted">*</span>}
-                {page.id}
-            </span>{" "}
+        <li>
             <a
-                className="reference-title"
+                className={
+                    "reference-contents" +
+                    c("is-current", isCurrent) +
+                    c("is-deleted", page.isDeleted)
+                }
                 href={`?book=${bookId}&loc=${page.id}`}
                 onClick={event => {
                     event.preventDefault();
-                    setStateAndNavigate(
+                    navigate(
                         prevState => ({
                             ...prevState,
-                            "app/currentBook": bookId,
-                            "app/mode": "read",
+                            book: bookId,
+                            sidebar: null,
                             [`book/${bookId}/loc`]: page!.id,
                         }),
                         false
                     );
                 }}
             >
-                {page.title || "(no title)"}
+                <span className="reference-label">
+                    <span className="reference-id">
+                        {page.isRestricted && <span aria-label="restricted">*</span>}
+                        {page.id}
+                    </span>{" "}
+                    <span className="reference-title">{page.title || "(no title)"}</span>
+                </span>
+
+                {lines.length > 0 && (
+                    <ul className="reference-lines">
+                        {lines.map((line, i) => (
+                            <li key={i}>{line}</li>
+                        ))}
+                    </ul>
+                )}
             </a>
-            {lines.length > 0 && (
-                <ul className="reference-lines">
-                    {lines.map((line, i) => (
-                        <li key={i}>{line}</li>
-                    ))}
-                </ul>
-            )}
         </li>
     );
 }
 
 function getIndexes(book: types.Hymnal | null) {
     if (!book) return [];
-    return Object.values(book.indices).map(index => ({
-        type: index.type,
-        name: index.name,
-        hasDefaultSort: index.hasDefaultSort,
-    }));
+    return [
+        { type: "_all", name: "Index", hasDefaultSort: true },
+        ...Object.values(book.indices).map(index => ({
+            type: index.type,
+            name: index.name,
+            hasDefaultSort: index.hasDefaultSort,
+        })),
+    ];
 }
 
 function getIndexCategories(
@@ -398,6 +382,8 @@ function getIndexCategories(
     indexType: types.IndexType
 ): Array<{ id: string; name: string }> {
     switch (indexType) {
+        case "_all":
+            return [{ id: "_", name: "_" }];
         case "topic":
             if (!book.topics) return [];
             return Object.values(book.topics);
@@ -427,6 +413,8 @@ function getIndexCategories(
 
 function getPageCategories(indexType: types.IndexType, page: types.Hymn): Array<string> {
     switch (indexType) {
+        case "_all":
+            return ["_"];
         case "topic":
             return page.topics;
         case "tune":
