@@ -1,10 +1,10 @@
 import React from "react";
 
-import c from "../util/c";
 import { useAppState } from "../state";
 import DialogElement from "../elements/DialogElement";
 import { ReactComponent as CloseIcon } from "../icons/close.svg";
 import { fonts } from "../fonts";
+import { useMatchMedia } from "../util/useMatchMedia";
 
 export function OptionsPanel({
     open,
@@ -34,6 +34,26 @@ export function OptionsPanel({
         if (sidebar.open) sidebar.addEventListener("super-dialog-toggle", fn);
         return () => sidebar.removeEventListener("super-dialog-toggle", fn);
     }, [onClose]);
+
+    let isOverlay = useMatchMedia("(max-width: 29rem)");
+
+    React.useEffect(() => {
+        let fn = (event: MouseEvent) => {
+            let target = event.target as Element | null;
+            if (
+                isOverlay &&
+                sidebarRef.current &&
+                !sidebarRef.current.contains(target)
+            ) {
+                if (sidebarRef.current.open) {
+                    sidebarRef.current.toggle(false);
+                    event.preventDefault();
+                }
+            }
+        };
+        document.addEventListener("mousedown", fn);
+        return () => document.removeEventListener("mousedown", fn);
+    }, [isOverlay]);
 
     return (
         <super-dialog
@@ -78,19 +98,16 @@ export function OptionsPanel({
                     />
                     Expand Repeated Lines
                 </label>
-
-                <div className="Select">
-                    <label htmlFor={htmlId + "-colorScheme"}>Color Scheme</label>
-                    <select
-                        id={htmlId + "-colorScheme"}
-                        value={colorScheme}
-                        onChange={e => setColorScheme(e.target.value)}
-                    >
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="black">Black</option>
-                    </select>
-                </div>
+                <label className="ToggleButton">
+                    <input
+                        type="checkbox"
+                        checked={colorScheme === "black"}
+                        onChange={e =>
+                            setColorScheme(e.target.checked ? "black" : "light")
+                        }
+                    />
+                    Dark Mode
+                </label>
 
                 <div className="Select">
                     <label htmlFor={htmlId + "-fontFamily"}>Font Family</label>
@@ -99,8 +116,10 @@ export function OptionsPanel({
                         value={fontFamily}
                         onChange={e => setFontFamily(e.target.value)}
                     >
-                        {fonts.map(({ name, id }) => (
-                            <option value={id}>{name}</option>
+                        {fonts.map(({ name, id, value }) => (
+                            <option key={id} value={id} style={{ fontFamily: value }}>
+                                {name}
+                            </option>
                         ))}
                     </select>
                 </div>

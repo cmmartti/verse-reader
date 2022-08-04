@@ -11,8 +11,8 @@ import { useAppState } from "../state";
 
 import { ReactComponent as MenuIcon } from "../icons/menu.svg";
 import { ReactComponent as TOCIcon } from "../icons/toc.svg";
-import { FindDialogBase } from "./FindDialogBase";
-import { FindDialog } from "./FindDialog";
+import { FindPanelBase } from "./FindPanelBase";
+import { FindPanel } from "./FindPanel";
 import { usePending } from "../util/usePending";
 import { useLocationState } from "../locationState";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -72,6 +72,8 @@ export function App() {
         }
     }, [bookId, summaries.data, setCurrentBookId]);
 
+    let pageRef = React.useRef<HTMLDivElement>(null!);
+
     return (
         <ErrorBoundary>
             <main className="App">
@@ -92,11 +94,10 @@ export function App() {
                         </super-menu-button>
                     </h1>
 
-                    <div className="Page">
+                    <div className="Page" ref={pageRef} tabIndex={-1}>
                         {showBookSpinner ? (
                             <div className="StatusMessage">Loading...</div>
                         ) : book.data ? (
-                            // book.data.id
                             <Page book={book.data} />
                         ) : book.isError ? (
                             <div className="StatusMessage">{book.error.message}</div>
@@ -136,6 +137,9 @@ export function App() {
                                         : undefined
                                 }
                                 disabled={!book.data}
+                                onSubmit={() => {
+                                    pageRef.current.focus();
+                                }}
                             />
                         )}
 
@@ -158,13 +162,13 @@ export function App() {
                 </div>
 
                 {book.data ? (
-                    <FindDialog
+                    <FindPanel
                         book={book.data}
                         open={sidebar === "find"}
                         onClose={() => setSidebar(null)}
                     />
                 ) : (
-                    <FindDialogBase
+                    <FindPanelBase
                         open={sidebar === "find"}
                         onClose={() => setSidebar(null)}
                     />
@@ -227,10 +231,12 @@ function BoundNumberInput({
     bookId,
     max,
     disabled = false,
+    onSubmit,
 }: {
     bookId: types.DocumentId;
     max?: number;
     disabled?: boolean;
+    onSubmit?: (value: string) => void;
 }) {
     let [loc, setLoc] = useLocationState(`book/${bookId}/loc`);
     return (
@@ -240,11 +246,7 @@ function BoundNumberInput({
             onSubmit={newLoc => {
                 // push new location to history stack
                 setLoc(newLoc, false);
-                (
-                    document.querySelector(
-                        `[data-page="${newLoc}"]`
-                    ) as HTMLElement | null
-                )?.focus();
+                onSubmit?.(newLoc);
             }}
             max={max}
         />

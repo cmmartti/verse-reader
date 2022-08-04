@@ -2,6 +2,8 @@
     font-size: calc(1rem * var(--ui-scale-factor, 1));
     padding: 0.75rem;
     min-height: 100%;
+    max-width: 55ch;
+    margin-inline: auto;
     @media (min-width: 55rem) {
         padding: 1rem;
     }
@@ -51,26 +53,13 @@
     display: inline-block;
     transform: scale(1.5);
 }
-.Hymn.isDeleted .Hymn-number {
+.Hymn.isDeleted .Hymn-title {
     text-decoration: line-through;
 }
 .Hymn-tunes {
     font-style: italic;
     text-align: center;
-    // font-weight: bold;
     font-size: 0.85em;
-}
-
-.Hymn-chorus,
-.Hymn-refrain {
-    margin-left: 1em;
-}
-.Hymn-inlineRefrain {
-    font-style: italic;
-}
-
-.Hymn-highlight {
-    background: blue;
 }
 
 .Hymn-verses {
@@ -78,35 +67,104 @@
     margin-inline: auto;
     width: 100%;
 
-    columns: 30ch auto;
-    column-gap: 2ch;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-auto-flow: row;
+    grid-template-rows: repeat(auto-fill, minmax(0, auto));
+    // row-gap: 1em;
 
     & > * {
+        grid-column: span 2;
         margin-top: 0;
     }
     & > * + * {
-        margin-top: 0.625em;
+        margin-top: 0.75em;
     }
 }
-.Hymn-verseNumber {
-    margin-left: 0.75em;
-    margin-right: 0.5em;
+
+.Hymn-verse {
+    // text-align: justify;
+    // hyphens: auto;
 }
+
+.Hymn-attachment {
+    margin-left: 0.75em;
+}
+.Hymn-specialLines {
+    font-style: italic;
+}
+
+.Hymn-verseNumber {
+    grid-area: verse-number;
+    margin-left: 0.75em;
+    // margin-right: 0.25em;
+}
+
+.Hymn-attachmentLabel {
+    grid-area: verse-number;
+    font-style: italic;
+    // margin-right: 0.5em;
+}
+
 .Hymn-repeat {
     font-weight: bold;
-    margin-right: 0.5em;
 }
-.Hymn-repeatMarker {
-    // margin-left: -0.5em;
+.Hymn-repeatLabel {
+    // margin-right: 0.5em;
+    // margin-left: 0.5em;
+}
+
+.Hymn-pointer {
+    font-style: italic;
 }
 .Hymn-line {
-    margin-right: 0.5em;
-    break-after: always;
+    // padding-left: 1em;
+    // text-indent: -1em;
 }
+.Hymn-lineSeparator {
+    padding-inline: 0.25em;
+    vertical-align: middle;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    &::before {
+        content: "";
+        height: 0.25em;
+        width: 0.25em;
+        border-radius: 0.075em;
+        background: var(--color2);
+    }
+}
+
 .Hymn-verse,
 .Hymn-chorus,
 .Hymn-refrain {
     break-inside: avoid-column;
+
+    // display: grid;
+    grid-template-areas: "verse-number lines";
+    grid-template-columns: 0.75em 1fr;
+    grid-template-columns: subgrid;
+    column-gap: 0.5rem;
+    align-items: baseline;
+}
+.Hymn-chorus,
+.Hymn-refrain {
+    grid-template-areas:
+        "verse-number verse-number"
+        ".            lines";
+    // margin-top: 0;
+}
+
+.Hymn-verseLines,
+.Hymn-inlineRefrain,
+.Hymn-repeat {
+    grid-area: lines;
+
+    // display: flex;
+    flex-direction: column;
 }
 
 .Hymn-verse,
@@ -116,14 +174,6 @@
     &.is-deleted .Hymn-line {
         text-decoration: line-through;
     }
-}
-
-.Hymn-line--nospaceafter {
-    margin-right: 0;
-}
-.Hymn-line--break {
-    text-indent: -1em;
-    margin-left: 1em;
 }
 
 .Hymn-details {

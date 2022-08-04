@@ -12,7 +12,7 @@ export type Index = {
     hasDefaultSort?: boolean;
 };
 
-export let FindDialogBase = (props: {
+export let FindPanelBase = (props: {
     open: boolean;
     onClose?: () => void;
 

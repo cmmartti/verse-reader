@@ -128,6 +128,8 @@ let getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
                     kind: "line",
                     text: (line as Node).textContent ?? "",
                 })),
+                before: evaluateString("@before", lineOrRepeat),
+                after: evaluateString("@after", lineOrRepeat),
             };
         }
         return {

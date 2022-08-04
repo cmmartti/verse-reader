@@ -89,6 +89,8 @@ export type RepeatLines = {
     kind: "repeat";
     times: number;
     lines: Line[];
+    before?: string;
+    after?: string;
 };
 
 export type Summary = {

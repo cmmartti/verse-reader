@@ -8,7 +8,7 @@ import c from "../util/c";
 import { usePending } from "../util/usePending";
 import { ReactComponent as TriangleIcon } from "../icons/triangle.svg";
 
-import { FindDialogBase } from "./FindDialogBase";
+import { FindPanelBase } from "./FindPanelBase";
 import { searchIndex } from "../search";
 import { useDebounceCallback } from "../util/useDebounceCallback";
 
@@ -16,7 +16,7 @@ import { navigate, useLocationState } from "../locationState";
 
 type IndexReference = { id: types.HymnId; lines: string[] };
 
-export let FindDialog = ({
+export let FindPanel = ({
     book,
     open,
     onClose,
@@ -166,7 +166,7 @@ export let FindDialog = ({
     let activeSearch = search.length >= 3;
 
     return (
-        <FindDialogBase
+        <FindPanelBase
             open={open}
             onClose={onClose}
             allIndexes={allIndexes}
@@ -240,27 +240,6 @@ export let FindDialog = ({
                                                 ),
                                             });
                                         }
-
-                                        // setExpand(prev => {
-                                        //     if (
-                                        //         (prev.all && !open) ||
-                                        //         (!prev.all && open)
-                                        //     ) {
-                                        //         return {
-                                        //             all: prev.all,
-                                        //             except: [
-                                        //                 ...prev.except,
-                                        //                 category.id,
-                                        //             ],
-                                        //         };
-                                        //     }
-                                        //     return {
-                                        //         all: prev.all,
-                                        //         except: prev.except.filter(
-                                        //             e => e !== category.id
-                                        //         ),
-                                        //     };
-                                        // });
                                     }
                                 }}
                             >
@@ -306,7 +285,7 @@ export let FindDialog = ({
                     })}
                 </div>
             )}
-        </FindDialogBase>
+        </FindPanelBase>
     );
 };
 

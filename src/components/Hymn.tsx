@@ -1,32 +1,39 @@
 import React from "react";
 
 import * as types from "../types";
-import c from "../util/c";
-import { useAppState } from "../state";
 import { navigate } from "../locationState";
+import { Verses } from "./Verses";
 
 export let Hymn = React.memo(_Hymn);
 
 export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
-    let authors = hymn.contributors.filter(contributor => contributor.type === "author");
-    let translators = hymn.contributors.filter(
-        contributor => contributor.type === "translator"
-    );
+    let contributors = hymn.contributors.map(({ type, id, year, note }) => {
+        return {
+            type,
+            id,
+            name: (id ? book.contributors?.[id]?.name : null) ?? id,
+            year,
+            note,
+        };
+    });
+
+    let authors = contributors.filter(c => c.type === "author");
+    let translators = contributors.filter(c => c.type === "translator");
 
     return (
-        <article className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}>
+        <article
+            className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}
+            lang={hymn.language}
+        >
             <header className="Hymn-header">
                 <h2 className="Hymn-title">
                     <span role="presentation">
-                        <span className="visually-hidden" role="presentation">
-                            Page{" "}
-                        </span>
+                        {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
+                        {hymn.id}.{" "}
                         {hymn.isDeleted && (
                             <span className="visually-hidden">deleted </span>
                         )}
-                        {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
-                        {hymn.id}.
-                    </span>{" "}
+                    </span>
                     <span role="presentation">{hymn.title}</span>
                 </h2>
 
@@ -77,11 +84,7 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                 </div>
             )}
 
-            <div className="Hymn-verses" lang={hymn.language}>
-                {hymn.verses.map((verse, i) => (
-                    <Verse verse={verse} verseNumber={i + 1} hymn={hymn} key={i} />
-                ))}
-            </div>
+            <Verses hymn={hymn} />
 
             <footer className="Hymn-details">
                 {hymn.language !== book.language && (
@@ -94,8 +97,8 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                         {authors.length === 1 ? "Author: " : "Authors: "}
                         {authors
                             .map(
-                                ({ id, note, year }) =>
-                                    id +
+                                ({ name, note, year }) =>
+                                    name +
                                     (note ? ` (${note})` : "") +
                                     (year ? ` (${year})` : "")
                             )
@@ -112,8 +115,8 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                         {translators.length === 1 ? "Translator: " : "Translators: "}
                         {translators
                             .map(
-                                ({ id, note, year }) =>
-                                    id +
+                                ({ name, note, year }) =>
+                                    name +
                                     (note ? ` (${note})` : "") +
                                     (year ? ` (${year})` : "")
                             )
@@ -161,158 +164,8 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                 {hymn.isRestricted && (
                     <p>*Not for church services; may be used for other occasions.</p>
                 )}
+                {hymn.isDeleted && <p>Deleted</p>}
             </footer>
         </article>
-    );
-}
-
-function Verse({
-    verse,
-    verseNumber,
-    hymn,
-}: {
-    verse: types.Verse;
-    verseNumber: number;
-    hymn: types.Hymn;
-}) {
-    let [repeatRefrain] = useAppState("hymn/repeatRefrain", true);
-    let [repeatChorus] = useAppState("hymn/repeatChorus", false);
-
-    return (
-        <React.Fragment>
-            <p className={"Hymn-verse" + c("is-deleted", verse.isDeleted)}>
-                <span className="Hymn-verseNumber">
-                    <span className="visually-hidden" role="presentation">
-                        Verse{" "}
-                    </span>
-                    {verseNumber}
-                    {verse.isDeleted && (
-                        <span className="visually-hidden" role="presentation">
-                            , deleted{" "}
-                        </span>
-                    )}
-                    .
-                </span>{" "}
-                <Lines lines={verse.lines} />
-                {hymn.refrain &&
-                    (repeatRefrain ? (
-                        <span
-                            className={
-                                "Hymn-inlineRefrain" +
-                                c("is-deleted", hymn.refrain.isDeleted)
-                            }
-                        >
-                            <span className="visually-hidden">
-                                Refrain
-                                {hymn.refrain.isDeleted && ", deleted"}:{" "}
-                            </span>
-                            <Lines lines={hymn.refrain.lines} />
-                        </span>
-                    ) : (
-                        verseNumber > 1 && (
-                            <em>
-                                <span aria-hidden>Refrain:</span>
-                                <span className="visually-hidden" role="presentation">
-                                    Refrain repeats here.
-                                </span>
-                            </em>
-                        )
-                    ))}
-                {verseNumber > 1 && hymn.chorus && !repeatChorus && (
-                    <em>
-                        <span aria-hidden>Chorus:</span>
-                        <span className="visually-hidden" role="presentation">
-                            Chorus repeats here.
-                        </span>
-                    </em>
-                )}
-            </p>
-
-            {hymn.refrain && !repeatRefrain && verseNumber === 1 && (
-                <p className={"Hymn-refrain" + c("is-deleted", hymn.refrain.isDeleted)}>
-                    <em>
-                        Refrain
-                        {hymn.refrain.isDeleted && (
-                            <span className="visually-hidden" role="presentation">
-                                , deleted
-                            </span>
-                        )}
-                        :
-                    </em>{" "}
-                    <Lines lines={hymn.refrain.lines} />
-                </p>
-            )}
-
-            {hymn.chorus && !repeatChorus && verseNumber === 1 && (
-                <p className={"Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)}>
-                    <em>
-                        Chorus
-                        {hymn.chorus.isDeleted && (
-                            <span className="visually-hidden" role="presentation">
-                                , deleted
-                            </span>
-                        )}
-                        :
-                    </em>{" "}
-                    <Lines lines={hymn.chorus.lines} />
-                </p>
-            )}
-
-            {hymn.chorus && repeatChorus && (
-                <p className={"Hymn-chorus" + c("is-deleted", hymn.chorus.isDeleted)}>
-                    <span className="visually-hidden">
-                        Chorus
-                        {hymn.chorus.isDeleted && ", deleted"}:{" "}
-                    </span>
-                    <Lines lines={hymn.chorus.lines} />
-                </p>
-            )}
-        </React.Fragment>
-    );
-}
-
-function Lines({ lines }: { lines: (types.Line | types.RepeatLines)[] }) {
-    return (
-        <React.Fragment>
-            {lines.map((lineOrRepeat, i) => {
-                switch (lineOrRepeat.kind) {
-                    case "repeat":
-                        return <RepeatLines key={i} repeat={lineOrRepeat} />;
-                    case "line":
-                        return (
-                            <>
-                                <span key={i} className="Hymn-line">
-                                    {lineOrRepeat.text}
-                                </span>{" "}
-                            </>
-                        );
-                    default:
-                        return null;
-                }
-            })}
-        </React.Fragment>
-    );
-}
-
-function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {
-    let [expandRepeatedLines] = useAppState("hymn/expandRepeatedLines", false);
-
-    if (expandRepeatedLines) {
-        return (
-            <span>
-                {[...Array(repeat.times)].map((_, i) => (
-                    <Lines key={i} lines={repeat.lines} />
-                ))}
-            </span>
-        );
-    }
-    return (
-        <span className="Hymn-repeat">
-            <Lines lines={repeat.lines} />
-            <span className="Hymn-repeatMarker">
-                {[...Array(repeat.times)].map(() => ":").join(",")}
-                {/* ({repeat.times}x){" "} */}
-            </span>
-        </span>
     );
 }

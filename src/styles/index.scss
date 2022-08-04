@@ -12,11 +12,11 @@
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
     --background: white;
-    --page-background: white;
     --page-font-weight: 400;
     --toolbar-background: hsl(250, 7%, 91%);
     --color: black;
     --color2: hsl(0, 0%, 78%);
+    --color3: hsl(0, 0%, 45%);
     --link-color: #003c8b;
     --accent-color: hsl(250, 50%, 40%);
     --focus-color: rebeccapurple;
@@ -30,16 +30,15 @@
     --listbox-background: white;
 }
 
-:root[data-color-scheme="dark"],
 :root[data-color-scheme="black"] {
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
-    --background: hsl(0, 0%, 20%);
-    --page-background: hsl(0, 0%, 20%);
+    --background: black;
     --page-font-weight: 300;
     --toolbar-background: #2a2a2a;
     --color: hsl(0, 0%, 90%);
     --color2: hsl(0, 0%, 34%);
+    --color3: hsl(0, 0%, 75%);
     --link-color: #aed1ff;
     --accent-color: hsl(225, 58%, 54%);
     --focus-color: rebeccapurple;
@@ -51,9 +50,6 @@
     --button-disabled-color: hsl(0, 0%, 60%);
     --input-background: black;
     --listbox-background: var(--background);
-}
-:root[data-color-scheme="black"] {
-    --page-background: black;
 }
 
 body {
