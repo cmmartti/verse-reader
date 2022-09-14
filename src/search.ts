@@ -90,8 +90,8 @@ export function searchIndex(
 
 function extractLines(verse: types.Verse) {
     return verse.lines.flatMap(lineOrRepeat => {
-        if (lineOrRepeat.kind === "repeat")
-            return lineOrRepeat.lines.map(line => line.text);
-        return lineOrRepeat.text;
+        if (typeof lineOrRepeat === "string") return lineOrRepeat;
+        else if (lineOrRepeat.kind === "repeat") return lineOrRepeat.lines;
+        return "";
     });
 }

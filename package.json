@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@popperjs/core": "^2.11.5",
+        "@popperjs/core": "^2.11.6",
+        "@tanstack/react-location": "^3.7.4",
         "fontoxpath": "^3.21.0",
         "history": "^5.3.0",
         "idb": "^7.0.1",
@@ -14,7 +15,6 @@
         "react-dom": "^18.1.0",
         "react-popper": "^2.3.0",
         "react-query": "^3.39.1",
-        "react-router-dom": "^6.3.0",
         "react-scripts": "^5.0.1",
         "urlpattern-polyfill": "^4.0.3",
         "workbox-core": "^6.3.0",
@@ -45,7 +45,8 @@
             "no-fallthrough": "off",
             "jsx-a11y/no-access-key": "off",
             "no-unused-vars": "off",
-            "@typescript-eslint/no-unused-vars": "off"
+            "@typescript-eslint/no-unused-vars": "off",
+            "no-unreachable": "off"
         }
     },
     "browserslist": {

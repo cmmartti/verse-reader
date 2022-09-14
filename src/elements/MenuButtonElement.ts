@@ -2,6 +2,7 @@ import MenuElement from "./MenuElement";
 
 export type MenuButtonElementAttributes = {
     for?: string | null;
+    trigger?: "click" | "mousedown";
 };
 
 export default class MenuButtonElement extends HTMLElement {
@@ -58,8 +59,8 @@ export default class MenuButtonElement extends HTMLElement {
 
                 // The menu button always receives the focus first when the menu
                 // is closed. This keeps the menu out of the tab order and makes
-                // it behave like a child of the menu button, even if the DOM elements
-                // are not adjacent.
+                // it behave like a child of the menu button, even if the DOM
+                // elements are not adjacent.
                 this.focus();
             }
         }

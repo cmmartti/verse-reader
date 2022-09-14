@@ -3,10 +3,11 @@ import React from "react";
 import * as types from "../types";
 import { navigate } from "../locationState";
 import { Verses } from "./Verses";
+import { Link } from "@tanstack/react-location";
 
 export let Hymn = React.memo(_Hymn);
 
-export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
+function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
     let contributors = hymn.contributors.map(({ type, id, year, note }) => {
         return {
             type,
@@ -27,9 +28,9 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
         >
             <header className="Hymn-header">
                 <h2 className="Hymn-title">
-                    <span role="presentation">
-                        {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
+                    <span role="presentation" style={{ whiteSpace: "nowrap" }}>
                         {hymn.id}.{" "}
+                        {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
                         {hymn.isDeleted && (
                             <span className="visually-hidden">deleted </span>
                         )}
@@ -52,9 +53,7 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                             )
                             .map((topic, index) => (
                                 <React.Fragment key={topic.id}>
-                                    <span role="presentation" className="Hymn-topic">
-                                        {topic.name}
-                                    </span>
+                                    <Link className="Hymn-topic">{topic.name}</Link>
                                     {index < hymn.topics.length - 1 && ", "}
                                 </React.Fragment>
                             ))}
@@ -62,7 +61,7 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                 )}
             </header>
 
-            {hymn.tunes.length > 0 && (
+            {/* {hymn.tunes.length > 0 && (
                 <div className="Hymn-tunes">
                     Tune:{" "}
                     {hymn.tunes
@@ -76,95 +75,120 @@ export function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) 
                         .map((tune, index) => {
                             return (
                                 <React.Fragment key={tune.id}>
-                                    {tune.name || tune.id}
+                                    <Link>{tune.name || tune.id}</Link>
                                     {index < hymn.tunes.length - 1 && ", "}
                                 </React.Fragment>
                             );
                         })}
                 </div>
-            )}
+            )} */}
 
             <Verses hymn={hymn} />
 
-            <footer className="Hymn-details">
+            <footer className="Hymn-links">
                 {hymn.language !== book.language && (
-                    <p>
-                        Language: {book.languages[hymn.language]?.name ?? hymn.language}
-                    </p>
-                )}
-                {authors.length > 0 && (
-                    <p>
-                        {authors.length === 1 ? "Author: " : "Authors: "}
-                        {authors
-                            .map(
-                                ({ name, note, year }) =>
-                                    name +
-                                    (note ? ` (${note})` : "") +
-                                    (year ? ` (${year})` : "")
-                            )
-                            .join(", ")}
-                    </p>
+                    <span className="Hymn-link">
+                        <h3>Language</h3>
+                        <Link>
+                            {book.languages[hymn.language]?.name ?? hymn.language}
+                        </Link>
+                    </span>
                 )}
 
-                {hymn.origin && (
-                    <p>Origin: {book.origins?.[hymn.origin]?.name ?? hymn.origin}</p>
+                {hymn.tunes.length > 0 && (
+                    <span className="Hymn-link">
+                        <h3>Tune{hymn.tunes.length > 1 && "s"}</h3>
+                        {hymn.tunes.map(id => (
+                            <Link key={id}>{book.tunes?.[id]?.name ?? id}</Link>
+                        ))}
+                    </span>
                 )}
+
+                <span className="Hymn-link">
+                    <h3>Author{authors.length > 1 && "s"}</h3>
+                    {authors.map(({ name, note, year }, i) => (
+                        <Link key={i}>
+                            {name +
+                                (note ? ` (${note})` : "") +
+                                (year ? ` (${year})` : "")}
+                        </Link>
+                    ))}
+                    {authors.length === 0 && "—"}
+                </span>
+
+                <span className="Hymn-link">
+                    <h3>Origin</h3>
+                    {hymn.origin ? (
+                        <Link>{book.origins?.[hymn.origin]?.name ?? hymn.origin}</Link>
+                    ) : (
+                        "—"
+                    )}
+                </span>
 
                 {translators.length > 0 && (
-                    <p>
-                        {translators.length === 1 ? "Translator: " : "Translators: "}
-                        {translators
-                            .map(
-                                ({ name, note, year }) =>
-                                    name +
+                    <span className="Hymn-link">
+                        <h3>Translator{translators.length > 1 && "s"}</h3>
+                        {translators.map(({ name, note, year }, i) => (
+                            <Link key={i}>
+                                {name +
                                     (note ? ` (${note})` : "") +
-                                    (year ? ` (${year})` : "")
-                            )
-                            .join(", ")}
-                    </p>
-                )}
-                {hymn.links.length > 0 && (
-                    <p>
-                        {hymn.links.map(link => (
-                            <span key={link.edition}>
-                                <a
-                                    href={`/en-${link.edition}?loc=${link.id}`}
-                                    onClick={event => {
-                                        event.preventDefault();
-                                        navigate(
-                                            prevState => ({
-                                                ...prevState,
-                                                book: "en-" + link.edition,
-                                                [`book/en-${link.edition}/loc`]: link.id,
-                                            }),
-                                            false
-                                        );
-                                    }}
-                                >
-                                    {link.edition}#{link.id}
-                                </a>
-                                {", "}
-                            </span>
+                                    (year ? ` (${year})` : "")}
+                            </Link>
                         ))}
-                    </p>
+                    </span>
                 )}
-                {/* {hymn.days.length > 0 && (
-                    <p className="Hymn-days">
-                        {hymn.days.length === 1 ? "Day: " : "Days: "}
-                        {hymn.days
-                            .map(dayId => book.calendar[dayId])
-                            .map((day, index) => (
-                                <React.Fragment key={day.id}>
-                                    {day.name}
-                                    {index < hymn.days.length - 1 && ", "}
-                                </React.Fragment>
-                            ))}
-                    </p>
-                )} */}
+
+                {hymn.links.length > 0 && (
+                    <span className="Hymn-link">
+                        <h3>Elsewhere</h3>
+                        {hymn.links.map(link => (
+                            <Link
+                                key={link.edition}
+                                to={`/en-${link.edition}?loc=${link.id}`}
+                                onClick={event => {
+                                    event.preventDefault();
+                                    navigate(
+                                        prevState => ({
+                                            ...prevState,
+                                            book: "en-" + link.edition,
+                                            [`book/en-${link.edition}/loc`]: link.id,
+                                        }),
+                                        false
+                                    );
+                                }}
+                            >
+                                EN-{link.edition} → {link.id}
+                            </Link>
+                        ))}
+                    </span>
+                )}
+
+                {hymn.days.length > 0 && (
+                    <span className="Hymn-link">
+                        <h3>Suggested Use</h3>
+                        {hymn.days.map(id => (
+                            <Link key={id}>{book.days?.[id]?.name ?? id}</Link>
+                        ))}
+                    </span>
+                )}
+
                 {hymn.isRestricted && (
-                    <p>*Not for church services; may be used for other occasions.</p>
+                    <span className="Hymn-link">
+                        <h3>Note</h3>
+                        <span>
+                            *Not for church services; may be used for other occasions.
+                        </span>
+                    </span>
                 )}
-                {hymn.isDeleted && <p>Deleted</p>}
+
+                {hymn.isDeleted && (
+                    <span className="Hymn-link">
+                        <h3>Note</h3>
+                        <span>
+                            This hymn was <Link>deleted</Link> in a later printing
+                        </span>
+                    </span>
+                )}
             </footer>
         </article>
     );

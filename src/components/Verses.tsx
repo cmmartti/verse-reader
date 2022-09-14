@@ -2,7 +2,7 @@ import React from "react";
 
 import * as types from "../types";
 import c from "../util/c";
-import { useAppState } from "../state";
+import { useOption } from "../options";
 
 type VerseFragment = {
     kind: "verse";
@@ -24,31 +24,35 @@ type PointerFragment = {
     a11yText: string;
 };
 
+// export let Verses = React.memo(_Verses);
+
 export function Verses({ hymn }: { hymn: types.Hymn }) {
-    let [expandRepeatedLines] = useAppState("hymn/expandRepeatedLines", false);
-    let [repeatRefrain] = useAppState("hymn/repeatRefrain", true);
-    let [repeatChorus] = useAppState("hymn/repeatChorus", false);
+    let [expandRepeatedLines] = useOption("expandRepeatedLines");
+    let [repeatRefrain] = useOption("repeatRefrain");
+    let [repeatChorus] = useOption("repeatChorus");
 
     let verses: VerseFragment[] = hymn.verses.map((verse, i) => {
         let verseNumber = i + 1;
+
         let lines: (
             | types.Line
             | types.RepeatLines
             | PointerFragment
             | SpecialFragment
-        )[] = processLines(verse.lines, expandRepeatedLines);
+        )[] = parseLines(verse.lines, expandRepeatedLines);
+
         let attachment: SpecialFragment | undefined;
 
         if (hymn.chorus) {
             if (repeatChorus) {
                 attachment = {
                     kind: "special" as const,
-                    lines: processLines(hymn.chorus.lines, expandRepeatedLines),
+                    lines: parseLines(hymn.chorus.lines, expandRepeatedLines),
                 };
             } else if (verseNumber === 1) {
                 attachment = {
                     kind: "special",
-                    lines: processLines(hymn.chorus.lines, expandRepeatedLines),
+                    lines: parseLines(hymn.chorus.lines, expandRepeatedLines),
                     label: "Chorus:",
                 } as SpecialFragment;
             } else {
@@ -64,13 +68,13 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
             if (repeatRefrain) {
                 lines.push({
                     kind: "special",
-                    lines: processLines(hymn.refrain.lines, expandRepeatedLines),
+                    lines: parseLines(hymn.refrain.lines, expandRepeatedLines),
                     label: "Refrain:",
                 } as SpecialFragment);
             } else if (verseNumber === 1) {
                 attachment = {
                     kind: "special",
-                    lines: processLines(hymn.refrain.lines, expandRepeatedLines),
+                    lines: parseLines(hymn.refrain.lines, expandRepeatedLines),
                     label: "Refrain:",
                 } as SpecialFragment;
             } else {
@@ -90,6 +94,8 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
             isDeleted: verse.isDeleted,
         };
     });
+
+    // console.log(JSON.stringify(verses, undefined, 4));
 
     return (
         <div className="Hymn-verses">
@@ -131,12 +137,14 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
     );
 }
 
-function processLines(
+function parseLines(
     lines: (types.Line | types.RepeatLines)[],
     expandRepeatedLines: boolean
-) {
+): (types.RepeatLines | string)[] {
     return lines.flatMap(line => {
-        if (line.kind === "repeat") {
+        if (typeof line === "string") {
+            return line;
+        } else if (line.kind === "repeat") {
             let repeat = line;
 
             if (expandRepeatedLines)
@@ -157,12 +165,15 @@ function processLines(
     });
 }
 
-function wrapLines(lines: types.Line[], before?: string, after?: string) {
+function wrapLines(lines: string[], before?: string, after?: string) {
     return lines.map((line, i) => {
-        let text = line.text;
-        if (before && i === 0) text = before + text;
-        if (after && i === lines.length - 1) text = text + after;
-        return { ...line, text } as types.Line;
+        if (before && i === 0) {
+            line = before + line;
+        }
+        if (after && i === lines.length - 1) {
+            line = line + after;
+        }
+        return line;
     });
 }
 
@@ -177,7 +188,7 @@ function Lines({
         <React.Fragment>
             {lines.map((line, i) => {
                 let _isLast = isLast && i === lines.length - 1;
-                if (line.kind === "line")
+                if (typeof line === "string")
                     return <Line key={i} line={line} isLast={_isLast} />;
                 if (line.kind === "repeat")
                     return <RepeatLines key={i} repeat={line} isLast={_isLast} />;
@@ -193,11 +204,11 @@ function Lines({
 
 function Line({ line, isLast }: { line: types.Line; isLast: boolean }) {
     if (isLast) {
-        return <span className="Hymn-line">{line.text}</span>;
+        return <span className="Hymn-line">{line}</span>;
     }
 
-    let start = line.text.slice(0, line.text.length - 1);
-    let lastChar = line.text.slice(line.text.length - 1);
+    let start = line.slice(0, line.length - 1);
+    let lastChar = line.slice(line.length - 1);
     return (
         <span className="Hymn-line">
             {start}
@@ -220,19 +231,19 @@ function RepeatLines({
     isLast: boolean;
 }) {
     return (
-        <span className="Hymn-repeat" role="presentation">
+        <strong className="Hymn-repeat" role="presentation">
             <Lines lines={repeat.lines} />
 
-            <span className="visually-hidden" role="presentation">
+            {/* <span className="visually-hidden" role="presentation">
                 {[...Array(repeat.times - 1)].map((_, i) => (
                     <Lines key={i} lines={repeat.lines} isLast />
                 ))}
-            </span>
+            </span> */}
 
             <span style={{ whiteSpace: "nowrap" }}>
                 <span className="Hymn-repeatLabel" aria-hidden>
                     {[...Array(repeat.times - 1)].map((_, i) => (
-                        <React.Fragment>
+                        <React.Fragment key={i}>
                             […]
                             {i !== repeat.times - 2 && (
                                 <span className="Hymn-lineSeparator"> </span>
@@ -242,7 +253,7 @@ function RepeatLines({
                 </span>
                 {!isLast && <span className="Hymn-lineSeparator"> </span>}
             </span>
-        </span>
+        </strong>
     );
 }
 

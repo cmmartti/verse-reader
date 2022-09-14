@@ -81,10 +81,7 @@ export type Verse = {
     isDeleted: boolean;
     lines: (Line | RepeatLines)[];
 };
-export type Line = {
-    kind: "line";
-    text: string;
-};
+export type Line = string;
 export type RepeatLines = {
     kind: "repeat";
     times: number;

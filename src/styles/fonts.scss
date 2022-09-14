@@ -1,4 +1,61 @@
 @font-face {
+    font-family: "Athelas Regular";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Athelas Regular"), url("/fonts/athelas-regular.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Athelas Italic";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Athelas Italic"), url("/fonts/athelas-italic.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Athelas Bold";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Athelas Bold"), url("/fonts/athelas-bold.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Athelas Bold Italic";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Athelas Bold Italic"), url("/fonts/athelas-bold-italic.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    font-style: normal;
+    font-weight: 400;
+    src: local(""), url("/fonts/atkinson-hyperlegible-400.woff2") format("woff2"),
+        url("/fonts/atkinson-hyperlegible-400.woff") format("woff");
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    font-style: normal;
+    font-weight: 700;
+    src: local(""), url("/fonts/atkinson-hyperlegible-700.woff2") format("woff2"),
+        url("/fonts/atkinson-hyperlegible-700.woff") format("woff");
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    font-style: italic;
+    font-weight: 400;
+    src: local(""), url("/fonts/atkinson-hyperlegible-400-italic.woff2") format("woff2"),
+        url("/fonts/atkinson-hyperlegible-400-italic.woff") format("woff");
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    font-style: italic;
+    font-weight: 700;
+    src: local(""), url("/fonts/atkinson-hyperlegible-700-italic.woff2") format("woff2"),
+        url("/fonts/atkinson-hyperlegible-700-italic.woff") format("woff");
+}
+
+@font-face {
     font-family: "Charter";
     src: local("Charter"), url("/fonts/charter-regular.woff") format("woff");
     font-style: normal;

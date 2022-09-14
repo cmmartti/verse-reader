@@ -1,0 +1,46 @@
+.SearchBar {
+    padding-inline-start: 0.325em;
+    border-radius: 0.5em;
+    background: var(--input-background);
+    color: var(--color);
+
+    display: flex;
+    align-items: center;
+
+    & input {
+        flex: 1;
+        width: 0;
+        border: none;
+        background: none;
+        &:focus {
+            outline: none;
+        }
+    }
+    & button {
+        color: inherit;
+        border: none;
+        background: none;
+        background: none;
+        font: inherit;
+        padding-inline: 0.5em;
+        &:focus-visible {
+            outline-offset: -0.325em;
+            outline: none;
+        }
+        &:focus-visible svg {
+            border-radius: 0.15em;
+            outline: var(--focus-outline);
+        }
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & svg {
+        height: 1.2em;
+        width: 1.2em;
+        flex-shrink: 0;
+        color: var(--color3);
+    }
+}

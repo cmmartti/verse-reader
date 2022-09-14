@@ -5,37 +5,49 @@
     --titlebar-height: 1.75rem;
     --page-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --toolbar-height: 2.5rem;
 }
 
 :root[data-color-scheme="light"],
 :root {
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
-    --background: white;
     --page-font-weight: 400;
-    --toolbar-background: hsl(250, 7%, 91%);
+    --page-background: white;
+    --background1: #f2f2f6;
+    --background2: #fbfbfc;
+    --background3: white;
+    --background4: #e1e1ea;
+    --background5: #f4f4f4; //menu
+    --page-background: var(--background3);
+    --toolbar-background: var(--background2);
     --color: black;
-    --color2: hsl(0, 0%, 78%);
-    --color3: hsl(0, 0%, 45%);
+    --color2: #a9a9ac;
+    --color3: #808080;
     --link-color: #003c8b;
     --accent-color: hsl(250, 50%, 40%);
     --focus-color: rebeccapurple;
     --focus-outline: 2px solid var(--focus-color);
     --selected-background: hsl(39, 100%, 86%);
-    --button-background: hsl(0 0% 97%);
+    --button-color: #3478f6;
+    --button-background: var(--background2);
     --button-active-background: #b7e3f0;
     --button-disabled-background: hsl(0 0% 80%);
-    --button-disabled-color: hsl(0, 0%, 30%);
-    --input-background: white;
-    --listbox-background: white;
+    --button-disabled-color: hsl(0, 0%, 80%);
+    --input-background: #e3e3e8;
 }
 
-:root[data-color-scheme="black"] {
+:root[data-color-scheme="dark"] {
     --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 
-    --background: black;
+    --background1: black;
+    --background2: #121213;
+    --background3: #1c1c1e;
+    --background4: #313135;
+    --background5: #232323; //menu
+    --page-background: var(--background1);
+    --toolbar-background: var(--background2);
     --page-font-weight: 300;
-    --toolbar-background: #2a2a2a;
     --color: hsl(0, 0%, 90%);
     --color2: hsl(0, 0%, 34%);
     --color3: hsl(0, 0%, 75%);
@@ -44,12 +56,18 @@
     --focus-color: rebeccapurple;
     --focus-outline: 2px solid var(--focus-color);
     --selected-background: hsl(129, 95%, 15%);
-    --button-background: hsl(250, 4%, 10%);
+    --button-color: #5a91f7;
+    --button-background: #121213;
     --button-active-background: hsl(194, 20%, 34%);
     --button-disabled-background: hsl(250, 4%, 12%);
     --button-disabled-color: hsl(0, 0%, 60%);
-    --input-background: black;
-    --listbox-background: var(--background);
+    --input-background: #303030;
+}
+
+:root,
+body,
+#root {
+    height: 100%;
 }
 
 body {
@@ -60,11 +78,11 @@ body {
         Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-size: 16px;
     @media (max-width: 29rem) {
-        font-size: 18px;
+        // font-size: 18px;
     }
     line-height: 1.25;
     color: var(--color);
-    background-color: var(--background);
+    background-color: var(--background1);
     box-sizing: border-box;
 
     & *::selection {
@@ -123,23 +141,37 @@ a:hover {
     white-space: pre;
 }
 
+.unlist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.unbutton {
+    font: inherit;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0;
+    display: block;
+}
+
 %form-control {
     font: inherit;
     color: var(--color);
     accent-color: var(--accent-color);
     border: none;
     padding: 0.325em;
-    border-radius: 0.15em;
+    border-radius: 0.5rem;
     line-height: 1;
     &:active {
         outline: none;
     }
-    &:focus:not(:focus-visible) {
-        outline: none;
-    }
-    &:focus {
-        outline: var(--focus-outline);
-    }
+    // &:focus:not(:focus-visible) {
+    //     outline: none;
+    // }
+    // &:focus {
+    //     outline: var(--focus-outline);
+    // }
     &:disabled,
     &[aria-disabled] {
         color: var(--button-disabled-color);
@@ -149,7 +181,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.25em;
+    // gap: 0.25em;
 
     & svg {
         display: inline-block;
@@ -193,6 +225,10 @@ input[type="number"] {
     color: var(--color);
     min-width: 6em;
     appearance: textfield;
+
+    &::placeholder {
+        color: var(--color3);
+    }
 }
 
 input[type="search"]::-webkit-search-cancel-button,
@@ -224,7 +260,8 @@ input[type="range"] {
 .Button {
     @extend %form-control;
     background: var(--button-background);
-    color: var(--color);
+    background: none;
+    color: var(--button-color);
     padding-left: 0.5em;
     padding-right: 0.5em;
     user-select: none;
@@ -232,18 +269,32 @@ input[type="range"] {
     cursor: default;
 
     &:active:not(:disabled):not([aria-disabled]) {
-        background: var(--button-active-background);
+        // background: var(--button-active-background);
     }
+    // &:disabled,
+    // &[aria-disabled] {
+    //     color: var(--button-disabled-color);
+    // }
 }
 
 super-menu {
+    max-height: 100%;
+    max-width: 100%;
+    z-index: 100;
+    position: absolute;
     &:not([open]) {
-        display: none;
+        // display: none;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(120px, 50%);
+        transition: opacity 100ms ease-in;
     }
-    color: var(--color);
-    border: 1px solid var(--color2);
-    border-radius: 0.2rem;
-    background: var(--button-background);
+    transition: opacity 100ms ease-out;
+    transform-origin: top right;
+
+    box-shadow: 0 0 5rem hsla(210, 19%, 11%, 0.25);
+    border-radius: 0.5rem;
+    background: var(--background5);
     user-select: none;
     &:focus {
         outline: none;
@@ -253,7 +304,6 @@ super-menu {
 
     display: flex;
     flex-direction: column;
-    padding: 0.15em 0;
 
     & > [role="group"] {
         display: flex;
@@ -261,14 +311,14 @@ super-menu {
     }
 
     & > [role="separator"] {
-        border-top: 1px solid var(--color2);
-        margin: 0.15em 0;
+        height: 0.325rem;
+        background: var(--background4);
     }
 
     & > [role^="menuitem"] {
-        padding: 0.25em 0.5em;
+        // padding: 0.25em 0.5em;
+        padding: 0.5em 0.75em;
         @media (max-width: 29rem) {
-            padding: 0.5em 0.75em;
         }
         border: none;
         font: inherit;
@@ -288,11 +338,18 @@ super-menu {
             }
         }
     }
+
+    & > [role^="menuitem"] + [role^="menuitem"] {
+        border-top: 0.5px solid var(--color2);
+    }
 }
 
 @import "App.scss";
-@import "FindPanel.scss";
+@import "BookIndex.scss";
 @import "Hymn.scss";
 @import "ManageDialog.scss";
 @import "OptionsPanel.scss";
 @import "fonts.scss";
+@import "NavigationBar.scss";
+@import "Home.scss";
+@import "SearchBar.scss";

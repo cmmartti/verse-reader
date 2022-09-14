@@ -6,6 +6,7 @@ import "./styles/index.scss";
 import { App } from "./components/App";
 import { registerElements } from "./elements/registerElements";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,9 +25,11 @@ registerElements();
 
 root.render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <App />
-        </QueryClientProvider>
+        <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
+                <App />
+            </QueryClientProvider>
+        </ErrorBoundary>
     </React.StrictMode>
 );
 

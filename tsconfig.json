@@ -17,7 +17,8 @@
         "jsx": "react-jsx",
         "downlevelIteration": true,
         "noUncheckedIndexedAccess": true,
-        "useUnknownInCatchVariables": true
+        "useUnknownInCatchVariables": true,
+        "allowUnreachableCode": true
     },
     "include": ["src", "src/customElements.d.ts"]
 }

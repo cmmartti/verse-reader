@@ -8,30 +8,15 @@ type ID = types.DocumentId;
 type IndexType = types.IndexType;
 
 type AppState = {
-    "app/colorScheme": string;
-    "app/fontSize": number;
-    "app/fontFamily": string;
-    "hymn/repeatRefrain": boolean;
-    "hymn/repeatChorus": boolean;
-    "hymn/expandRepeatedLines": boolean;
-    [key: `book/${ID}/currentIndex`]: IndexType | null;
     [key: `book/${ID}/lastLoc`]: types.HymnId | null;
+    [key: `book/${ID}/currentIndex`]: IndexType | null;
     [key: `book/${ID}/index/${IndexType}/sort`]: string;
-    [key: `book/${ID}/index/${IndexType}/scrollPosition`]: string | null;
     [key: `book/${ID}/index/${IndexType}/expand`]: { all: boolean; except: string[] };
 };
 
 let store = createStore<AppState>(() => {
     let jsonString = localStorage.getItem("AppState");
-    return {
-        "app/colorScheme": "light",
-        "app/fontSize": 1.2,
-        "app/fontFamily": "raleway",
-        "hymn/repeatRefrain": true,
-        "hymn/repeatChorus": false,
-        "hymn/expandRepeatedLines": false,
-        ...(jsonString === null ? {} : (JSON.parse(jsonString) as AppState)),
-    };
+    return jsonString === null ? {} : (JSON.parse(jsonString) as AppState);
 });
 
 type UpdateFn<T> = ((prevValue: T) => T) | T;

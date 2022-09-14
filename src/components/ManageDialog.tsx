@@ -8,7 +8,6 @@ import DialogElement from "../elements/DialogElement";
 import { ReactComponent as CloseIcon } from "../icons/close.svg";
 
 import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
-import { useLocationState } from "../locationState";
 
 export let ManageDialog = ({
     open,
@@ -38,37 +37,37 @@ export let ManageDialog = ({
 
     let [inputValue, setInputValue] = React.useState("");
 
-    let sidebarRef = React.useRef<DialogElement>(null!);
+    let dialogRef = React.useRef<DialogElement>(null!);
 
     React.useEffect(() => {
-        let sidebar = sidebarRef.current;
-        if (!sidebar) return;
+        let dialog = dialogRef.current;
+        if (!dialog) return;
 
         let fn = () => {
-            if (typeof onClose === "function" && !sidebar.open) onClose();
+            if (typeof onClose === "function" && !dialog.open) onClose();
         };
-        if (sidebar.open) sidebar.addEventListener("super-dialog-toggle", fn);
-        return () => sidebar.removeEventListener("super-dialog-toggle", fn);
+        if (dialog.open) dialog.addEventListener("super-dialog-toggle", fn);
+        return () => dialog.removeEventListener("super-dialog-toggle", fn);
     }, [onClose]);
 
     return (
         <super-dialog
             class="ManageDialog"
-            ref={sidebarRef}
+            ref={dialogRef}
             open={open ? "" : null}
-            aria-labelledby="sidebar-title"
+            aria-labelledby="dialog-title"
         >
             <div
                 className="ManageDialog-overlay"
-                onClick={() => sidebarRef.current.toggle(false)}
+                onClick={() => dialogRef.current.toggle(false)}
             ></div>
 
             <div className="ManageDialog-window">
                 <header className="ManageDialog-titlebar">
-                    <h2 id="sidebar-title">Manage Books</h2>
+                    <h2 id="dialog-title">Manage Books</h2>
                     <button
                         className="Button"
-                        onClick={() => sidebarRef.current.toggle(false)}
+                        onClick={() => dialogRef.current.toggle(false)}
                         aria-label="close dialog"
                         title="Close Sidebar"
                     >
@@ -148,8 +147,6 @@ export let ManageDialog = ({
 };
 
 function BookList({ isLoading }: { isLoading: boolean }) {
-    let [currentBook, setCurrentBook] = useLocationState("book");
-
     let queryClient = useQueryClient();
 
     let deleteMutation = useMutation(bookService.deleteBook, {
@@ -157,8 +154,6 @@ function BookList({ isLoading }: { isLoading: boolean }) {
             queryClient.invalidateQueries("summaries");
             queryClient.invalidateQueries(["book", bookId]);
             queryClient.invalidateQueries(["indexOfLines", bookId]);
-
-            if (bookId === currentBook) setCurrentBook(null, false);
         },
     });
 
@@ -212,6 +207,7 @@ function ListItem({
     return (
         <li key={summary.id}>
             <b>{summary.title}</b>
+            <span className="subdued">{summary.id}</span>
             <button
                 className="Button"
                 onClick={() => {

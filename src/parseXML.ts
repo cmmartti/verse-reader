@@ -124,16 +124,20 @@ let getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
             return {
                 kind: "repeat",
                 times: parseInt(evaluateString("@times", lineOrRepeat) || "2", 10),
-                lines: evaluateNodes("line", lineOrRepeat).map(line => ({
-                    kind: "line",
-                    text: (line as Node).textContent ?? "",
-                })),
+                // lines: evaluateNodes("line", lineOrRepeat).map(line => ({
+                //     kind: "line",
+                //     text: (line as Node).textContent ?? "",
+                // })),
+                lines: evaluateNodes("line", lineOrRepeat).map(
+                    line => (line as Node).textContent ?? ""
+                ),
                 before: evaluateString("@before", lineOrRepeat),
                 after: evaluateString("@after", lineOrRepeat),
             };
         }
-        return {
-            kind: "line",
-            text: (lineOrRepeat as Node).textContent ?? "",
-        };
+        return (lineOrRepeat as Node).textContent ?? "";
+        // return {
+        //     kind: "line",
+        //     text: (lineOrRepeat as Node).textContent ?? "",
+        // };
     });
