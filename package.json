@@ -39,7 +39,6 @@
         "rules": {
             "@typescript-eslint/no-unused-vars": "off",
             "jsx-a11y/no-access-key": "off",
-            "no-fallthrough": "on",
             "no-unused-vars": "off",
             "no-unreachable": "off"
         }
