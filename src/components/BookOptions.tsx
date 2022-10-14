@@ -2,13 +2,12 @@ import React from "react";
 
 import { fonts } from "../fonts";
 import { useOption } from "../options";
-import { useMatch } from "@tanstack/react-location";
+import { useParams } from "react-router-dom";
 import { NavigationBar } from "./NavigationBar";
 import * as types from "../types";
 
 export function BookOptions() {
-    let match = useMatch();
-    let file = match.data.file as types.Hymnal;
+    let { id } = useParams() as { id: types.DocumentId; loc: types.HymnId };
 
     let htmlId = React.useId();
 
@@ -21,10 +20,7 @@ export function BookOptions() {
 
     return (
         <main className="OptionsPanel">
-            <NavigationBar
-                back={{ to: "/" + file.id, title: file.id }}
-                title="Options"
-            />
+            <NavigationBar back={{ to: "/" + id, title: "Back" }} title="Options" />
 
             <div className="OptionsPanel-contents">
                 <div className="section">

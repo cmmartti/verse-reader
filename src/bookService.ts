@@ -1,8 +1,6 @@
 import { openDB, DBSchema } from "idb/with-async-ittr";
 import { Index } from "lunr";
 
-import { buildIndex } from "./search";
-import { parseXML } from "./parseXML";
 import * as types from "./types";
 
 interface AppDB extends DBSchema {
@@ -43,6 +41,12 @@ export async function getAllSummaries(): Promise<types.Summary[]> {
         );
 }
 
+export async function getSummary(id: types.DocumentId): Promise<types.Summary> {
+    let res = await (await db).get("summary", id);
+    if (res) return res;
+    else throw new Error(`Book "${id}" does not exist.`);
+}
+
 export async function getBook(id: types.DocumentId): Promise<types.Hymnal> {
     let res = await (await db).get("book", id);
     if (res) return res;
@@ -55,14 +59,16 @@ export async function getIndexOfLines(id: types.DocumentId): Promise<lunr.Index>
     else throw new Error(`Line index for book "${id}" does not exist.`);
 }
 
-export async function uploadBook(xmlString: string): Promise<types.Hymnal> {
-    let xmlDocument = new DOMParser().parseFromString(xmlString, "text/xml");
-
-    // Assume that the XML file is valid
-
-    let book = parseXML(xmlDocument);
-
+export async function importBook({
+    book,
+    index,
+}: {
+    book: types.Hymnal;
+    index: lunr.Index;
+}) {
     let tx = (await db).transaction(["book", "summary", "linesIndex"], "readwrite");
+
+    let pageIds = Object.keys(book.pages);
 
     await Promise.all([
         tx.objectStore("book").put(book),
@@ -72,15 +78,14 @@ export async function uploadBook(xmlString: string): Promise<types.Hymnal> {
             publisher: book.publisher,
             year: book.year,
             language: book.language,
-            pageCount: Object.keys(book.pages).length,
+            pageCount: pageIds.length,
+            initialPage: pageIds[0] ?? null,
         }),
         tx.objectStore("linesIndex").put({
             id: book.id,
-            index: buildIndex(book).toJSON(),
+            index: index.toJSON(),
         }),
     ]);
-
-    return book;
 }
 
 export async function deleteBook(id: types.DocumentId): Promise<void> {

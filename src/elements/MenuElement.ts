@@ -49,7 +49,7 @@ export default class MenuElement extends HTMLElement {
         newValue: string | null
     ) {
         if (name === "open") {
-            // Menu was opened
+            // If the menu was opened
             if (newValue !== null) {
                 // Remove child menuitems from the tab order. Do it every time
                 // the menu is opened instead of in connectedCallback to catch
@@ -62,7 +62,7 @@ export default class MenuElement extends HTMLElement {
                 this.focus();
             }
 
-            // Menu was closed
+            // If the menu was closed
             else this.setAttribute("aria-hidden", "true");
         }
     }

@@ -95,8 +95,6 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
         };
     });
 
-    // console.log(JSON.stringify(verses, undefined, 4));
-
     return (
         <div className="Hymn-verses">
             {verses.map(verse => (

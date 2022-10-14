@@ -1,110 +1,120 @@
 import React from "react";
 import {
-    MakeGenerics,
-    Outlet,
-    ReactLocation,
-    Router,
-    useMatch,
-    useNavigate,
-    useSearch,
-} from "@tanstack/react-location";
+    createBrowserRouter,
+    RouterProvider,
+    useRouteError,
+    redirect,
+    Link,
+} from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import * as bookService from "../bookService";
-import * as types from "../types";
+import { store } from "../state";
 
-import { useAppState } from "../state";
-
-import { BookIndex } from "./BookIndex";
+import { BookIndex, loader as findLoader } from "./BookIndex";
 import { BookOptions } from "./BookOptions";
 import { Home } from "./Home";
 import { Book } from "./Book";
 import { OptionsProvider } from "../options";
 
-const location = new ReactLocation();
+export const queryClient = new QueryClient();
 
-export type LocationGenerics = MakeGenerics<{
-    Search: {
-        loc?: string;
-        q?: string;
-    };
-}>;
-
-export function useLoc(
-    initialLoc: types.HymnId
-): [types.HymnId, (loc: types.HymnId, replace: boolean) => void] {
-    let search = useSearch<LocationGenerics>();
-    let navigate = useNavigate();
-    let match = useMatch();
-    let id = match.params.id;
-
-    let [lastLoc, setLastLoc] = useAppState(`book/${id}/lastLoc`);
-
-    let setLoc = React.useCallback(
-        (loc: string, replace: boolean) => {
-            navigate({
-                replace,
-                search: prev => ({ ...prev, loc }),
-            });
-            setLastLoc(loc);
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Home />,
+        errorElement: <ErrorPage />,
+        loader: () => bookService.getAllSummaries(),
+        action: async ({ request }) => {
+            let formData = await request.formData();
+            if (request.method === "DELETE") {
+                for (let id of formData.getAll("id") as string[]) {
+                    bookService.deleteBook(id);
+                }
+            }
         },
-        [navigate, setLastLoc]
-    );
+    },
+    {
+        path: "/:id",
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                index: true,
+                loader: async ({ params }) => {
+                    let { initialPage } = await bookService.getSummary(params.id!);
+                    let loc = store.getState()[`book/${params.id}/loc`] ?? initialPage;
+                    if (loc) return redirect(`/${params.id}/${loc}`);
+                },
+                // element: <EmptyBook />,
+            },
+            {
+                path: ":loc",
+                id: "book",
+                loader: async ({ params }) => {
+                    let book = await bookService.getBook(params.id!);
 
-    return [(search.loc ?? lastLoc ?? initialLoc).toString(), setLoc];
-}
+                    // If the current loc is invalid, redirect to the initial loc
+                    let locs = Object.values(book.pages).map(page => page.id);
+                    if (!locs.includes(params.loc!)) {
+                        let initialLoc = locs[0];
+                        if (initialLoc) return redirect(`/${params.id}/${initialLoc}`);
+                        else throw new Error("404 Not Found");
+                    }
+
+                    // Persist the last-visited loc
+                    store.setState(prev => ({
+                        ...prev,
+                        [`book/${params.id}/loc`]: params.loc,
+                    }));
+
+                    return book;
+                },
+                children: [
+                    { index: true, element: <Book /> },
+                    { path: "options", element: <BookOptions /> },
+                    {
+                        path: "index",
+                        id: "index",
+                        element: <BookIndex />,
+                        loader: findLoader,
+                    },
+                ],
+            },
+        ],
+    },
+]);
 
 export function App() {
+    React.useLayoutEffect(() => {
+        // https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+        let root = document.documentElement;
+        let setVar = () => root.style.setProperty("--vh100", window.innerHeight + "px");
+        setVar();
+
+        window.addEventListener("resize", setVar);
+        return () => window.removeEventListener("resize", setVar);
+    }, []);
+
     return (
-        <OptionsProvider>
-            <Router
-                location={location}
-                routes={[
-                    {
-                        path: "/",
-                        element: <Home />,
-                        loader: async () => ({
-                            list: await bookService.getAllSummaries(),
-                        }),
-                    },
-                    {
-                        path: "/:id",
-                        loader: async ({ params: { id } }) => ({
-                            file: await bookService.getBook(id!),
-                        }),
-                        children: [
-                            {
-                                path: "/",
-                                element: <Book />,
-                            },
-                            {
-                                path: "/options",
-                                element: <BookOptions />,
-                            },
-                            {
-                                path: "/index",
-                                element: <BookIndex />,
-                                children: [
-                                    {
-                                        path: "/:groupby",
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                ]}
-            >
-                <Outlet />
-            </Router>
-        </OptionsProvider>
+        <QueryClientProvider client={queryClient}>
+            <OptionsProvider>
+                <RouterProvider router={router} />
+            </OptionsProvider>
+        </QueryClientProvider>
     );
 }
 
-function toggleFullscreen(element: Element) {
-    if (!document.fullscreenElement)
-        element.requestFullscreen({ navigationUI: "show" }).catch(err => {
-            console.error(
-                `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
-            );
-        });
-    else if (document.fullscreenElement) document.exitFullscreen();
+export function ErrorPage() {
+    const error = useRouteError();
+    console.error(error);
+    return (
+        <div id="error-page">
+            <h1>Error</h1>
+            <p>An unexpected error has occurred.</p>
+            <p>{error instanceof Error ? error.message : String(error)}</p>
+            <p>
+                <Link to="/">Return to Library</Link>
+            </p>
+        </div>
+    );
 }

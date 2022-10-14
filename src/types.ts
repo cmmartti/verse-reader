@@ -97,4 +97,5 @@ export type Summary = {
     year: Hymnal["year"];
     language: Hymnal["language"];
     pageCount: number;
+    initialPage: HymnId | null;
 };

@@ -27,7 +27,9 @@ export function SearchBar({
                 <input
                     ref={inputRef}
                     aria-label="search"
-                    type="search"
+                    type="text"
+                    inputMode="search"
+                    enterKeyHint="search"
                     value={value}
                     onChange={event => onChange(event.target.value)}
                     placeholder={placeholder}
@@ -41,6 +43,7 @@ export function SearchBar({
                         onClick={event => {
                             event.preventDefault();
                             onChange("");
+                            inputRef.current.focus();
                         }}
                         // On tap, prevent click events from firing so as to not
                         // move the focus. This prevents the keyboard from

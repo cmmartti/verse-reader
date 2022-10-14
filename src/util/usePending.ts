@@ -1,11 +1,15 @@
 import React from "react";
 
-export function usePending(pending: boolean, wait = 0, minLength: number = 0) {
+/**
+ * Hide loading states from the user unless they exceed a minimum of `wait` ms, and
+ * once shown, display them for a minimum of `minLength` ms.
+ */
+export function usePending(loading: boolean, wait = 0, minLength: number = 0) {
     let [, forceRender] = React.useState<any>();
 
-    // The buffered pending value
-    let spinning = React.useRef(wait === 0 ? false : pending);
-    let prevPending = React.useRef(spinning.current);
+    // The buffered loading value
+    let spinning = React.useRef(wait === 0 ? false : loading);
+    let prevState = React.useRef(spinning.current);
 
     let waitTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     let minLengthTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -17,26 +21,26 @@ export function usePending(pending: boolean, wait = 0, minLength: number = 0) {
             // If there is no minLength timer, abort here
             if (minLength <= 0 || minLengthTimeout.current) return;
 
-            // Stop spinning after a minimum pending period (minLength)
+            // Stop spinning after a minimum loading period (minLength)
             minLengthTimeout.current = setTimeout(() => {
                 minLengthTimeout.current = null;
-                // ...but only if `pending` has concluded during the timeout
-                if (!prevPending.current) {
+                // ...but only if `loading` has concluded during the timeout
+                if (!prevState.current) {
                     spinning.current = false;
                     forceRender({});
                 }
             }, minLength);
         }
 
-        if (prevPending.current) {
+        if (prevState.current) {
             // Start spinning immediately if there's no pre-spinner delay (wait)
             if (wait <= 0) startSpinning();
             // Otherwise start spinning after the pre-spinner delay timer completes
             else if (!waitTimeout.current) {
                 waitTimeout.current = setTimeout(() => {
                     waitTimeout.current = null;
-                    // ...but only if pending is still awaiting conclusion
-                    if (prevPending.current) {
+                    // ...but only if loading is still awaiting conclusion
+                    if (prevState.current) {
                         startSpinning();
                         forceRender({});
                     }
@@ -52,11 +56,11 @@ export function usePending(pending: boolean, wait = 0, minLength: number = 0) {
 
     let firstRun = React.useRef(true);
 
-    // Recalculate whenever the pending state changes, or if this is the first run.
+    // Recalculate whenever the loading state changes, or if this is the first run.
     // We want to do this synchronously with the render, not in an effect.
-    // This way, when pending → true, spinning → true in the same pass.
-    if (firstRun.current || pending !== prevPending.current) {
-        prevPending.current = pending;
+    // This way, when loading → true, spinning → true in the same pass.
+    if (firstRun.current || loading !== prevState.current) {
+        prevState.current = loading;
         recalculate();
     }
 

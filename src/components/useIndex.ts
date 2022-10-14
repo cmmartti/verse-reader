@@ -8,9 +8,9 @@ import { searchIndex } from "../search";
 import { usePending } from "../util/usePending";
 import { useDebounceCallback } from "../util/useDebounceCallback";
 
-type Status = "ready" | "error" | "waiting" | "loading" | "success";
-type Reference = { id: types.HymnId; lines: string[] };
-type Category = {
+export type Status = "ready" | "error" | "waiting" | "loading" | "success";
+export type Reference = { id: types.HymnId; lines: string[] };
+export type Category = {
     id: string;
     name: string | null;
     references: Reference[];
@@ -18,13 +18,13 @@ type Category = {
 
 export function useIndex({
     book,
-    groupBy,
+    index,
     sort,
     search,
     minSearchLength,
 }: {
     book: types.Hymnal;
-    groupBy: types.Index;
+    index: types.Index;
     sort: string;
     search: string;
     minSearchLength: number;
@@ -87,7 +87,7 @@ export function useIndex({
     let categories = React.useMemo(() => {
         // Explicitly defined categories
         let definedCategories: Record<string, Category> = {};
-        for (let { id, name } of getCategories(book, groupBy.type)) {
+        for (let { id, name } of getCategories(book, index.type)) {
             definedCategories[id] = { id, name, references: [] };
         }
 
@@ -101,7 +101,7 @@ export function useIndex({
         for (let ref of references) {
             let page = book.pages[ref.id];
             if (!page) break;
-            let categoryIds = getPageCategories(groupBy.type, page);
+            let categoryIds = getPageCategories(index.type, page);
 
             if (categoryIds.length === 0) other.references.push(ref);
             for (let id of categoryIds) {
@@ -121,7 +121,7 @@ export function useIndex({
         ];
 
         // If the categories aren't ordered by default, sort them alphabetically
-        if (!groupBy.hasDefaultSort || sort === "a-z")
+        if (!index.hasDefaultSort || sort === "a-z")
             categories.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
 
         if (sort === "count")
@@ -136,7 +136,7 @@ export function useIndex({
             name: name ?? `[${id}]`,
             references,
         }));
-    }, [book, sort, references, groupBy]);
+    }, [book, sort, references, index]);
 
     return {
         status,
@@ -147,9 +147,9 @@ export function useIndex({
 
 function getCategories(
     book: types.Hymnal,
-    groupBy: types.IndexType
+    index: types.IndexType
 ): Array<{ id: string; name: string | null }> {
-    switch (groupBy) {
+    switch (index) {
         case "_none":
             return [{ id: "_none", name: null }];
         case "topic":
@@ -179,8 +179,8 @@ function getCategories(
     }
 }
 
-function getPageCategories(groupBy: types.IndexType, page: types.Hymn): Array<string> {
-    switch (groupBy) {
+function getPageCategories(index: types.IndexType, page: types.Hymn): Array<string> {
+    switch (index) {
         case "_none":
             return ["_"];
         case "topic":

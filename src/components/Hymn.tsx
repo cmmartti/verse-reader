@@ -1,9 +1,8 @@
 import React from "react";
 
 import * as types from "../types";
-import { navigate } from "../locationState";
 import { Verses } from "./Verses";
-import { Link } from "@tanstack/react-location";
+import { Link } from "react-router-dom";
 
 export let Hymn = React.memo(_Hymn);
 
@@ -20,6 +19,10 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
 
     let authors = contributors.filter(c => c.type === "author");
     let translators = contributors.filter(c => c.type === "translator");
+
+    function getURL(search: string) {
+        return `index?q=${encodeURIComponent(search)}`;
+    }
 
     return (
         <article
@@ -53,7 +56,12 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                             )
                             .map((topic, index) => (
                                 <React.Fragment key={topic.id}>
-                                    <Link className="Hymn-topic">{topic.name}</Link>
+                                    <Link
+                                        className="Hymn-topic"
+                                        to={getURL(`#topic=${topic.id}`)}
+                                    >
+                                        {topic.name}
+                                    </Link>
                                     {index < hymn.topics.length - 1 && ", "}
                                 </React.Fragment>
                             ))}
@@ -89,7 +97,7 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                 {hymn.language !== book.language && (
                     <span className="Hymn-link">
                         <h3>Language</h3>
-                        <Link>
+                        <Link to={getURL(`#language=${hymn.language}`)}>
                             {book.languages[hymn.language]?.name ?? hymn.language}
                         </Link>
                     </span>
@@ -99,19 +107,21 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                     <span className="Hymn-link">
                         <h3>Tune{hymn.tunes.length > 1 && "s"}</h3>
                         {hymn.tunes.map(id => (
-                            <Link key={id}>{book.tunes?.[id]?.name ?? id}</Link>
+                            <Link key={id} to={getURL(`#tune=${id}`)}>
+                                {book.tunes?.[id]?.name ?? id}
+                            </Link>
                         ))}
                     </span>
                 )}
 
                 <span className="Hymn-link">
                     <h3>Author{authors.length > 1 && "s"}</h3>
-                    {authors.map(({ name, note, year }, i) => (
-                        <Link key={i}>
-                            {name +
-                                (note ? ` (${note})` : "") +
-                                (year ? ` (${year})` : "")}
-                        </Link>
+                    {authors.map(({ name, note, year, id }, i) => (
+                        <div key={i}>
+                            <Link to={getURL(`#author=${id}`)}>{name}</Link>
+                            {note && ` (${note})`}
+                            {year && ` (${year})`}
+                        </div>
                     ))}
                     {authors.length === 0 && "—"}
                 </span>
@@ -119,7 +129,9 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                 <span className="Hymn-link">
                     <h3>Origin</h3>
                     {hymn.origin ? (
-                        <Link>{book.origins?.[hymn.origin]?.name ?? hymn.origin}</Link>
+                        <Link to={getURL(`#origin=${hymn.origin}`)}>
+                            {book.origins?.[hymn.origin]?.name ?? hymn.origin}
+                        </Link>
                     ) : (
                         "—"
                     )}
@@ -128,12 +140,12 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                 {translators.length > 0 && (
                     <span className="Hymn-link">
                         <h3>Translator{translators.length > 1 && "s"}</h3>
-                        {translators.map(({ name, note, year }, i) => (
-                            <Link key={i}>
-                                {name +
-                                    (note ? ` (${note})` : "") +
-                                    (year ? ` (${year})` : "")}
-                            </Link>
+                        {translators.map(({ name, note, year, id }, i) => (
+                            <div key={i}>
+                                <Link to={getURL(`#transl=${id}`)}>{name}</Link>
+                                {note && ` (${note})`}
+                                {year && ` (${year})`}
+                            </div>
                         ))}
                     </span>
                 )}
@@ -145,17 +157,6 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                             <Link
                                 key={link.edition}
                                 to={`/en-${link.edition}?loc=${link.id}`}
-                                onClick={event => {
-                                    event.preventDefault();
-                                    navigate(
-                                        prevState => ({
-                                            ...prevState,
-                                            book: "en-" + link.edition,
-                                            [`book/en-${link.edition}/loc`]: link.id,
-                                        }),
-                                        false
-                                    );
-                                }}
                             >
                                 EN-{link.edition} → {link.id}
                             </Link>
@@ -167,7 +168,9 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                     <span className="Hymn-link">
                         <h3>Suggested Use</h3>
                         {hymn.days.map(id => (
-                            <Link key={id}>{book.days?.[id]?.name ?? id}</Link>
+                            <Link key={id} to={getURL(`#day=${id}`)}>
+                                {book.days?.[id]?.name ?? id}
+                            </Link>
                         ))}
                     </span>
                 )}
@@ -176,7 +179,11 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                     <span className="Hymn-link">
                         <h3>Note</h3>
                         <span>
-                            *Not for church services; may be used for other occasions.
+                            *
+                            <Link to={getURL("#restricted")}>
+                                Not for church services
+                            </Link>
+                            ; may be used for other occasions.
                         </span>
                     </span>
                 )}
@@ -185,7 +192,8 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
                     <span className="Hymn-link">
                         <h3>Note</h3>
                         <span>
-                            This hymn was <Link>deleted</Link> in a later printing
+                            This hymn was <Link to={getURL("#deleted")}>deleted</Link> in
+                            a later printing
                         </span>
                     </span>
                 )}

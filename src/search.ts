@@ -5,11 +5,17 @@ import * as types from "./types";
 // Do not delete
 let limitLength: PipelineFunction = token =>
     token.toString().length <= 2 ? null : token;
-Pipeline.registerFunction(limitLength, "limitLength");
 
 let stripPunctuation: PipelineFunction = token =>
     token.update(term => term.replaceAll(/[“”’'".,;:?!\-—–+^0-9]/g, ""));
+
+Pipeline.registerFunction(limitLength, "limitLength");
 Pipeline.registerFunction(stripPunctuation, "stripPunctuation");
+
+let extractLines = (verse: types.Verse) =>
+    verse.lines.flatMap(lineOrRepeat =>
+        typeof lineOrRepeat === "string" ? lineOrRepeat : lineOrRepeat.lines
+    );
 
 export function buildIndex(book: types.Hymnal) {
     let builder = new Builder();
@@ -21,21 +27,21 @@ export function buildIndex(book: types.Hymnal) {
 
     // Add each line of each verse of each hymn to the search index.
     // Label each line with a decipherable reference ID.
-    Object.values(book.pages).forEach(page => {
-        page.verses.forEach((verse, verseIndex) => {
-            extractLines(verse).forEach((line, lineIndex) =>
-                builder.add({ id: `${page.id}/${verseIndex}/${lineIndex}`, line: line })
+    for (let hymn of Object.values(book.pages)) {
+        hymn.verses.forEach((verse, verseIndex) => {
+            extractLines(verse).forEach((line, i) =>
+                builder.add({ id: `${hymn.id}/${verseIndex}/${i}`, line })
             );
         });
-        if (page.refrain)
-            extractLines(page.refrain).forEach((line, lineIndex) =>
-                builder.add({ id: `${page.id}/r/${lineIndex}`, line: line })
+        if (hymn.refrain)
+            extractLines(hymn.refrain).forEach((line, i) =>
+                builder.add({ id: `${hymn.id}/r/${i}`, line })
             );
-        if (page.chorus)
-            extractLines(page.chorus).forEach((line, lineIndex) =>
-                builder.add({ id: `${page.id}/c/${lineIndex}`, line: line })
+        if (hymn.chorus)
+            extractLines(hymn.chorus).forEach((line, i) =>
+                builder.add({ id: `${hymn.id}/c/${i}`, line })
             );
-    }, builder);
+    }
 
     return builder.build();
 }
@@ -47,26 +53,30 @@ export function searchIndex(
 ) {
     // Get a list of lines that match the search terms
     let results = indexOfLines.query(query => {
-        query.term(search, {
-            fields: ["line"],
-            presence: lunr.Query.presence.REQUIRED,
-            wildcard: lunr.Query.wildcard.TRAILING,
-        });
+        query.term(
+            search.map(str => str.toLowerCase()),
+            {
+                fields: ["line"],
+                presence: lunr.Query.presence.REQUIRED,
+                wildcard: lunr.Query.wildcard.TRAILING,
+            }
+        );
     });
 
     let linesByPage = {} as Record<string, string[]>;
 
     for (let result of results) {
-        // Break apart the ref string into its component parts
-        let [pageId, verseId, lineId] = result.ref.split("/");
+        // Break apart the ref string into its component parts to find which hymn and
+        // verse this line belongs to
+        let [hymnId, verseId, lineId] = result.ref.split("/");
 
-        // Skip this result if the ref is invalid for some reason
-        if (!pageId || !verseId || !lineId) break;
+        // Skip this result if the ref string is invalid for some reason
+        if (!hymnId || !verseId || !lineId) break;
 
-        let page = book.pages[pageId];
+        let page = book.pages[hymnId];
         if (!page) break;
 
-        // Get all lines for this verse
+        // Extract the matching line from this verse
         let verseLines: string[] = [];
         if (verseId === "r" && page.refrain) verseLines = extractLines(page.refrain);
         else if (verseId === "c" && page.chorus) verseLines = extractLines(page.chorus);
@@ -74,24 +84,14 @@ export function searchIndex(
             let verse = page.verses[parseInt(verseId, 10)];
             if (verse) verseLines = extractLines(verse);
         }
-
-        // Extract the matching line
         let line = verseLines[parseInt(lineId, 10)] ?? `?? ${result.ref.split}`;
 
-        // Initialize this page's results list if it doesn't exist yet
-        let resultsList = linesByPage[pageId] ?? [];
-        linesByPage[pageId] = resultsList;
+        // Initialize this hymn's results list if it doesn't exist yet
+        let resultsList = linesByPage[hymnId] ?? [];
+        linesByPage[hymnId] = resultsList;
 
         resultsList.push(line);
     }
 
     return Object.entries(linesByPage).map(([id, lines]) => ({ id, lines }));
-}
-
-function extractLines(verse: types.Verse) {
-    return verse.lines.flatMap(lineOrRepeat => {
-        if (typeof lineOrRepeat === "string") return lineOrRepeat;
-        else if (lineOrRepeat.kind === "repeat") return lineOrRepeat.lines;
-        return "";
-    });
 }

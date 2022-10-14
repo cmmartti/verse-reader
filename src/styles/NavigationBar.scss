@@ -1,47 +1,37 @@
 .NavigationBar {
-    // background: var(--toolbar-background);
-    // border-bottom: 0.5px solid var(--color2);
+    height: var(--toolbar-height);
+    padding: 0.375rem 0;
+    display: flex;
 
-    & > .NavigationBar-top {
-        height: var(--toolbar-height);
+    & > .NavigationBar-back {
+        flex: 1 1;
+
         display: flex;
-        gap: 0.5rem;
-
-        & > .NavigationBar-back {
-            flex: 1 1;
-
-            display: flex;
-            justify-content: flex-start;
-            align-items: stretch;
-        }
-        & > .NavigationBar-title {
-            font-size: inherit;
-            font-weight: bold;
-            padding-inline: 0.325rem;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            text-align: center;
-            display: flex;
-            align-items: center;
-        }
-        & > .NavigationBar-tools {
-            flex: 1 1;
-
-            display: flex;
-            justify-content: flex-end;
-            align-items: stretch;
-
-            display: grid;
-            grid-auto-flow: column;
-            grid-auto-columns: minmax(2.875rem, auto);
-        }
+        justify-content: flex-start;
+        align-items: stretch;
     }
+    & > .NavigationBar-title {
+        font-size: inherit;
+        font-weight: bold;
 
-    & > .NavigationBar-bottom {
-        // height: var(--toolbar-height);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        text-align: center;
+        display: flex;
+        align-items: center;
+    }
+    & > .NavigationBar-tools {
+        flex: 1 1;
+
+        display: flex;
+        justify-content: flex-end;
+        align-items: stretch;
+
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(2.875rem, auto);
     }
 }
 
@@ -53,31 +43,4 @@
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(2.875rem, auto);
-}
-
-.NavigationBar-input {
-    display: flex;
-    padding-block: 0.325rem;
-
-    & input {
-        flex: 1;
-        padding: 0 0.25rem;
-        font: inherit;
-        font-weight: 600;
-        font-size: 1.325em;
-        line-height: 1;
-        text-align: center;
-        border: none;
-        min-width: 0;
-        width: 3em;
-        height: 100%;
-        background: var(--input-background);
-        outline-offset: 0;
-        &:focus:not(:focus-visible) {
-            outline: none;
-        }
-        &:focus {
-            outline: none;
-        }
-    }
 }

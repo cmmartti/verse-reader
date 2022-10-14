@@ -1,6 +1,6 @@
 import React from "react";
 
-export function useDebounceCallback<CallbackArgs extends any[]>(
+export function useDebouncedCallback<CallbackArgs extends any[]>(
     callback: (...args: CallbackArgs) => void,
     wait = 100,
     leading = false

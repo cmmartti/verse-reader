@@ -171,8 +171,9 @@
 .Hymn-links {
     display: flex;
     // flex-direction: column;
+    // justify-content: space-between;
     flex-wrap: wrap;
-    column-gap: 1.25em;
+    column-gap: 1em;
     row-gap: 0.5em;
 
     // display: grid;
