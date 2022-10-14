@@ -6,7 +6,7 @@ import * as bookService from "../bookService";
 import { searchIndex } from "../search";
 
 import { usePending } from "../util/usePending";
-import { useDebounceCallback } from "../util/useDebounceCallback";
+import { useDebouncedCallback } from "../util/useDebouncedCallback";
 
 export type Status = "ready" | "error" | "waiting" | "loading" | "success";
 export type Reference = { id: types.HymnId; lines: string[] };
@@ -66,7 +66,7 @@ export function useIndex({
         },
         [book, indexOfLines.data, indexOfLinesIsLoading]
     );
-    let updateResultsDebounced = useDebounceCallback(updateResults, 150);
+    let updateResultsDebounced = useDebouncedCallback(updateResults, 150);
 
     // let prevSearch = React.useRef(search);
     // React.useEffect(() => {
