@@ -10,6 +10,7 @@ const DEFAULT_OPTIONS = {
    colorScheme: "light",
    fontSize: 1.2,
    fontFamily: "charter",
+   pageMargins: 1,
 };
 
 type Options = typeof DEFAULT_OPTIONS;
@@ -48,6 +49,13 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
          (fonts.find(font => font.id === options.fontFamily) ?? fonts[0]!).value
       );
    }, [options.fontFamily]);
+
+   React.useLayoutEffect(() => {
+      document.documentElement.style.setProperty(
+         "--page-margins",
+         options.pageMargins + "rem"
+      );
+   }, [options.pageMargins]);
 
    return (
       <OptionsContext.Provider value={[options, setOptions]}>

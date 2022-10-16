@@ -18,6 +18,7 @@ export function BookOptions() {
    let [colorScheme, setColorScheme] = useOption("colorScheme");
    let [fontSize, setFontSize] = useOption("fontSize");
    let [fontFamily, setFontFamily] = useOption("fontFamily");
+   let [pageMargins, setPageMargins] = useOption("pageMargins");
 
    return (
       <main className="OptionsPanel">
@@ -90,6 +91,18 @@ export function BookOptions() {
                      onChange={e => setFontSize(parseInt(e.target.value, 10) / 10)}
                      min="10"
                      max="20"
+                     step="1"
+                  />
+               </div>
+
+               <div className="OptionsPanel-range">
+                  <label htmlFor={htmlId + "-fontSize"}>Margins</label>
+                  <input
+                     type="range"
+                     value={pageMargins * 10}
+                     onChange={e => setPageMargins(parseInt(e.target.value, 10) / 10)}
+                     min="0"
+                     max="50"
                      step="1"
                   />
                </div>

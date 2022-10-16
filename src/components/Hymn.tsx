@@ -93,7 +93,7 @@ function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
 
             <Verses hymn={hymn} />
 
-            <footer className="Hymn-links">
+            <footer className="Hymn-footer">
                 {hymn.language !== book.language && (
                     <span className="Hymn-link">
                         <h3>Language</h3>

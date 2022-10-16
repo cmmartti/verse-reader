@@ -1,201 +1,202 @@
 .Hymn {
-    flex: 1;
-    font-size: calc(1rem * var(--ui-scale-factor, 1));
-    max-width: 55ch;
-    width: 100%;
-    margin-inline: auto;
+   flex: 1;
+   font-size: calc(1rem * var(--ui-scale-factor, 1));
+   max-width: 55ch;
+   width: 100%;
+   margin-inline: auto;
 
-    padding: 0.75rem;
-    @media (min-width: 55rem) {
-        padding: 1rem;
-    }
+   padding: var(--page-margins, 0.75rem);
+   @media (min-width: 55rem) {
+      padding: 1rem;
+   }
 
-    position: relative;
+   position: relative;
 
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
+   display: flex;
+   flex-direction: column;
+   // gap: Max(0.5em, var(--page-margins));
 
-    & > * {
-        flex-shrink: 0;
-    }
+   & > * {
+      flex-shrink: 0;
+   }
 }
 
 .Hymn-header {
-    font-size: calc(max(1rem, 0.85em));
-    // border-bottom: 0.5px solid;
-    // padding-bottom: 0.5em;
+   font-size: calc(max(1rem, 0.85em));
+   padding-bottom: 1rem;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.25em 1em;
-    @media (max-width: 29rem) {
-        flex-direction: column;
-        align-items: center;
-    }
-    text-align: center;
+   display: flex;
+   justify-content: space-between;
+   align-items: baseline;
+   gap: 0.25em 1em;
+   @media (max-width: 29rem) {
+      flex-direction: column;
+      align-items: center;
+   }
+   text-align: center;
 }
 .Hymn-title {
-    font: inherit;
-    font-weight: bold;
-    // text-wrap: balance;
+   font: inherit;
+   font-weight: bold;
+   // text-wrap: balance;
 
-    @media (min-width: 29rem) {
-        display: flex;
-        gap: 0.25em;
-        text-align: left;
-    }
+   @media (min-width: 29rem) {
+      display: flex;
+      gap: 0.25em;
+      text-align: left;
+   }
 }
 .Hymn-topics {
-    font: inherit;
-    font-size: 0.85em;
-    // color: var(--color3);
-    @media (min-width: 29rem) {
-        text-align: right;
-    }
+   font: inherit;
+   font-size: 0.85em;
+   // color: var(--color3);
+   @media (min-width: 29rem) {
+      text-align: right;
+   }
 }
 .Hymn-topic {
-    white-space: nowrap;
+   white-space: nowrap;
 }
 .Hymn-asterisk {
-    padding: 0 0.1em;
-    display: inline-block;
-    transform: scale(1.5);
+   padding: 0 0.1em;
+   display: inline-block;
+   transform: scale(1.5);
 }
 .Hymn.isDeleted .Hymn-title {
-    text-decoration: line-through;
+   text-decoration: line-through;
 }
 .Hymn-tunes {
-    text-align: center;
-    font-size: 0.85em;
+   text-align: center;
+   font-size: 0.85em;
 }
 
 .Hymn-verses {
-    flex: 1 0;
-    margin-inline: auto;
-    width: 100%;
+   flex: 1 0;
+   margin-inline: auto;
+   width: 100%;
 
-    & > * + * {
-        margin-top: 0.75em;
-    }
+   & > * + * {
+      margin-top: 0.75em;
+   }
 }
 
 .Hymn-attachment {
-    margin-left: 0.75em;
+   margin-left: 0.75em;
 }
 .Hymn-specialLines {
-    font-style: italic;
+   font-style: italic;
 }
 
 .Hymn-verseNumber {
-    grid-area: verse-number;
-    margin-left: 0.75em;
-    margin-right: 0.25em;
+   grid-area: verse-number;
+   margin-left: 0.75em;
+   margin-right: 0.25em;
 }
 
 .Hymn-attachmentLabel {
-    grid-area: verse-number;
-    font-style: italic;
-    margin-right: 0.5em;
+   grid-area: verse-number;
+   font-style: italic;
+   margin-right: 0.5em;
 }
 
 .Hymn-repeat {
-    font-weight: bold;
+   font-weight: bold;
 }
 .Hymn-repeatLabel {
 }
 
 .Hymn-pointer {
-    font-style: italic;
+   font-style: italic;
 }
 .Hymn-line {
-    // padding-left: 1em;
-    // text-indent: -1em;
+   // padding-left: 1em;
+   // text-indent: -1em;
 }
 .Hymn-lineSeparator {
-    padding-inline: 0.25em;
-    vertical-align: middle;
+   padding-inline: 0.25em;
+   vertical-align: middle;
 
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+   display: inline-flex;
+   justify-content: center;
+   align-items: center;
 
-    &::before {
-        content: "";
-        height: 0.25em;
-        width: 0.25em;
-        border-radius: 0.075em;
-        background: var(--color2);
-    }
+   &::before {
+      content: "";
+      height: 0.25em;
+      width: 0.25em;
+      border-radius: 0.075em;
+      background: var(--color2);
+   }
 }
 
 .Hymn-verse,
 .Hymn-chorus,
 .Hymn-refrain {
-    break-inside: avoid-column;
+   break-inside: avoid-column;
 
-    // display: grid;
-    grid-template-areas: "verse-number lines";
-    grid-template-columns: 0.75em 1fr;
-    grid-template-columns: subgrid;
-    column-gap: 0.5rem;
-    align-items: baseline;
+   // display: grid;
+   grid-template-areas: "verse-number lines";
+   grid-template-columns: 0.75em 1fr;
+   grid-template-columns: subgrid;
+   column-gap: 0.5rem;
+   align-items: baseline;
 }
 .Hymn-chorus,
 .Hymn-refrain {
-    grid-template-areas:
-        "verse-number verse-number"
-        ".            lines";
-    // margin-top: 0;
+   grid-template-areas:
+      "verse-number verse-number"
+      ".            lines";
+   // margin-top: 0;
 }
 
 .Hymn-verseLines,
 .Hymn-inlineRefrain,
 .Hymn-repeat {
-    grid-area: lines;
+   grid-area: lines;
 
-    // display: flex;
-    flex-direction: column;
+   // display: flex;
+   flex-direction: column;
 }
 
 .Hymn-verse,
 .Hymn-chorus,
 .Hymn-refrain,
 .Hymn-inlineRefrain {
-    &.is-deleted .Hymn-line {
-        text-decoration: line-through;
-    }
+   &.is-deleted .Hymn-line {
+      text-decoration: line-through;
+   }
 }
 
-.Hymn-links {
-    display: flex;
-    // flex-direction: column;
-    // justify-content: space-between;
-    flex-wrap: wrap;
-    column-gap: 1em;
-    row-gap: 0.5em;
+.Hymn-footer {
+   padding-top: Max(0.5em, var(--page-margins));
 
-    // display: grid;
-    // grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
+   display: flex;
+   // flex-direction: column;
+   // justify-content: space-between;
+   flex-wrap: wrap;
+   column-gap: 1em;
+   row-gap: 0.5em;
+
+   // display: grid;
+   // grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
 }
 .Hymn-link {
-    line-height: 1.2em;
-    font-size: 0.8em;
+   line-height: 1.2em;
+   font-size: 0.8em;
 
-    display: inline-flex;
-    // align-items: center;
-    flex-direction: column;
+   display: inline-flex;
+   // align-items: center;
+   flex-direction: column;
 
-    & > :first-child {
-        font-size: 0.75em;
-        font-weight: bold;
-        // text-transform: uppercase;
-        font-style: italic;
-    }
+   & > :first-child {
+      font-size: 0.75em;
+      font-weight: bold;
+      // text-transform: uppercase;
+      font-style: italic;
+   }
 
-    & > :not(:first-child) {
-        // font-weight: bold;
-        // font-size: 0.825em;
-    }
+   & > :not(:first-child) {
+      // font-weight: bold;
+      // font-size: 0.825em;
+   }
 }
