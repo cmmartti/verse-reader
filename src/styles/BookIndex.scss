@@ -1,201 +1,209 @@
 .BookIndex {
-    height: var(--vh100);
-    display: flex;
-    flex-flow: column;
+   min-height: 100vh;
+   --page-padding: 1rem;
+   @media (max-width: 35rem) {
+      --page-padding: 0.625rem;
+   }
 
-    --page-padding: 1rem;
-    @media (max-width: 35rem) {
-        --page-padding: 0.625rem;
-    }
+   display: flex;
+   flex-flow: column;
 
-    &:not(.--grouped) {
-        background: var(--background3);
-    }
+   &:not(.--grouped) {
+      background: var(--background3);
+   }
 
-    & > .-header {
-        background: var(--toolbar-background);
-        border-bottom: 0.5px solid var(--color2);
-    }
+   & > .-header {
+      background: var(--toolbar-background);
+      backdrop-filter: blur(12px);
+      // border-bottom: 0.5px solid var(--color2);
+      position: sticky;
+      width: 100%;
+      top: 0;
+      z-index: 1;
+   }
 
-    & > .-results {
-        flex: 1;
-        overflow: auto;
-        padding-bottom: var(--page-padding);
+   & > .-results {
+      flex: 1;
+      // overflow: auto;
+      padding-bottom: var(--page-padding);
 
-        &:focus {
-            outline: none;
-        }
+      &:focus {
+         outline: none;
+      }
 
-        & > .status {
-            padding-inline: var(--page-padding);
-            padding-block: 0.325rem;
-            color: var(--color3);
-        }
-    }
+      & > .status {
+         padding-inline: var(--page-padding);
+         padding-block: 0.325rem;
+         color: var(--color3);
+      }
+   }
 }
 
 .Section {
-    & > .-header {
-        display: flex;
-        justify-content: stretch;
-        & > .-button {
+   & > .-header {
+      display: flex;
+      justify-content: stretch;
+      & > .-button {
+         flex: 1;
+         padding-block: 0.325rem;
+         padding-inline: calc(var(--page-padding) + 0.5rem) var(--page-padding);
+
+         display: flex;
+         justify-content: stretch;
+         align-items: center;
+         gap: 0.5rem;
+
+         & > .-marker {
+            width: 0.75em;
+            height: 0.75em;
+            background: red;
+            border-radius: 100%;
+         }
+         & > .-title {
             flex: 1;
-            padding: 0.375rem var(--page-padding);
-
-            display: flex;
-            justify-content: stretch;
-            align-items: center;
-            gap: 0.5rem;
-
-            & > .-marker {
-                width: 0.75em;
-                height: 0.75em;
-                background: red;
-                border-radius: 100%;
+            font-weight: 600;
+         }
+         & > .-count {
+            color: var(--color3);
+         }
+         & > .-arrow {
+            transition: transform ease-in-out 250ms;
+            color: var(--button-color);
+            &.--rotate90 {
+               transform: rotate(90deg);
             }
-            & > .-title {
-                flex: 1;
-                font-weight: 600;
-            }
-            & > .-count {
-                color: var(--color3);
-            }
-            & > .-arrow {
-                transition: transform ease-in-out 250ms;
-                color: var(--button-color);
-                &.--rotate90 {
-                    transform: rotate(90deg);
-                }
-            }
-        }
-    }
+         }
+      }
+   }
 
-    // horizontal divider line between sections
-    position: relative;
-    &:not(.--open)::after {
-        position: absolute;
-        inset: 0 0 0 var(--page-padding);
-        content: "";
-        pointer-events: none;
-        border-bottom: 0.5px solid var(--color2);
-    }
+   // horizontal divider line between sections
+   position: relative;
+   &:not(.--open)::after {
+      position: absolute;
+      inset: 0 0 0 var(--page-padding);
+      content: "";
+      pointer-events: none;
+      border-bottom: 0.5px solid var(--color2);
+   }
 
-    & > .-contents {
-        padding-inline: var(--page-padding);
+   & > .-contents {
+      padding-inline: var(--page-padding);
 
-        & > .-items {
-            border-radius: 0.5rem;
-            background: var(--background3);
-            --page-padding: 0.5rem;
+      & > .-items {
+         border-radius: 0.5rem;
+         background: var(--background3);
+         --page-padding: 0.5rem;
 
-            & > * {
-                // horizontal divider line
-                position: relative;
-                &:not(:first-child)::after {
-                    content: "";
-                    position: absolute;
-                    pointer-events: none;
-                    inset: 0 0 0 0.5rem;
-                    border-top: 0.5px solid var(--color2);
-                }
+         & > * {
+            // horizontal divider line
+            position: relative;
+            &:not(:first-child)::after {
+               content: "";
+               position: absolute;
+               pointer-events: none;
+               inset: 0 0 0 0.5rem;
+               border-top: 0.5px solid var(--color2);
             }
-        }
-    }
-    &:not(.--open) > .-contents {
-        display: none;
-    }
+         }
+      }
+   }
+   &:not(.--open) > .-contents {
+      display: none;
+   }
 }
 
 .ReferenceList {
-    & > * {
-        // horizontal divider line
-        position: relative;
-        &:not(:first-child)::after {
-            content: "";
-            position: absolute;
-            pointer-events: none;
-            inset: 0 0 0 var(--page-padding);
-            border-top: 0.5px solid var(--color2);
-        }
-    }
+   & > * {
+      // horizontal divider line
+      position: relative;
+      &:not(:first-child)::after {
+         content: "";
+         position: absolute;
+         pointer-events: none;
+         inset: 0 0 0 var(--page-padding);
+         border-top: 0.5px solid var(--color2);
+      }
+   }
 }
 
 a.ReferenceLink {
-    padding-inline: var(--page-padding);
-    padding-block: 0.325rem;
-    text-decoration: none !important;
-    color: inherit;
-    &:focus-visible {
-        outline: none;
-        background: var(--background4);
-    }
+   padding-inline: var(--page-padding);
+   padding-block: 0.325rem;
+   text-decoration: none !important;
+   color: inherit;
+   &:focus-visible {
+      outline: none;
+      background: var(--background4);
+   }
 
-    &:hover > .-label > .-title {
-        @media (hover: hover) {
-            text-decoration: underline;
-        }
-    }
-    &.is-current > .-label > .-title {
-        font-weight: bold;
-    }
-    &.is-current > .-icon {
-        font-weight: bold;
-        color: red;
-    }
-    &.is-deleted > .-label > .-title {
-        text-decoration: line-through;
-    }
-    &.is-otherLanguage > .-label > .-title {
-        font-style: italic;
-    }
+   &:hover > .-label > .-title {
+      @media (hover: hover) {
+         text-decoration: underline;
+      }
+   }
+   &.is-current {
+      & > .-label > .-title {
+         color: red;
+      }
+      & > .-icon {
+         font-weight: bold;
+         color: red;
+      }
+   }
+   &.is-deleted > .-label > .-title {
+      text-decoration: line-through;
+   }
+   &.is-otherLanguage > .-label > .-title {
+      font-style: italic;
+   }
 
-    display: grid;
-    grid-template-columns: minmax(1.5rem, auto) 1fr;
-    column-gap: 0.5rem;
-    row-gap: 0.25rem;
+   display: grid;
+   grid-template-columns: minmax(2rem, auto) 1fr;
+   column-gap: 0.5rem;
+   row-gap: 0.25rem;
 
-    & > .-icon {
-        grid-column: 1;
-        color: var(--color3);
-    }
+   & > .-icon {
+      grid-column: 1;
+      color: var(--color3);
+   }
 
-    & > * {
-        grid-column: 2;
-    }
+   & > * {
+      grid-column: 2;
+   }
 
-    & > .-label {
-        overflow: hidden;
-        display: flex;
-        @media (max-width: 29rem) {
-            flex-direction: column;
-        }
+   & > .-label {
+      overflow: hidden;
+      display: flex;
+      @media (max-width: 29rem) {
+         flex-direction: column;
+      }
 
-        & > .-title {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+      & > .-title {
+         flex: 1;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+      }
 
-        & > .-verseCount {
-            color: var(--color3);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            @media (max-width: 29rem) {
-                font-size: 0.9rem;
-            }
-        }
-    }
+      & > .-verseCount {
+         color: var(--color3);
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         @media (max-width: 29rem) {
+            font-size: 0.9rem;
+         }
+      }
+   }
 
-    & > .-preview {
-        font-size: 0.9em;
-        padding-inline-start: 0;
-        list-style: "→  ";
-        color: var(--color3);
+   & > .-preview {
+      font-size: 0.9em;
+      padding-inline-start: 0;
+      list-style: "→  ";
+      color: var(--color3);
 
-        & > * {
-            padding-block: 0.15em;
-        }
-    }
+      & > * {
+         padding-block: 0.15em;
+      }
+   }
 }

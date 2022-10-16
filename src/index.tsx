@@ -7,7 +7,7 @@ import { registerElements } from "./elements/registerElements";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-const container = document.getElementById("root");
+const container = document.getElementById("react-root");
 const root = createRoot(container!);
 
 registerElements();
