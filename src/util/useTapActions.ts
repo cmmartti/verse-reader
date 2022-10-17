@@ -34,48 +34,53 @@ export function useTapActions<E extends HTMLElement>(
          if (event.changedTouches.length === 1) {
             let touchEnd = event.changedTouches[0];
 
+            // Check for abort conditions
             if (
-               touchStart &&
-               touchEnd &&
-               //↓ Touch location hasn't moved between start and end
-               Math.abs(touchStart.clientX - touchEnd.clientX) < 3 &&
-               Math.abs(touchStart.clientY - touchEnd.clientY) < 3 &&
-               //↓ Touch end was within TOUCH_END_DELAY of touch start
-               //  to not block long presses (native text selection)
-               releaseTimeout &&
-               //↓ Text is not currently selected, to allow for dismissal of selected
-               //  text by tapping anywhere without unintentionally triggering an action
-               !document.getSelection()?.toString()
+               !touchEnd ||
+               !touchStart ||
+               //↓ Touch target is an anchor
+               (touchEnd.target instanceof Element && touchEnd.target.tagName === "A") ||
+               //↓ Touch location has moved
+               Math.abs(touchStart.clientX - touchEnd.clientX) >= 3 ||
+               Math.abs(touchStart.clientY - touchEnd.clientY) >= 3 ||
+               //↓ Touch end was not within TOUCH_END_DELAY of touch start.
+               //  This is to not block long presses (native text selection).
+               !releaseTimeout ||
+               //↓ Text is currently selected. Abort to allow for dismissal of selected
+               //  text by tapping anywhere without unintentionally triggering an action.
+               document.getSelection()?.toString()
             ) {
-               let ratio = touchStart.clientX / page.clientWidth;
-
-               // Left side
-               if (ratio <= 0.33) {
-                  event.preventDefault();
-                  left?.();
-               }
-
-               // Right side
-               else if (ratio >= 0.66) {
-                  event.preventDefault();
-                  right?.();
-               }
-
-               // Middle
-               else {
-                  if (doubleTapTimeout) {
-                     middle?.();
-                     event.preventDefault();
-                  } else {
-                     doubleTapTimeout = setTimeout(
-                        () => (doubleTapTimeout = null),
-                        DOUBLE_TAP_DELAY
-                     );
-                  }
-               }
-
-               page.removeEventListener("touchend", touchEndHandler);
+               return;
             }
+
+            let ratio = touchStart.clientX / page.clientWidth;
+
+            // Left side
+            if (ratio <= 0.33) {
+               event.preventDefault();
+               left?.();
+            }
+
+            // Right side
+            else if (ratio >= 0.66) {
+               event.preventDefault();
+               right?.();
+            }
+
+            // Middle
+            else {
+               if (doubleTapTimeout) {
+                  middle?.();
+                  event.preventDefault();
+               } else {
+                  doubleTapTimeout = setTimeout(
+                     () => (doubleTapTimeout = null),
+                     DOUBLE_TAP_DELAY
+                  );
+               }
+            }
+
+            page.removeEventListener("touchend", touchEndHandler);
          }
       }
 
