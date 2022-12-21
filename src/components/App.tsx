@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       },
    },
    {
-      path: "/:id",
+      path: "/file/:id",
       errorElement: <ErrorPage />,
       children: [
          {
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
             loader: async ({ params }) => {
                let { initialPage } = await bookService.getSummary(params.id!);
                let loc = store.getState()[`book/${params.id}/loc`] ?? initialPage;
-               if (loc) return redirect(`/${params.id}/${loc}`);
+               if (loc) return redirect(`/file/${params.id}/${loc}`);
             },
             // element: <EmptyBook />,
          },
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
                let locs = Object.values(book.pages).map(page => page.id);
                if (!locs.includes(params.loc!)) {
                   let initialLoc = locs[0];
-                  if (initialLoc) return redirect(`/${params.id}/${initialLoc}`);
+                  if (initialLoc) return redirect(`/file/${params.id}/${initialLoc}`);
                   else throw new Error("404 Not Found");
                }
 

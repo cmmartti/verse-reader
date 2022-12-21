@@ -75,6 +75,7 @@ export async function importBook({
         tx.objectStore("summary").put({
             id: book.id,
             title: book.title,
+            subtitle: book.subtitle,
             publisher: book.publisher,
             year: book.year,
             language: book.language,

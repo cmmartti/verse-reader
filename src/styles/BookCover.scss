@@ -1,0 +1,85 @@
+.BookCover {
+   border: 0.5px solid var(--background-tinted2);
+   background: var(--background-tinted1);
+   box-shadow: 0 0 6px hsla(210, 19%, 11%, 0.15);
+   &.--empty {
+      border: 2px dashed var(--background-tinted2);
+      background: none;
+      box-shadow: none;
+   }
+   user-select: none;
+   overflow: hidden;
+   border-radius: 8px;
+
+   width: 225px;
+   min-height: 300px;
+   display: flex;
+   flex-direction: column;
+
+   & > .-top {
+      min-height: 36px;
+
+      display: flex;
+      justify-content: flex-end;
+
+      & > * {
+         // border: 1px solid red;
+         min-width: 2em;
+      }
+   }
+
+   & > .-link {
+      font-size: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      padding: 8px;
+      gap: 8px;
+
+      text-decoration: none;
+      &:hover > .-title {
+         text-decoration: underline;
+      }
+
+      & > .-icon {
+         padding-block: 4px;
+
+         & svg {
+            display: inline;
+            height: 32px;
+            width: auto;
+         }
+      }
+
+      & > .-title {
+         // font-size: 1.15rem;
+         font-weight: 600;
+         text-align: center;
+         padding-inline: 8px;
+      }
+      & > .-subtitle {
+         text-align: center;
+         font-size: 0.8em;
+         padding-inline: 8px;
+      }
+
+      & > .-spacer {
+         flex: 1;
+      }
+
+      & > .-publisher {
+         flex: 1;
+         color: var(--color3);
+         font-size: 0.8em;
+         padding-inline: 8px;
+      }
+      & > .-pages {
+         color: var(--color3);
+         font-size: 0.6em;
+         text-align: end;
+         align-self: end;
+      }
+   }
+}

@@ -71,8 +71,11 @@ export let AddDialog = ({ open, onClose }: { open: boolean; onClose?: () => void
                   if (res.status !== 200)
                      throw new Error(`${res.status}: ${res.statusText}`);
                   blob = await res.blob();
-               } else if (item.source.type === "file") blob = item.source.file;
-               else throw new Error(`Invalid import type`);
+               } else if (item.source.type === "file") {
+                  blob = item.source.file;
+               } else {
+                  throw new Error(`Invalid import type`);
+               }
 
                if (blob.type !== "text/xml" && blob.type !== "application/xml") {
                   throw new Error(
@@ -91,23 +94,21 @@ export let AddDialog = ({ open, onClose }: { open: boolean; onClose?: () => void
                let errorNode = xmlDocument.querySelector("parsererror");
                if (errorNode) throw new Error("XML parsing failed");
 
-               let book = parseXML(xmlDocument);
-
                // TODO: Validate book document
-               // if (!isValidHymnal(book)) {
-               //     throw new Error("XML document does not conform to schema")
-               // }
-
+               let book = parseXML(xmlDocument);
                let index = buildIndex(book);
-               let data = { book, index };
 
-               await delay(2);
+               // await delay(2);
 
                if (signal.aborted) {
                   throw new DOMException("Aborted", "AbortError");
                }
 
-               update(i, item => ({ ...item, data, status: "success" }));
+               update(i, item => ({
+                  ...item,
+                  data: { book, index },
+                  status: "success",
+               }));
             } catch (error) {
                if (error instanceof Error && error.name === "AbortError") return;
 

@@ -1,20 +1,17 @@
 .Hymn {
    flex: 1;
    font-size: calc(1rem * var(--ui-scale-factor, 1));
-   max-width: 55ch;
+   max-width: 45ch;
    width: 100%;
    margin-inline: auto;
 
-   padding: var(--page-margins, 0.75rem);
-   @media (min-width: 55rem) {
-      padding: 1rem;
-   }
+   padding-inline: var(--page-margins, 0.75rem);
+   padding-block: clamp(1rem, var(--page-margins, 0.75rem), 2.5rem);
 
    position: relative;
 
    display: flex;
    flex-direction: column;
-   // gap: Max(0.5em, var(--page-margins));
 
    & > * {
       flex-shrink: 0;
@@ -49,7 +46,6 @@
 .Hymn-topics {
    font: inherit;
    font-size: 0.85em;
-   // color: var(--color3);
    @media (min-width: 29rem) {
       text-align: right;
    }
@@ -74,6 +70,8 @@
    flex: 1 0;
    margin-inline: auto;
    width: 100%;
+   min-height: 20rem;
+   padding-bottom: clamp(0.5em, var(--page-margins, 0.75rem), 2.5rem);
 
    & > * + * {
       margin-top: 0.75em;
@@ -84,7 +82,8 @@
    margin-left: 0.75em;
 }
 .Hymn-specialLines {
-   font-style: italic;
+   // font-style: italic;
+   border-bottom: 0.5px solid var(--color2);
 }
 
 .Hymn-verseNumber {
@@ -132,6 +131,7 @@
 .Hymn-verse,
 .Hymn-chorus,
 .Hymn-refrain {
+   scroll-snap-align: start;
    break-inside: avoid-column;
 
    // display: grid;
@@ -168,7 +168,9 @@
 }
 
 .Hymn-footer {
-   padding-top: Max(0.5em, var(--page-margins));
+   // padding-top: clamp(0.5em, var(--page-margins, 0.75rem), 2.5rem);
+   // padding-top: 16px;
+   // border-top: 1px solid var(--color2);
 
    display: flex;
    // flex-direction: column;

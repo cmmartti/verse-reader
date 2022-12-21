@@ -1,46 +1,50 @@
 .NavigationBar {
-    height: var(--toolbar-height);
-    padding: 0.375rem 0;
-    display: flex;
+   min-height: var(--toolbar-height);
+   display: grid;
+   grid-template-columns: 1fr auto 1fr;
 
-    & > .NavigationBar-back {
-        flex: 1 1;
+   & > .-back {
+      flex: 1 0 min-width;
+      display: grid;
+      grid-auto-flow: column;
+      // grid-auto-columns: minmax(2.875rem, auto);
+      justify-content: start;
+      align-items: stretch;
+      width: max-content;
+   }
 
-        display: flex;
-        justify-content: flex-start;
-        align-items: stretch;
-    }
-    & > .NavigationBar-title {
-        font-size: inherit;
-        font-weight: bold;
+   & > .-tools {
+      flex: 1 0 min-width;
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(2.875rem, auto);
+      justify-content: end;
+      align-items: stretch;
 
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      & > .Button {
+         padding-inline: 16px;
+      }
+   }
 
-        text-align: center;
-        display: flex;
-        align-items: center;
-    }
-    & > .NavigationBar-tools {
-        flex: 1 1;
+   & > .-title {
+      flex: auto 1 0;
+      padding-inline: 8px;
+      padding-block: 4px;
+      min-width: 0;
 
-        display: flex;
-        justify-content: flex-end;
-        align-items: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: inherit;
+      font-weight: bold;
 
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: minmax(2.875rem, auto);
-    }
-}
+      & > .-contents {
+         font: inherit;
+         text-align: center;
 
-.Toolbar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: stretch;
-
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(2.875rem, auto);
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+      }
+   }
 }

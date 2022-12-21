@@ -1,0 +1,86 @@
+.Menu {
+   max-width: 100%;
+   z-index: 100;
+   position: absolute;
+   &:not([open]) {
+      // display: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0ms ease-in;
+   }
+   transition: opacity 50ms ease-out;
+   transform-origin: top right;
+
+   box-shadow: 0 0 80px hsla(210, 19%, 11%, 0.375);
+   // border: 1px solid var(--background-tinted2);
+   border-radius: 8px;
+   background: var(--background5);
+   user-select: none;
+   &:focus {
+      outline: none;
+   }
+
+   overflow: auto;
+   overscroll-behavior: contain;
+
+   display: flex;
+   flex-direction: column;
+
+   & > [role="group"] {
+      display: flex;
+      flex-direction: column;
+   }
+
+   & > [role="separator"] {
+      background: var(--background4);
+      border-top: 0.375rem solid var(--background4);
+   }
+
+   & > [role^="menuitem"],
+   & > [role="group"] > [role^="menuitem"] {
+      padding-block: 8px;
+      padding-inline: 28px 16px;
+      border: none;
+      font: inherit;
+      background: none;
+      text-decoration: none;
+      text-align: start;
+      &:focus {
+         background: hsla(0, 0%, 0%, 0.1);
+         background: var(--background-tinted1);
+         outline: none;
+      }
+      &[disabled],
+      &[aria-disabled] {
+         color: var(--button-disabled-color);
+         text-decoration: line-through;
+         &:focus {
+            background: var(--button-disabled-background);
+         }
+      }
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+
+      & svg {
+         display: inline-block;
+         height: 1.2em;
+         width: 1.2em;
+         flex-shrink: 0;
+      }
+   }
+
+   & > [role^="menuitem"][aria-checked="true"]::before {
+      content: "✓";
+      font-weight: bold;
+      position: absolute;
+      left: 8px;
+   }
+
+   & > [role^="menuitem"] + [role^="menuitem"],
+   & > [role="group"] > [role^="menuitem"] + [role^="menuitem"] {
+      border-top: 0.5px solid var(--color2);
+   }
+}

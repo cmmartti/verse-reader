@@ -80,7 +80,7 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
             } else {
                 lines.push({
                     kind: "pointer",
-                    text: "Refrain:",
+                    text: "[Refrain]",
                     a11yText: "Refrain repeats here.",
                 } as PointerFragment);
             }

@@ -3,22 +3,23 @@ import { Link, useParams, useRouteLoaderData, useNavigate } from "react-router-d
 import { useFullscreen } from "rooks";
 
 import * as types from "../types";
+import { ReactComponent as CloseIcon } from "../icons/close.svg";
 import { ReactComponent as TOCIcon } from "../icons/toc.svg";
-// import { ReactComponent as BackIcon } from "../icons/arrow-back-ios.svg";
-// import { ReactComponent as ForwardIcon } from "../icons/arrow-forward-ios.svg";
+import { ReactComponent as MoreIcon } from "../icons/more_vert.svg";
+import { ReactComponent as BackIcon } from "../icons/arrow-back-ios.svg";
+import { ReactComponent as ForwardIcon } from "../icons/arrow-forward-ios.svg";
 
 import { useTapActions } from "../util/useTapActions";
 import { Hymn } from "./Hymn";
 import { useMatchMedia } from "../util/useMatchMedia";
 import { NavigationBar } from "./NavigationBar";
-import { useLockBodyScroll } from "../util/useLockBodyScroll";
 import { useAppState } from "../state";
 import { DEFAULT_STATE, stateToParams } from "./BookIndex";
 import { Helmet } from "react-helmet";
+import { Menu } from "./Menu";
 
 export function Book() {
    let navigate = useNavigate();
-   // useLockBodyScroll();
 
    let file = useRouteLoaderData("book") as types.Hymnal;
    let params = useParams() as { id: types.DocumentId; loc: types.HymnId };
@@ -30,7 +31,8 @@ export function Book() {
 
    let setLoc = React.useCallback(
       (loc: string) => {
-         navigate(`/${params.id!}/${loc}`, { replace: true });
+         navigate(`/file/${params.id!}/${loc}`, { replace: true });
+         canvasRef.current!.focus();
       },
       [navigate, params.id]
    );
@@ -52,10 +54,7 @@ export function Book() {
 
    React.useEffect(() => {
       let fn = (event: KeyboardEvent) => {
-         let target = event.target as HTMLElement;
-         if (target.nodeName === "INPUT" || target.nodeName === "TEXTAREA") {
-            return;
-         }
+         if (!canvasRef.current!.contains(event.target as HTMLElement | null)) return;
 
          switch (event.key) {
             case "n":
@@ -97,7 +96,7 @@ export function Book() {
    let isMobile = useMatchMedia("(max-width: 29rem)");
 
    let [isExpanded, setIsExpanded] = React.useState(false);
-   let { toggleFullscreen } = useFullscreen();
+   // let { toggleFullscreen } = useFullscreen();
 
    useTapActions(canvasRef, {
       left: () => setLoc(prevLoc),
@@ -113,6 +112,8 @@ export function Book() {
          value={params.loc}
          onSubmit={value => setLoc(value)}
          onEnter={() => canvasRef.current.focus()}
+         onForward={() => setLoc(nextLoc)}
+         onBack={() => setLoc(prevLoc)}
       />
    );
 
@@ -125,6 +126,7 @@ export function Book() {
          to={"index?" + stateToParams(lastIndexState)}
       >
          <TOCIcon />
+         {/* Index */}
       </Link>
    );
 
@@ -134,8 +136,30 @@ export function Book() {
       </Link>
    );
 
+   let menu = (
+      <Menu
+         label={<MoreIcon />}
+         buttonProps={{ class: "Button" }}
+         placement="bottom-end"
+      >
+         <button role="menuitem" onClick={() => {}}>
+            Mark as Sung
+         </button>
+         <button role="menuitemcheckbox" aria-checked={true} onClick={() => {}}>
+            Show Notes
+         </button>
+         <div role="separator" />
+         <button role="menuitem" onClick={() => {}}>
+            Favourites
+         </button>
+         <button role="menuitem" onClick={() => {}}>
+            History
+         </button>
+      </Menu>
+   );
+
    return (
-      <main className={"App" + (isExpanded ? " --fullscreen" : "")} ref={appRef}>
+      <main className={"Book" + (isExpanded ? " --fullscreen" : "")} ref={appRef}>
          <Helmet>
             <title>{file.title}</title>
          </Helmet>
@@ -158,29 +182,19 @@ export function Book() {
             </header>
          )}
 
-         <div className="-canvas" ref={canvasRef} tabIndex={-1}>
-            <Hymn key={params.loc} hymn={file.pages[params.loc!]!} book={file} />
+         <div className="-contents">
+            <div className="-canvas" ref={canvasRef} tabIndex={-1}>
+               <Hymn key={params.loc} hymn={file.pages[params.loc!]!} book={file} />
+            </div>
          </div>
 
          {isMobile && !isExpanded && (
             <div className="-bottombar">
-               {/* <button
-                        className="Button"
-                        onClick={back}
-                        disabled={params.loc === locs[0]}
-                    >
-                        <BackIcon />
-                    </button>
-                    <button
-                        className="Button"
-                        onClick={forward}
-                        disabled={params.loc === locs[locs.length - 1]}
-                    >
-                        <ForwardIcon />
-                    </button> */}
-               {optionsLink}
-               {input}
-               {indexLink}
+               <div className="-contents">
+                  {indexLink}
+                  {input}
+                  {optionsLink}
+               </div>
             </div>
          )}
       </main>
@@ -193,13 +207,19 @@ function NumberInput({
    onSubmit,
    disabled = false,
    max,
+   onForward,
+   onBack,
 }: {
    value: types.HymnId;
    onSubmit: (value: string) => void;
    onEnter: () => void;
    disabled?: boolean;
    max?: number;
+   onForward?: () => void;
+   onBack?: () => void;
 }) {
+   let inputRef = React.useRef<HTMLInputElement>(null!);
+
    let [inputValue, setInputValue] = React.useState(value);
 
    // If the value changes, discard unsubmitted user input
@@ -207,38 +227,47 @@ function NumberInput({
       setInputValue(value ?? "");
    }, [value]);
 
+   // Submit when the page is clicked, in lieu of a dedicated submit button
+   // React.useEffect(() => {
+   //    function fn(event: Event) {
+   //       if (event.target === inputRef.current) return;
+   //       if (inputValue) onSubmit(inputValue);
+   //       else setInputValue(value);
+   //    }
+   //    window.addEventListener("click", fn);
+   //    return () => window.removeEventListener("click", fn);
+   // }, [inputValue, onSubmit, value]);
+
    return (
-      <div className="AddressBar">
+      <form
+         className="AddressBar"
+         onSubmit={e => {
+            e.preventDefault();
+            if (inputValue) {
+               onSubmit(inputValue);
+               onEnter();
+            } else setInputValue(value);
+         }}
+      >
          <input
+            ref={inputRef}
             disabled={disabled}
             type="text"
             inputMode="decimal"
             enterKeyHint="go"
             value={inputValue}
             onKeyDown={e => {
-               switch (e.key) {
-                  case "Enter":
-                     if (inputValue) {
-                        onSubmit(inputValue);
-                        onEnter();
-                     } else setInputValue(value);
-                     break;
-                  case "Escape":
-                     setInputValue(value);
-                     onEnter();
-                     break;
+               if (e.key === "Escape") {
+                  setInputValue(value);
+                  onEnter();
                }
             }}
             onFocus={e => e.target.select()}
-            onBlur={() => {
-               if (inputValue) onSubmit(inputValue);
-               else setInputValue(value);
-            }}
             onChange={event => setInputValue(event.target.value)}
             aria-label="page number"
             max={max}
             min="1"
          />
-      </div>
+      </form>
    );
 }

@@ -16,6 +16,7 @@ export function parseXML(xmlDocument: XMLDocument): Hymnal {
         id: evaluateString("/hymnal/@id", xmlDocument),
         year: evaluateString("/hymnal/@year", xmlDocument),
         title: evaluateString("/hymnal/@title", xmlDocument),
+        subtitle: evaluateString("/hymnal/@subtitle", xmlDocument) || null,
         publisher: evaluateString("/hymnal/@publisher", xmlDocument) || null,
         language: evaluateString("/hymnal/@language", xmlDocument),
         indices: Object.fromEntries(

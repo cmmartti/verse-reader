@@ -24,7 +24,6 @@ import { ReactComponent as MoreIcon } from "../icons/more_vert.svg";
 import { ReactComponent as ChevronIcon } from "../icons/chevron_right.svg";
 import { ReactComponent as ExpandIcon } from "../icons/unfold.svg";
 import { ReactComponent as CollapseIcon } from "../icons/fold.svg";
-import { useLockBodyScroll } from "../util/useLockBodyScroll";
 
 export type TReference = { id: types.HymnId; lines: string[] };
 export type TCategory = {
@@ -110,15 +109,21 @@ export async function loader({
    return { book, results };
 }
 
-export function BookIndex() {
-   // useLockBodyScroll();
+function IndexPage() {
 
+
+   return <BookIndex />
+}
+
+export function BookIndex() {
    let { book, results } = useRouteLoaderData("index") as LoaderResponse;
+
    let params = useParams<{ id: types.DocumentId; loc: types.HymnId }>();
 
    let [searchParams, setSearchParams] = useSearchParams();
    let setSearchParamsDebounced = useDebouncedCallback(
-      (searchParams: URLSearchParams) => setSearchParams(searchParams),
+      (searchParams: URLSearchParams) =>
+         setSearchParams(searchParams, { replace: true }),
       50,
       true
    );
@@ -319,7 +324,7 @@ export function BookIndex() {
 
          <header className="-header">
             <NavigationBar
-               back={{ to: `/${book.id}`, title: "Back" }}
+               back={{ to: `/file/${book.id}`, title: "Back" }}
                title={indexOptions.find(option => option.type === index.type)!.name}
                tools={menu}
             />
@@ -471,7 +476,7 @@ function Result({
             c("is-deleted", page.isDeleted) +
             c("is-otherLanguage", page.language !== book.language)
          }
-         to={`/${book.id}/${page.id}`}
+         to={`/file/${book.id}/${page.id}`}
       >
          <div className="-icon">{page.id}</div>
 

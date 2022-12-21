@@ -1,15 +1,23 @@
 import React from "react";
-import { Form, Link, useLoaderData, useSearchParams } from "react-router-dom";
+import { Link, useLoaderData, useSearchParams, useSubmit } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
 import { AddDialog } from "./AddDialog";
 
 import { ReactComponent as BookIcon } from "../icons/book.svg";
-import { ReactComponent as ArrowForward } from "../icons/arrow-forward-ios.svg";
+// import { ReactComponent as ArrowForward } from "../icons/arrow-forward-ios.svg";
+import { ReactComponent as MoreIcon } from "../icons/more_vert.svg";
+import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
 import * as types from "../types";
 import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
+import { Menu } from "./Menu";
+import { useOption } from "../options";
 
 export function Home() {
+   let submit = useSubmit();
+
+   let [colorScheme, setColorScheme] = useOption("colorScheme");
+
    let { isPromptable, promptToInstall, isInstalled } = useAddToHomeScreenPrompt();
 
    let list = useLoaderData() as types.Summary[];
@@ -22,40 +30,10 @@ export function Home() {
             let params = new URLSearchParams(prev);
             if (open) params.set("add", "true");
             else params.delete("add");
-            dispatch({ what: "stop_editing" });
             return params;
          });
       },
       [setSearchParams]
-   );
-
-   let [editState, dispatch] = React.useReducer(
-      (
-         state: { selected: types.DocumentId[]; mode: "edit" | "view" },
-         action:
-            | { what: "select"; id: types.DocumentId }
-            | { what: "deselect"; id: types.DocumentId }
-            | { what: "start_editing" }
-            | { what: "stop_editing" }
-      ) => {
-         switch (action.what) {
-            case "select":
-               if (!state.selected.includes(action.id))
-                  return { ...state, selected: [...state.selected, action.id] };
-               return state;
-            case "deselect":
-               return {
-                  ...state,
-                  selected: state.selected.filter(id => action.id !== id),
-               };
-            case "start_editing":
-               return { ...state, mode: "edit" as const, selected: [] };
-            case "stop_editing":
-               return { ...state, mode: "view" as const, selected: [] };
-         }
-         return state;
-      },
-      { selected: [], mode: "view" }
    );
 
    return (
@@ -64,106 +42,146 @@ export function Home() {
             <title>Hymnal - Library</title>
          </Helmet>
          <div className="-header">
-            <h1 className="reset -title">Library</h1>
-            {editState.mode === "view" && list.length > 0 && (
-               <button
-                  className="Button"
-                  onClick={() => dispatch({ what: "start_editing" })}
-               >
-                  Edit
-               </button>
-            )}
-
-            {editState.mode === "edit" && (
-               <Form
-                  method="delete"
-                  onSubmit={() => dispatch({ what: "stop_editing" })}
-                  className="display-contents"
-               >
-                  {editState.selected.map(id => (
-                     <input key={id} type="hidden" name="id" value={id} />
-                  ))}
-                  <button
-                     type="submit"
-                     className="Button color-warning"
-                     disabled={editState.selected.length === 0}
-                  >
-                     Delete
-                  </button>
-               </Form>
-            )}
-
-            {editState.mode === "edit" && (
-               <button
-                  className="Button"
-                  onClick={() => dispatch({ what: "stop_editing" })}
-               >
-                  <b>Done</b>
-               </button>
-            )}
+            <h1 className="-title">Library</h1>
          </div>
 
-         <div className="section">
-            {editState.mode === "view" &&
-               list.map(book => (
-                  <Link key={book.id} to={"/" + book.id}>
-                     <BookIcon />
-                     <div style={{ display: "flex", flexFlow: "column" }}>
-                        {book.title} {book.year && `(${book.year})`}
-                        <span className="subdued">{book.publisher}</span>
-                     </div>
-                     <span className="spacer" />
-                     <ArrowForward />
-                  </Link>
-               ))}
+         <div className="-contents">
+            {list.map(book => (
+               <BookCover
+                  key={book.id}
+                  book={book}
+                  deleteSelf={() => {
+                     let formData = new FormData();
+                     formData.append("id", book.id);
+                     submit(formData, { method: "delete", action: "/" });
+                  }}
+               />
+            ))}
 
-            {editState.mode === "view" && list.length === 0 && (
-               <div className="subdued">Empty</div>
-            )}
+            {list.length === 0 && <div className="BookCover --empty"></div>}
 
-            {editState.mode === "edit" &&
-               list.map(book => (
-                  <label key={book.id}>
-                     <input
-                        className="reset"
-                        type="checkbox"
-                        checked={editState.selected.includes(book.id)}
-                        onChange={e =>
-                           dispatch({
-                              what: e.target.checked ? "select" : "deselect",
-                              id: book.id,
-                           })
-                        }
-                     />
-                     <BookIcon />
-                     <div style={{ display: "flex", flexFlow: "column" }}>
-                        {book.title} {book.year && `(${book.year})`}
-                        <span className="subdued">{book.publisher}</span>
-                     </div>
-                     <span className="spacer" />
-                  </label>
-               ))}
-
-            {/* {(editState.mode === "edit" || list.length === 0) && (
-                )} */}
-            <button className="section-button" onClick={() => toggleDialog(true)}>
-               Add books
-            </button>
+            <div className="-buttons">
+               <button className="-button" onClick={() => toggleDialog(true)}>
+                  Add Books
+               </button>
+            </div>
          </div>
+         <div className="-settings">
+            <fieldset className="-radioSet" title="Color Scheme">
+               <legend className="visually-hidden">Color Scheme</legend>
+               <label
+                  className={"-radio" + (colorScheme === "light" ? " --checked" : "")}
+               >
+                  Light
+                  <input
+                     type="radio"
+                     name="color-scheme"
+                     value="light"
+                     checked={colorScheme === "light"}
+                     onChange={e => {
+                        if (e.target.checked) setColorScheme(e.target.value);
+                     }}
+                  />
+               </label>
 
-         {!isInstalled && (
-            <div className="section">
+               <label
+                  className={"-radio" + (colorScheme === "system" ? " --checked" : "")}
+               >
+                  Auto
+                  <input
+                     type="radio"
+                     name="color-scheme"
+                     value="system"
+                     checked={colorScheme === "system"}
+                     onChange={e => {
+                        if (e.target.checked) setColorScheme(e.target.value);
+                     }}
+                  />
+               </label>
+
+               <label
+                  className={"-radio" + (colorScheme === "dark" ? " --checked" : "")}
+               >
+                  Dark
+                  <input
+                     type="radio"
+                     name="color-scheme"
+                     value="dark"
+                     checked={colorScheme === "dark"}
+                     onChange={e => {
+                        if (e.target.checked) setColorScheme(e.target.value);
+                     }}
+                  />
+               </label>
+            </fieldset>
+
+            {!isInstalled && (
                <button
-                  className="section-button"
+                  className="Button"
                   onClick={promptToInstall}
                   disabled={!isPromptable}
                >
                   Install to Home Screen
                </button>
-            </div>
-         )}
+            )}
+         </div>
 
          <AddDialog open={isDialogOpen} onClose={() => toggleDialog(false)} />
       </main>
+   );
+}
+
+function BookCover({
+   book,
+   deleteSelf,
+}: {
+   book: types.Summary;
+   deleteSelf: () => void;
+}) {
+   return (
+      <div className="BookCover">
+         <div className="-top">
+            <Menu
+               label={<MoreIcon aria-hidden />}
+               buttonProps={{
+                  class: "Button",
+                  "aria-label": "options",
+                  title: "Options",
+               }}
+               placement="bottom-end"
+            >
+               <button
+                  role="menuitem"
+                  className="color-warning"
+                  onClick={() => {
+                     if (
+                        window.confirm(
+                           `Are you sure you want to delete "${book.title}"?`
+                        )
+                     )
+                        deleteSelf();
+                  }}
+               >
+                  Delete <DeleteIcon aria-hidden />
+               </button>
+            </Menu>
+         </div>
+
+         <Link to={"/file/" + book.id} className="-link">
+            <div className="-icon">
+               <BookIcon aria-hidden />
+            </div>
+
+            <h2 className="reset -title">{book.title}</h2>
+
+            {book.subtitle && <h3 className="reset -subtitle">{book.subtitle}</h3>}
+
+            <div className="-spacer" />
+
+            {book.publisher && <div className="-publisher">{book.publisher}</div>}
+            <div className="-spacer" />
+            <div className="-pages">{book.pageCount}</div>
+         </Link>
+      </div>
    );
 }

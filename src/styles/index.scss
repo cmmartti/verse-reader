@@ -9,17 +9,21 @@
    --background3: white;
    --background4: hsl(240, 18%, 90%);
    --background5: hsl(0, 0%, 96%); //menu
+   --background-tinted1: hsl(219, 40%, 94%);
+   --background-tinted2: hsl(219, 40%, 85%);
    --page-background: var(--background3);
    --toolbar-background: hsla(0, 0%, 96%, 0.85);
    --color: black;
    --color2: hsl(240, 2%, 67%);
    --color3: hsl(0, 0%, 50%);
+   --color-warning: hsl(0, 100%, 41%);
    --link-color: #003c8b;
    --accent-color: hsl(250, 50%, 40%);
    --focus-color: rebeccapurple;
    --focus-outline: 2px solid var(--focus-color);
    --selected-background: hsl(39, 100%, 86%);
    --button-color: #3478f6;
+   // --button-color: #003c8b;
    --button-background: var(--background2);
    --button-active-background: #b7e3f0;
    --button-disabled-background: hsl(0 0% 80%);
@@ -35,18 +39,22 @@
    --background3: hsl(240, 3%, 11%);
    --background4: hsl(240, 4%, 20%);
    --background5: hsl(0, 0%, 14%); //menu
+   --background-tinted1: hsl(219, 20%, 12%);
+   --background-tinted2: hsl(219, 20%, 20%);
    --page-background: var(--background1);
    --toolbar-background: hsla(240, 3%, 7%, 0.65);
    --page-font-weight: 300;
    --color: hsl(0, 0%, 90%);
    --color2: hsl(0, 0%, 34%);
    --color3: hsl(0, 0%, 75%);
+   --color-warning: hsl(0, 82%, 46%);
    --link-color: #aed1ff;
    --accent-color: hsl(225, 58%, 54%);
    --focus-color: rebeccapurple;
    --focus-outline: 2px solid var(--focus-color);
    --selected-background: hsl(129, 95%, 15%);
    --button-color: #5a91f7;
+   // --button-color: #aed1ff;
    --button-background: #121213;
    --button-active-background: hsl(194, 20%, 34%);
    --button-disabled-background: hsl(250, 4%, 12%);
@@ -55,32 +63,38 @@
 }
 
 :root {
-   --titlebar-height: 1.75rem;
+   --titlebar-height: 28px;
    --page-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-   --toolbar-height: 2.75rem;
+   --toolbar-height: 44px;
+   --toolbar-height: Max(44px, 1.75em);
 
    text-size-adjust: none;
-   overscroll-behavior-y: none;
+   // overscroll-behavior-y: none;
    font: -apple-system-body;
    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
       Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-   font-size: 16px;
    line-height: 1.25;
    box-sizing: border-box;
+   background: var(--background4);
 
    height: 100%;
+
+   scroll-snap-type: mandatory;
+   overflow: auto;
 }
 
 body {
-   min-height: 100vh;
-   margin: 0;
+   height: 100%;
+   margin-inline: auto;
+   margin-block: 0;
    color: var(--color);
-   background: var(--background1);
+   max-width: 960px;
+   // max-width: 1200px;
 }
 
 #react-root {
-   min-height: 100vh;
+   height: 100%;
 }
 
 * {
@@ -93,8 +107,8 @@ body {
    // color: white;
 }
 
-// Disable font-boosting on Android Chrome
 html * {
+   /* Disable font-boosting on Android Chrome */
    max-height: 1000000px;
 }
 
@@ -129,8 +143,8 @@ a:hover {
    color: var(--color);
    accent-color: var(--accent-color);
    border: none;
-   padding: 0.325em;
-   border-radius: 0.5rem;
+   padding: 6px;
+   border-radius: 8px;
    line-height: 1;
    &:active {
       outline: none;
@@ -150,7 +164,7 @@ a:hover {
    display: flex;
    align-items: center;
    justify-content: center;
-   gap: 0.25em;
+   gap: 4px;
 
    & svg {
       display: inline-block;
@@ -232,8 +246,7 @@ input[type="range"] {
    background: var(--button-background);
    background: none;
    color: var(--button-color);
-   padding-left: 0.5em;
-   padding-right: 0.5em;
+   padding-inline: 4px;
    user-select: none;
    white-space: nowrap;
    cursor: default;
@@ -247,101 +260,33 @@ input[type="range"] {
    // }
 }
 
-super-menu {
-   max-width: 100%;
-   z-index: 100;
-   position: absolute;
-   &:not([open]) {
-      // display: none;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0ms ease-in;
-   }
-   transition: opacity 100ms ease-out;
-   transform-origin: top right;
-
-   box-shadow: 0 0 5rem hsla(210, 19%, 11%, 0.25);
-   border-radius: 0.5rem;
-   background: var(--background5);
-   user-select: none;
-   &:focus {
-      outline: none;
-   }
-
-   overflow: auto;
-   overscroll-behavior: contain;
-
-   display: flex;
-   flex-direction: column;
-
-   & > [role="group"] {
-      display: flex;
-      flex-direction: column;
-   }
-
-   & > [role="separator"] {
-      background: var(--background4);
-      border-top: 0.375rem solid var(--background4);
-   }
-
-   & > [role^="menuitem"],
-   & > [role="group"] > [role^="menuitem"] {
-      padding-block: 0.5em;
-      padding-inline: 1.75em 1em;
-      border: none;
-      font: inherit;
-      background: none;
-      color: inherit;
-      text-decoration: none;
-      text-align: start;
-      &:focus {
-         background: hsla(0, 0%, 0%, 0.1);
-         outline: none;
-      }
-      &[disabled],
-      &[aria-disabled] {
-         color: var(--button-disabled-color);
-         &:focus {
-            background: var(--button-disabled-background);
-         }
-      }
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.25em;
-
-      & svg {
-         display: inline-block;
-         height: 1.2em;
-         width: 1.2em;
-         flex-shrink: 0;
-      }
-   }
-
-   & > [role^="menuitem"][aria-checked="true"]::before {
-      content: "✓";
-      font-weight: bold;
-      position: absolute;
-      left: 0.65em;
-   }
-
-   & > [role^="menuitem"] + [role^="menuitem"],
-   & > [role="group"] > [role^="menuitem"] + [role^="menuitem"] {
-      border-top: 0.5px solid var(--color2);
-   }
+legend {
+   padding: 0;
+   display: table;
+}
+fieldset {
+   border: 0;
+   padding: 0.01em 0 0 0;
+   margin: 0;
+   min-width: 0;
+}
+body:not(:-moz-handler-blocked) fieldset {
+   display: table-cell;
 }
 
-@import "App.scss";
-@import "BookIndex.scss";
-@import "Hymn.scss";
 @import "AddDialog.scss";
-@import "OptionsPanel.scss";
+@import "Book.scss";
+@import "BookCover.scss";
+@import "BookIndex.scss";
 @import "fonts.scss";
-@import "NavigationBar.scss";
 @import "Home.scss";
+@import "Hymn.scss";
+@import "Menu.scss";
+@import "NavigationBar.scss";
+@import "OptionsPanel.scss";
 @import "SearchBar.scss";
 @import "Spinner.scss";
+@import "TabList.scss";
 
 // Visually hidden, still accessible to screen readers.
 // Parent element may need `position: relative` to avoid breaking nested scrolling layouts.
@@ -351,6 +296,7 @@ super-menu {
    width: 1px;
    height: 1px;
    clip: rect(0 0 0 0);
+   user-select: none;
 
    // Keep leading and trailing white-space so that screen reader prompts can be
    // inserted anywhere without being munged together with adjacent text
@@ -414,7 +360,7 @@ super-menu {
    color: var(--button-color);
 }
 .color-warning {
-   color: red;
+   color: var(--color-warning);
 }
 
 .subdued {

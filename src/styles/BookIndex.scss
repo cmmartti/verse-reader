@@ -1,13 +1,14 @@
 .BookIndex {
    min-height: 100vh;
-   --page-padding: 1rem;
+   --page-padding: 16px;
    @media (max-width: 35rem) {
-      --page-padding: 0.625rem;
+      --page-padding: 10px;
    }
 
    display: flex;
    flex-flow: column;
 
+   background: var(--background1);
    &:not(.--grouped) {
       background: var(--background3);
    }
@@ -15,7 +16,7 @@
    & > .-header {
       background: var(--toolbar-background);
       backdrop-filter: blur(12px);
-      // border-bottom: 0.5px solid var(--color2);
+      border-bottom: 0.5px solid var(--color2);
       position: sticky;
       width: 100%;
       top: 0;
@@ -33,8 +34,11 @@
 
       & > .status {
          padding-inline: var(--page-padding);
-         padding-block: 0.325rem;
+         padding-block: 4px;
          color: var(--color3);
+         min-height: 36px;
+         display: flex;
+         align-items: center;
       }
    }
 }
@@ -45,7 +49,7 @@
       justify-content: stretch;
       & > .-button {
          flex: 1;
-         padding-block: 0.325rem;
+         padding-block: 4px;
          padding-inline: calc(var(--page-padding) + 0.5rem) var(--page-padding);
 
          display: flex;
@@ -127,8 +131,10 @@
 }
 
 a.ReferenceLink {
+   min-height: 36px;
+   // min-height: 56px;
+   padding-block: 4px;
    padding-inline: var(--page-padding);
-   padding-block: 0.325rem;
    text-decoration: none !important;
    color: inherit;
    &:focus-visible {
@@ -143,7 +149,7 @@ a.ReferenceLink {
    }
    &.is-current {
       & > .-label > .-title {
-         color: red;
+         // color: red;
       }
       & > .-icon {
          font-weight: bold;
@@ -158,12 +164,14 @@ a.ReferenceLink {
    }
 
    display: grid;
-   grid-template-columns: minmax(2rem, auto) 1fr;
-   column-gap: 0.5rem;
-   row-gap: 0.25rem;
+   grid-template-columns: auto 1fr;
+   align-items: center;
+   column-gap: 8px;
+   row-gap: 4px;
 
    & > .-icon {
       grid-column: 1;
+      min-width: 1.75em;
       color: var(--color3);
    }
 

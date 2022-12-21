@@ -1,5 +1,5 @@
 import React from "react";
-import { createPopper } from "@popperjs/core";
+import { createPopper, Placement } from "@popperjs/core";
 
 import MenuButtonElement from "../elements/MenuButtonElement";
 import MenuElement from "../elements/MenuElement";
@@ -9,10 +9,12 @@ export function Menu({
    label,
    buttonProps = {},
    trigger = "mousedown",
+   placement = "bottom-start",
 }: {
    children?: React.ReactNode;
    label: React.ReactNode;
    trigger?: "click" | "mousedown";
+   placement?: Placement;
    buttonProps?: React.DetailedHTMLProps<
       React.HTMLAttributes<HTMLElement>,
       MenuButtonElement
@@ -25,13 +27,13 @@ export function Menu({
 
    React.useEffect(() => {
       createPopper(buttonRef.current, menuRef.current, {
-         placement: "bottom-start",
+         placement: placement,
          modifiers: [
             { name: "flip" },
             { name: "preventOverflow", options: { padding: 8 } },
          ],
       });
-   }, []);
+   }, [placement]);
 
    let [isOpen, setIsOpen] = React.useState(false);
 
@@ -58,7 +60,7 @@ export function Menu({
             ></div>
          )}
 
-         <super-menu ref={menuRef} id={id}>
+         <super-menu ref={menuRef} id={id} class="Menu">
             {children}
          </super-menu>
       </>

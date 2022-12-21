@@ -26,7 +26,7 @@ export function BookOptions() {
             <title>Hymnal - Options</title>
          </Helmet>
 
-         <NavigationBar back={{ to: "/" + id, title: "Back" }} title="Options" />
+         <NavigationBar back={{ to: "/file/" + id, title: "Back" }} title="Options" />
 
          <div className="OptionsPanel-contents">
             <div className="section">
