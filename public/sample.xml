@@ -1,0 +1,1457 @@
+<?xml version="1.0"?>
+<hymnal
+    xmlns="hymnalreader.net"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="hymnalreader.net schema.xsd"
+    title="Christmas Carols"
+    subtitle="Sample"
+    year="2022"
+    id="carols"
+    language="en"
+>
+   <languages>
+      <language id="en" name="English"/>
+   </languages>
+   <indices>
+      <index type="topic" name="Topical Index" has-default-sort="true"/>
+      <index type="tune" name="Index of Tunes"/>
+      <index type="author" name="Index of Authors"/>
+      <index type="translator" name="Index of Translators"/>
+      <index type="origin" name="Index of Origins"/>
+   </indices>
+   <contributors>
+      <contributor name="Unknown" id="unknown"/>
+      <contributor name="Edmund Sears" id="edmund-sears"/>
+      <contributor name="John Wesley Work Jr." id="john-wesley-work-jr"/>
+      <contributor name="Katherine Kennicott Davis" id="katherine-kennicott-davis"/>
+      <contributor name="Jester Hairston" id="jester-hairston"/>
+      <contributor name="Phillips Brooks" id="phillips-brooks"/>
+      <contributor name="Johnny Marks" id="johnny-marks"/>
+      <contributor name="Jay Livingston" id="jay-livingston"/>
+      <contributor name="Ray Evans" id="ray-evans"/>
+      <contributor name="John Henry Hopkins Jr." id="john-henry-hopkins-jr" />
+      <contributor name="Jean de Brébeuf" id="jean-de-brébeuf" />
+      <contributor name="John Mason Neale" id="john-mason-neale" />
+      <contributor name="St. Germanus I" id="st-germanus-i" />
+      <contributor name="James Chadwick" id="james-chadwick" />
+      <contributor name="James Montgomery" id="james-montgomery" />
+      <contributor name="Wilfrid Moreau" id="wilfrid-moreau" />
+      <contributor name="William Chatterton Dix" id="william-chatterton-dix" />
+      <contributor name="Charles Wesley" id="charles-wesley" />
+      <contributor name="William Sandys" id="william-sandys" />
+      <contributor name="Isaac Watts" id="isaac-watts" />
+      <contributor name="John Francis Wade" id="john-francis-wade" />
+      <contributor name="Frederick Oakeley" id="frederick-oakeley" />
+      <contributor name="Edward Caswall" id="edward-caswall" />
+      <contributor name="Placide Cappeau" id="placide-cappeau" />
+      <contributor name="John S. Dwight" id="john-s-dwight" />
+      <contributor name="Joseph Mohr" id="joseph-mohr" />
+      <contributor name="John Freeman Young" id="john-freeman-young" />
+      <contributor name="Michael Perry" id="michael-perry" />
+      <contributor name="Nahum Tate" id="nahum-tate" />
+      <contributor name="Noël Regney" id="noël-regney" />
+   </contributors>
+   <topics>
+      <topic name="Advent" id="advent" />
+      <topic name="Christmas" id="christmas" />
+      <topic name="Winter" id="winter" />
+      <topic name="Epiphany" id="epiphany" />
+   </topics>
+   <origins>
+      <origin id="austria" name="Austria"/>
+      <origin id="canada" name="Canada"/>
+      <origin id="england" name="England"/>
+      <origin id="france" name="France"/>
+      <origin id="latin" name="Latin"/>
+      <origin id="greece" name="Greece"/>
+      <origin id="usa" name="USA"/>
+   </origins>
+   <tunes>
+      <tune name="Mueller" id="mueller"/>
+      <tune name="Cradle Song" id="cradle-song"/>
+      <tune name="Do you hear what I hear?" id="do-you-hear-what-i-hear"/>
+      <tune name="Go Tell It on the Mountain" id="go-tell-it-on-the-mountain"/>
+      <tune name="Jingle Bells" id="jingle-bells"/>
+      <tune name="Carol" id="carol"/>
+      <tune name="The Little Drummer Boy" id="little-drummer-boy"/>
+      <tune name="Mary’s Boy Child" id="marys-boy-child"/>
+      <tune name="St. Louis" id="st-louis"/>
+      <tune name="Forest Green" id="forest-green"/>
+      <tune name="Rudolph the red-nosed reindeer" id="rudolph-the-red-nosed-reindeer"/>
+      <tune name="Silver Bells" id="silver-bells"/>
+      <tune name="Three Kings of Orient" id="three-kings-of-orient"/>
+      <tune name="Huron Carol" id="huron-carol"/>
+      <tune name="Lo, how a rose e’er blooming" id="lo-how-a-rose-eer-blooming"/>
+      <tune name="Regent Square" id="regent-square"/>
+      <tune name="Calypso Carol" id="calypso-carol"/>
+      <tune name="Coventry Carol" id="coventry-carol"/>
+      <tune name="Tempus adest floridum" id="tempus-adest-floridum"/>
+      <tune name="God Rest You Merry" id="god-rest-you-merry"/>
+      <tune name="Mendelssohn" id="mendelssohn" />
+      <tune name="I saw three ships" id="i-saw-three-ships" />
+      <tune name="Antioch" id="antioch" />
+      <tune name="Adeste Fideles" id="adeste-fideles" />
+      <tune name="Cantique de Noel" id="cantique-de-noel" />
+      <tune name="Greensleeves" id="greensleeves" />
+      <tune name="Winchester Old" id="winchester-old" />
+      <tune name="Christmas" id="christmas" />
+      <tune name="Veni Emmanuel" id="veni-emmanuel" />
+      <tune name="Dix" id="dix" />
+   </tunes>
+   <pages>
+      <page id="1">
+         <contributor type="author" ref="unknown"/>
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="mueller"/>
+         <tune ref="cradle-song"/>
+         <title>Away in a manger, no crib for His bed</title>
+         <verses>
+            <verse>
+               <line>Away in a manger, no crib for His bed,</line>
+               <line>the little Lord Jesus lay down His sweet head:</line>
+               <line>the stars in the sky looked down where He lay,</line>
+               <line>the little Lord Jesus asleep on the hay.</line>
+            </verse>
+            <verse>
+               <line>The cattle are lowing, the poor Baby wakes,</line>
+               <line>but little Lord Jesus no crying He makes.</line>
+               <line>I love Thee, Lord Jesus, look down from the sky,</line>
+               <line>and stay by my cradle till morning is nigh.</line>
+            </verse>
+            <verse>
+               <line>Be near me, Lord Jesus; I ask Thee to stay</line>
+               <line>close by me forever, and love me, I pray.</line>
+               <line>bless all the dear children in Thy tender care,</line>
+               <line>and take us to Heaven, to live with Thee there.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="2">
+         <contributor type="author" ref="noël-regney" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="do-you-hear-what-i-hear" />
+         <title>Do you hear what I hear?</title>
+         <verses>
+            <verse>
+               <line>Said the night wind to the little lamb:</line>
+               <line>“Do you see what I see?</line>
+               <line>Way up in the sky, little lamb.</line>
+               <line>Do you see what I see?</line>
+               <line>A star, a star, dancing in the night</line>
+               <repeat after=".”">
+                  <line>with a tail as big as a kite</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Said the little lamb to the shepherd boy:</line>
+               <line>“Do you hear what I hear?</line>
+               <line>Ringing through the sky, shepherd boy.</line>
+               <line>Do you hear what I hear?</line>
+               <line>A song, a song, high above the trees</line>
+               <repeat after=".”">
+                  <line>with a voice as big as the sea</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Said the shepherd boy to the mighty king:</line>
+               <line>“Do you know what I know?</line>
+               <line>In your palace warm, mighty king.</line>
+               <line>Do you know what I know?</line>
+               <line>A Child, a Child shivers in the cold</line>
+               <repeat after=".”">
+                  <line>let us bring Him silver and gold</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Said the king to the people everywhere:</line>
+               <line>“Listen to what I say!</line>
+               <line>Pray for peace, people everywhere!</line>
+               <line>Listen to what I say!</line>
+               <line>The Child, the Child, sleeping in the night</line>
+               <repeat after=".”">
+                  <line>He will bring us goodness and light</line>
+               </repeat>
+            </verse>
+         </verses>
+      </page>
+      <page id="3">
+         <contributor type="author" ref="john-wesley-work-jr" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="go-tell-it-on-the-mountain" />
+         <title>Go Tell It on the Mountain</title>
+         <verses>
+            <verse>
+               <line>While shepherds kept their watching</line>
+               <line>o’er silent flocks by night,</line>
+               <line>behold, throughout the heavens</line>
+               <line>there shone a holy light.</line>
+            </verse>
+            <chorus>
+               <line>Go, tell it on the mountain,</line>
+               <line>over the hills and everywhere;</line>
+               <line>go, tell it on the mountain</line>
+               <line>that Jesus Christ is born.</line>
+            </chorus>
+            <verse>
+               <line>The shepherds feared and trembled</line>
+               <line>when lo! above the earth</line>
+               <line>rang out the angel chorus</line>
+               <line>that hailed our Savior’s birth.</line>
+            </verse>
+            <verse>
+               <line>Down in a lowly manger</line>
+               <line>the humble Christ was born,</line>
+               <line>and God sent us salvation</line>
+               <line>that blessed Christmas morn.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="4">
+         <contributor type="author" ref="edmund-sears" year="1849" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="carol"/>
+         <title>It came upon a midnight clear</title>
+         <verses>
+            <verse>
+               <line>It came upon a midnight clear,</line>
+               <line>that glorious song of old,</line>
+               <line>from angels bending near the earth,</line>
+               <line>to touch their harps of gold;</line>
+               <line>peace on the earth, good-will to men,</line>
+               <line>from heavens all-gracious King;</line>
+               <line>the world in solemn stillness lay</line>
+               <line>to hear the angels sing.</line>
+            </verse>
+            <verse>
+               <line>Still through the cloven skies they come,</line>
+               <line>with peaceful wings unfurled;</line>
+               <line>and still celestial music floats,</line>
+               <line>o’er all the weary world;</line>
+               <line>above its sad and lowly plains,</line>
+               <line>they bend on hovering wing;</line>
+               <line>and ever o’er it’s babel sounds,</line>
+               <line>the blessed angels sing.</line>
+            </verse>
+            <verse>
+               <line>Yet with the woes of sin and strife,</line>
+               <line>the world has suffered long;</line>
+               <line>beneath the angel strain have rolled,</line>
+               <line>two thousand years of wrong;</line>
+               <line>and men at war with men, hear not,</line>
+               <line>the love-song which they bring;</line>
+               <line>O hush the noise, ye men of strife,</line>
+               <line>and hear the angels sing.</line>
+            </verse>
+            <verse>
+               <line>And ye, beneath life’s crushing load,</line>
+               <line>whose forms are bending low,</line>
+               <line>who toil along the climbing way,</line>
+               <line>with painful steps and slow;</line>
+               <line>look up, for glad and golden hours,</line>
+               <line>come swiftly on the wing;</line>
+               <line>O rest beside the weary road,</line>
+               <line>and hear the angels sing.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="5">
+         <topic ref="winter"/>
+         <origin ref="usa" />
+         <tune ref="jingle-bells"/>
+         <title>Jingle Bells</title>
+         <verses>
+            <verse>
+               <line>Dashing through the snow</line>
+               <line>in a one-horse open sleigh,</line>
+               <line>o’er the fields we go</line>
+               <line>laughing all the way!</line>
+               <line>Bells on bob tail ring</line>
+               <line>making spirits bright,</line>
+               <line>what fun it is to ride and sing</line>
+               <line>a sleighing song tonight! Oh!</line>
+            </verse>
+            <chorus>
+               <repeat>
+                  <line>Jingle bells, jingle bells,</line>
+                  <line>jingle all the way.</line>
+                  <line>Oh! what fun it is to ride</line>
+                  <line>in a one-horse open sleigh.</line>
+               </repeat>
+            </chorus>
+            <verse>
+               <line>A day or two ago</line>
+               <line>I thought I’d take a ride,</line>
+               <line>and soon, Miss Fanny Bright</line>
+               <line>was seated by my side.</line>
+               <line>The horse was lean and lank,</line>
+               <line>misfortune seemed his lot,</line>
+               <line>He got into a drifted bank</line>
+               <line>and then we got upset.</line>
+            </verse>
+            <verse>
+               <line>A day or two ago</line>
+               <line>the story I must tell,</line>
+               <line>I went out on the snow,</line>
+               <line>and on my back I fell;</line>
+               <line>a gent was riding by</line>
+               <line>in a one-horse open sleigh,</line>
+               <line>he laughed as there I sprawling lie,</line>
+               <line>but quickly drove away. Ah!</line>
+            </verse>
+            <verse>
+               <line>Now the ground is white</line>
+               <line>go it while you’re young,</line>
+               <line>take the girls tonight</line>
+               <line>and sing this sleighing song;</line>
+               <line>just get a bobtailed bay</line>
+               <line>two forty as his speed,</line>
+               <line>hitch him to an open sleigh</line>
+               <line>and crack! you’ll take the lead.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="6">
+         <contributor type="author" ref="katherine-kennicott-davis" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="little-drummer-boy"/>
+         <title>The Little Drummer Boy</title>
+         <verses>
+            <verse>
+               <line>Come they told me, pa rum pum pum pum</line>
+               <line>A new born King to see, pa rum pum pum pum</line>
+               <line>Our finest gifts we bring, pa rum pum pum pum</line>
+               <line>To lay before the King, pa rum pum pum pum</line>
+               <line>Rum pum pum pum, rum pum pum pum</line>
+               <line>So to honor Him, pa rum pum pum pum</line>
+               <line>When we come</line>
+            </verse>
+            <verse>
+               <line>Little Baby, pa rum pum pum pum</line>
+               <line>I am a poor boy too, pa rum pum pum pum</line>
+               <line>I have no gift to bring, pa rum pum pum pum</line>
+               <line>That’s fit to give the King, pa rum pum pum pum</line>
+               <line>Rum pum pum pum, rum pum pum pum</line>
+               <line>Shall I play for you, pa rum pum pum pum</line>
+               <line>On my drum?</line>
+            </verse>
+            <verse>
+               <line>Mary nodded, pa rum pum pum pum</line>
+               <line>The ox and lamb kept time, pa rum pum pum pum</line>
+               <line>I played my drum for Him, pa rum pum pum pum</line>
+               <line>I played my best for Him, pa rum pum pum pum</line>
+               <line>Rum pum pum pum, rum pum pum pum</line>
+               <line>Then He smiled at me, pa rum pum pum pum</line>
+               <line>Me and my drum</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="7">
+         <contributor type="author" ref="jester-hairston" year="1956" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="marys-boy-child" />
+         <title>Mary’s Boy Child</title>
+         <verses>
+            <verse>
+               <line>Long time ago in Bethlehem</line>
+               <line>so the Holy Bible say,</line>
+               <line>Mary’s Boy Child, Jesus Christ</line>
+               <line>was born on Christmas Day!</line>
+            </verse>
+            <verse>
+               <line>While shepherds watched their flocks by night</line>
+               <line>they saw a bright new shining star</line>
+               <line>and heard a choir from heaven sing</line>
+               <line>the music came from afar.</line>
+            </verse>
+            <verse>
+               <line>Hark! Now hear the angels sing:</line>
+               <line>“New King’s born today</line>
+               <line>and man will live for evermore</line>
+               <line>because of Christmas Day!”</line>
+            </verse>
+            <verse>
+               <line>Now Joseph and his wife Mary</line>
+               <line>came to Bethlehem that night.</line>
+               <line>They found no place to bear her Child,</line>
+               <line>not a single room was in sight.</line>
+            </verse>
+            <verse>
+               <line>Hark! Now hear the angels sing:</line>
+               <line>“New King’s born today</line>
+               <line>and man will live for evermore</line>
+               <line>because of Christmas Day!”</line>
+            </verse>
+            <verse>
+               <line>By and by they found a little nook</line>
+               <line>in a stable all forlorn.</line>
+               <line>And in a manger cold and dark</line>
+               <line>Mary’s little Boy-Child was born</line>
+            </verse>
+            <verse>
+               <line>Trumpets sound and angels sing,</line>
+               <line>listen to what they say!</line>
+               <line>That man will live forevermore</line>
+               <line>because of Christmas Day!</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="8">
+         <contributor ref="phillips-brooks" year="1868" />
+         <topic ref="christmas"/>
+         <origin ref="usa" />
+         <tune ref="st-louis"/>
+         <tune ref="forest-green"/>
+         <title>O little town of Bethlehem</title>
+         <verses>
+            <verse>
+               <line>O little town of Bethlehem,</line>
+               <line>how still we see thee lie;</line>
+               <line>above the deep and dreamless sleep,</line>
+               <line>the silent stars go by;</line>
+               <line>yet in thy darkness shineth,</line>
+               <line>the everlasting Light;</line>
+               <line>the hopes and fears of all the years,</line>
+               <line>are met in thee tonight.</line>
+            </verse>
+            <verse>
+               <line>For Christ is born of Mary,</line>
+               <line>and gathered all above,</line>
+               <line>while mortals sleep, the angels keep,</line>
+               <line>their watch of wondering love.</line>
+               <line>O morning stars, together,</line>
+               <line>proclaim the holy birth!</line>
+               <line>and praises sing to God our King,</line>
+               <line>and peace to men on earth.</line>
+            </verse>
+            <verse>
+               <line>How silently, how silently,</line>
+               <line>the wondrous gift is given!</line>
+               <line>so God imparts to human hearts,</line>
+               <line>the blessings of His heaven.</line>
+               <line>No ear may hear His coming,</line>
+               <line>but in this world of sin,</line>
+               <line>where meek souls will receive Him still,</line>
+               <line>the dear Christ enters in.</line>
+            </verse>
+            <verse>
+               <line>O holy Child of Bethlehem!</line>
+               <line>Descend to us, we pray;</line>
+               <line>cast out our sin, and enter in,</line>
+               <line>be born in us today.</line>
+               <line>We hear the Christmas angels,</line>
+               <line>the great glad tidings tell:</line>
+               <line>“Oh, come to us, abide with us,</line>
+               <line>our Lord Immanuel!”</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="9">
+         <contributor type="author" ref="johnny-marks" year="1949" />
+         <origin ref="usa" />
+         <tune ref="rudolph-the-red-nosed-reindeer" />
+         <title>Rudolph the red-nosed reindeer</title>
+         <verses>
+            <verse>
+               <line>You know Dasher and Dancer</line>
+               <line>and Prancer and Vixen,</line>
+               <line>Comet and Cupid</line>
+               <line>and Donner and Blitzen.</line>
+               <line>But do you recall</line>
+               <line>the most famous reindeer of all?</line>
+            </verse>
+            <verse>
+               <line>Rudolph the red-nosed reindeer</line>
+               <line>had a very shiny nose,</line>
+               <line>and if you ever saw it</line>
+               <line>you would even say it glows.</line>
+            </verse>
+            <verse>
+               <line>All of the other reindeer</line>
+               <line>used to laugh and call him names.</line>
+               <line>They never let poor Rudolph</line>
+               <line>join in any reindeer games</line>
+            </verse>
+            <verse>
+               <line>Then one foggy Christmas Eve</line>
+               <line>Santa came to say,</line>
+               <line>“Rudolph with your nose so bright</line>
+               <line>won’t you guide my sleigh tonight?”</line>
+            </verse>
+            <verse>
+               <line>Then all the reindeer loved him</line>
+               <line>and they shouted out with glee,</line>
+               <line>“Rudolph the red-nosed reindeer</line>
+               <line>You’ll go down in history!”
+            </line>
+            </verse>
+         </verses>
+      </page>
+      <page id="10">
+         <contributor type="author" ref="jay-livingston" year="1950" />
+         <contributor type="author" ref="ray-evans" year="1950" />
+         <topic ref="winter" />
+         <origin ref="usa" />
+         <tune ref="silver-bells" />
+         <title>Silver Bells</title>
+         <verses>
+            <verse>
+               <line>City sidewalks, busy sidewalks</line>
+               <line>dressed in holiday style.</line>
+               <line>In the air there’s a</line>
+               <line>feeling of Christmas.</line>
+               <line>Children laughing,</line>
+               <line>people passing,</line>
+               <line>meeting smile after smile</line>
+               <line>and on every street corner</line>
+               <line>you’ll hear</line>
+            </verse>
+            <refrain>
+               <line>silver bells, silver bells,</line>
+               <line>it’s Christmas time in the city.</line>
+               <line>Ring-a-ling, hear them ring,</line>
+               <line>soon it will be Christmas day.</line>
+            </refrain>
+            <verse>
+               <line>Strings of street lights,</line>
+               <line>even stop lights,</line>
+               <line>blink a bright red and green.</line>
+               <line>As the shoppers rush</line>
+               <line>home with their treasures,</line>
+               <line>hear the snow crunch,</line>
+               <line>see the kids bunch.</line>
+               <line>This is Santa’s big scene</line>
+               <line>and above all this bustle</line>
+               <line>you’ll hear</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="11">
+         <contributor type="author" ref="john-henry-hopkins-jr" year="1857"/>
+         <topic ref="christmas" />
+         <origin ref="usa" />
+         <tune ref="three-kings-of-orient" />
+         <title>Three Kings of Orient</title>
+         <verses>
+            <verse>
+               <line>We Three Kings of Orient are,</line>
+               <line>bearing gifts we traverse afar,</line>
+               <line>field and fountain, moor and mountain,</line>
+               <line>following yonder Star.</line>
+            </verse>
+            <chorus>
+               <line>O star of wonder, star of night,</line>
+               <line>star with Royal Beauty bright,</line>
+               <line>westward leading, still proceeding,</line>
+               <line>guide us to Thy perfect light.</line>
+            </chorus>
+            <verse>
+               <line>Born a King on Bethlehem plain,</line>
+               <line>gold I bring to crown Him again,</line>
+               <line>King for ever, ceasing never</line>
+               <line>Over us all to reign.</line>
+            </verse>
+            <verse>
+               <line>Frankincense to offer have I,</line>
+               <line>incense owns a Deity nigh:</line>
+               <line>prayer and praising all men raising,</line>
+               <line>worship Him God on High.</line>
+            </verse>
+            <verse>
+               <line>Myrrh is mine; its bitter perfume</line>
+               <line>breathes a life of gathering gloom;—</line>
+               <line>dorrowing, sighing, bleeding, dying,</line>
+               <line>sealed in the stone-cold tomb.</line>
+            </verse>
+            <verse>
+               <line>Glorious now behold Him arise,</line>
+               <line>King, and God, and Sacrifice;</line>
+               <line>Heav’n sings Hallelujah:</line>
+               <line>Hallelujah the earth replies.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="12">
+         <contributor type="author" ref="jean-de-brébeuf" year="1642" />
+         <topic ref="christmas" />
+         <origin ref="canada" />
+         <tune ref="huron-carol" />
+         <title>Huron Carol</title>
+         <verses>
+            <verse>
+               <line>’Twas in the moon of winter-time</line>
+               <line>when all the birds had fled,</line>
+               <line>that mighty Gitchi Manitou</line>
+               <line>sent angel choirs instead;</line>
+               <line>before their light the stars grew dim,</line>
+               <line>and wandering hunters heard the hymn:</line>
+            </verse>
+            <refrain>
+               <line>“Jesus your King is born, Jesus is born,</line>
+               <line>in excelsis gloria.”</line>
+            </refrain>
+            <verse>
+               <line>Within a lodge of broken bark</line>
+               <line>the tender Babe was found,</line>
+               <line>a ragged robe of rabbit skin</line>
+               <line>enwrapp’d His beauty round;</line>
+               <line>but as the hunter braves drew nigh,</line>
+               <line>the angel song rang loud and high…</line>
+            </verse>
+            <verse>
+               <line>The earliest moon of wintertime</line>
+               <line>is not so round and fair</line>
+               <line>as was the ring of glory</line>
+               <line>on the helpless infant there.</line>
+               <line>The chiefs from far before him knelt</line>
+               <line>with gifts of fox and beaver pelt.</line>
+            </verse>
+            <verse>
+               <line>O children of the forest free,</line>
+               <line>O sons of Manitou,</line>
+               <line>the Holy Child of earth and heaven</line>
+               <line>is born today for you.</line>
+               <line>Come kneel before the radiant Boy</line>
+               <line>who brings you beauty, peace and joy.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="13">
+         <contributor ref="st-germanus-i" year="634–734" />
+         <contributor type="translator" ref="john-mason-neale" year="1818–1866" />
+         <topic ref="christmas"/>
+         <origin ref="greece" />
+         <tune ref="lo-how-a-rose-eer-blooming"/>
+         <title>A great and mighty wonder</title>
+         <verses>
+            <verse>
+               <line>A great and mighty wonder,</line>
+               <line>our Christmas festal brings:</line>
+               <line>on earth, a lowly infant</line>
+               <line>behold the King of kings!</line>
+            </verse>
+            <verse>
+               <line>The Word is made incarnate,</line>
+               <line>descending from on high;</line>
+               <line>and cherubim sing anthems,</line>
+               <line>to shepherds from the sky.</line>
+            </verse>
+            <verse>
+               <line>And we with them triumphant,</line>
+               <line>repeat the hymn again:</line>
+               <line>“To God on high be glory,</line>
+               <line>and peace on earth to men!”</line>
+            </verse>
+            <verse>
+               <line>Since all He comes to ransom,</line>
+               <line>by all be He adored,</line>
+               <line>the Infant born in Bethlehem,</line>
+               <line>the Savior and the Lord!</line>
+            </verse>
+            <verse>
+               <line>All idol forms shall perish,</line>
+               <line>and error shall decay,</line>
+               <line>and Christ shall wield His scepter,</line>
+               <line>our Lord and God for aye.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="14">
+         <contributor type="author" ref="james-montgomery" year="1816"/>
+         <topic ref="christmas"/>
+         <origin ref="england" />
+         <tune ref="regent-square"/>
+         <title>Angels from the realms of glory</title>
+         <verses>
+            <verse>
+               <line>Angels from the realms of glory,</line>
+               <line>wing your flight o’er all the earth;</line>
+               <line>ye who sang creation’s story,</line>
+               <line>now proclaim Messiah’s birth.</line>
+            </verse>
+            <chorus>
+               <line>Come and worship, come and worship,</line>
+               <line>worship Christ, the new-born king.</line>
+            </chorus>
+            <verse>
+               <line>Shepherds in the field abiding,</line>
+               <line>watching o’er your flocks by night,</line>
+               <line>God with man is now residing;</line>
+               <line>yonder shines the Infant light.</line>
+            </verse>
+            <verse>
+               <line>Sages, leave your contemplations,</line>
+               <line>brighter visions beam afar;</line>
+               <line>seek the great desire of nations;</line>
+               <line>ye have seen His natal star.</line>
+            </verse>
+            <verse>
+               <line>Saints before the altar bending,</line>
+               <line>watching long in hope and fear,</line>
+               <line>suddenly the Lord descending,</line>
+               <line>in His temple shall appear.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="15">
+         <contributor type="author" ref="wilfrid-moreau" year="1842" />
+         <contributor type="translator" ref="james-chadwick" year="1862"/>
+         <origin ref="france"/>
+         <title>Angels We Have Heard on High</title>
+         <verses>
+            <verse>
+               <line>Angels we have heard on high</line>
+               <line>sweetly singing o’er the plains,</line>
+               <line>and the mountains in reply</line>
+               <line>echoing their joyous strains.</line>
+            </verse>
+            <refrain>
+               <repeat>
+                  <line>Gloria in excelsis Deo!</line>
+               </repeat>
+            </refrain>
+            <verse>
+               <line>Shepherds, why this jubilee?</line>
+               <line>Why your joyous strains prolong?</line>
+               <line>What the gladsome tidings be?</line>
+               <line>Which inspire your heavenly songs?</line>
+            </verse>
+            <verse>
+               <line>Come to Bethlehem and see</line>
+               <line>Him whose birth the angels sing;</line>
+               <line>come, adore on bended knee,</line>
+               <line>Christ the Lord, the newborn King.</line>
+            </verse>
+            <verse>
+               <line>See Him in a manger laid</line>
+               <line>whom the choirs of angels praise;</line>
+               <line>Mary, Joseph, lend your aid,</line>
+               <line>while our heart in love we raise.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="16">
+         <contributor type="author" ref="william-chatterton-dix" year="1860"/>
+         <topic ref="epiphany"/>
+         <origin ref="england"/>
+         <tune ref="dix"/>
+         <title>As with gladness men of old</title>
+         <verses>
+            <verse>
+               <line>As with gladness men of old,</line>
+               <line>did the guiding star behold;</line>
+               <line>as with joy they hailed its light,</line>
+               <line>leading onward, beaming bright;</line>
+               <line>so, most gracious God, may we,</line>
+               <line>evermore be led to Thee.</line>
+            </verse>
+            <verse>
+               <line>As with joyful steps they sped,</line>
+               <line>to that lowly cradle bed,</line>
+               <line>there to bend the knee before,</line>
+               <line>Him whom heaven and earth adore;</line>
+               <line>so may we with willing feet,</line>
+               <line>ever seek Thy mercy-seat.</line>
+            </verse>
+            <verse>
+               <line>As they offered gifts most rare,</line>
+               <line>at that dwelling rude and bare;</line>
+               <line>so may we with holy joy,</line>
+               <line>pure, and free from sin’s alloy,</line>
+               <line>all our costliest treasures bring,</line>
+               <line>Christ, to Thee, our heavenly King.</line>
+            </verse>
+            <verse>
+               <line>Holy Jesus, every day,</line>
+               <line>keep us in the narrow way;</line>
+               <line>and, when earthly things are past,</line>
+               <line>bring our ransomed souls at last,</line>
+               <line>where they need no star to guide,</line>
+               <line>where no clouds Thy glory hide.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="17">
+         <contributor type="author" ref="michael-perry" year="1964" />
+         <topic ref="christmas" />
+         <origin ref="england" />
+         <tune ref="calypso-carol" />
+         <title>See him lying on a bed of straw</title>
+         <verses>
+            <verse>
+               <line>See him lying on a bed of straw,</line>
+               <line>a draughty stable with an open door;</line>
+               <line>Mary cradling the babe she bore —</line>
+               <line>the Prince of glory is his name.</line>
+            </verse>
+            <refrain>
+               <line>O now carry me to Bethlehem</line>
+               <line>to see the Lord of love again:</line>
+               <line>just as poor as was the stable then,</line>
+               <line>the Prince of glory when he came!</line>
+            </refrain>
+            <verse>
+               <line>Star of silver, sweep across the skies,</line>
+               <line>show where Jesus in the manger lies;</line>
+               <line>shepherds, swiftly from your stupor rise</line>
+               <line>to see the Saviour of the world!</line>
+            </verse>
+            <verse>
+               <line>Angels, sing again the song you sang,</line>
+               <line>sing the glory of God’s gracious plan;</line>
+               <line>sing that Bethl’em’s little baby can</line>
+               <line>be salvation to the soul.</line>
+            </verse>
+            <verse>
+               <line>Mine are riches, from your poverty;</line>
+               <line>from your innocence, eternity;</line>
+               <line>mine, forgiveness by your death for me,</line>
+               <line>child of sorrow for my joy.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="18">
+         <contributor type="author" ref="unknown" year="c. 15th century" />
+         <topic ref="christmas" />
+         <tune ref="coventry-carol" />
+         <title>Coventry Carol</title>
+         <verses>
+            <verse>
+               <line>Lully, lullay, thou little tiny child,</line>
+               <line>Bye bye, lully, lullay.</line>
+               <line>Thou little tiny child,</line>
+               <line>Bye bye, lully, lullay.</line>
+            </verse>
+            <verse>
+               <line>O sisters too, how may we do</line>
+               <line>For to preserve this day</line>
+               <line>This poor youngling for whom we sing,</line>
+               <line>“Bye bye, lully, lullay?”</line>
+            </verse>
+            <verse>
+               <line>Herod the king, in his raging,</line>
+               <line>Chargèd he hath this day</line>
+               <line>His men of might in his own sight</line>
+               <line>All young children to slay.</line>
+            </verse>
+            <verse>
+               <line>That woe is me, poor child, for thee</line>
+               <line>And ever mourn and may</line>
+               <line>For thy parting neither say nor sing,</line>
+               <line>“Bye bye, lully, lullay.”</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="19">
+         <contributor type="author" ref="unknown" year="Early modern period" />
+         <topic ref="christmas" />
+         <origin ref="england" />
+         <title>The First Noel</title>
+         <verses>
+            <verse>
+               <line>The First Noel, the Angels did say</line>
+               <line>Was to certain poor shepherds in fields as they lay</line>
+               <line>In fields where they lay keeping their sheep</line>
+               <line>On a cold winter’s night that was so deep.</line>
+            </verse>
+            <refrain>
+               <line>Noel, Noel, Noel, Noel</line>
+               <line>Born is the King of Israel!</line>
+            </refrain>
+            <verse>
+               <line>They looked up and saw a star</line>
+               <line>Shining in the East beyond them far</line>
+               <line>And to the earth it gave great light</line>
+               <line>And so it continued both day and night.</line>
+            </verse>
+            <verse>
+               <line>And by the light of that same star</line>
+               <line>Three Wise men came from country far</line>
+               <line>To seek for a King was their intent</line>
+               <line>And to follow the star wherever it went.</line>
+            </verse>
+            <verse>
+               <line>This star drew nigh to the northwest</line>
+               <line>O’er Bethlehem it took its rest</line>
+               <line>And there it did both Pause and stay</line>
+               <line>Right o’er the place where Jesus lay.</line>
+            </verse>
+            <verse>
+               <line>Then entered in those Wise men three</line>
+               <line>Full reverently upon their knee</line>
+               <line>And offered there in His presence</line>
+               <line>Their gold and myrrh and frankincense.</line>
+            </verse>
+            <verse>
+               <line>Then let us all with one accord</line>
+               <line>Sing praises to our heavenly Lord</line>
+               <line>That hath made Heaven and earth of nought</line>
+               <line>And with his blood mankind has bought.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="20">
+         <contributor type="author" ref="john-mason-neale" year="1853" />
+         <topic ref="christmas" />
+         <origin ref="england" />
+         <tune ref="tempus-adest-floridum" />
+         <title>Good King Wenceslas</title>
+         <verses>
+            <verse>
+               <line>Good King Wenceslas looked out,</line>
+               <line>on the Feast of Stephen,</line>
+               <line>When the snow lay round about,</line>
+               <line>deep and crisp and even;</line>
+               <line>Brightly shone the moon that night,</line>
+               <line>tho’ the frost was cruel,</line>
+               <line>When a poor man came in sight,</line>
+               <line>gath’ring winter fuel.</line>
+            </verse>
+            <verse>
+               <line>“Hither, page, and stand by me,</line>
+               <line>if thou know’st it, telling,</line>
+               <line>Yonder peasant, who is he?</line>
+               <line>Where and what his dwelling?”</line>
+               <line>“Sire, he lives a good league hence,</line>
+               <line>underneath the mountain;</line>
+               <line>Right against the forest fence,</line>
+               <line>by Saint Agnes’ fountain.”</line>
+            </verse>
+            <verse>
+               <line>“Bring me flesh, and bring me wine,</line>
+               <line>bring me pine logs hither:</line>
+               <line>Thou and I will see him dine,</line>
+               <line>when we bear them thither.”</line>
+               <line>Page and monarch, forth they went,</line>
+               <line>forth they went together;</line>
+               <line>Through the rude wind’s wild lament</line>
+               <line>and the bitter weather.</line>
+            </verse>
+            <verse>
+               <line>“Sire, the night is darker now,</line>
+               <line>and the wind blows stronger;</line>
+               <line>Fails my heart, I know not how;</line>
+               <line>I can go no longer.”</line>
+               <line>“Mark my footsteps, good my page.</line>
+               <line>Tread thou in them boldly</line>
+               <line>Thou shalt find the winter’s rage</line>
+               <line>freeze thy blood less coldly.”</line>
+            </verse>
+            <verse>
+               <line>In his master’s steps he trod,</line>
+               <line>where the snow lay dinted;</line>
+               <line>Heat was in the very sod</line>
+               <line>which the saint had printed.</line>
+               <line>Therefore, Christian men, be sure,</line>
+               <line>wealth or rank possessing,</line>
+               <line>Ye who now will bless the poor,</line>
+               <line>shall yourselves find blessing.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="21">
+         <contributor type="author" ref="unknown" year="1650s"/>
+         <topic ref="christmas" />
+         <origin ref="england" />
+         <tune ref="god-rest-you-merry" />
+         <title>God rest you merry, gentlemen</title>
+         <verses>
+            <verse>
+               <line>God rest you merry, gentlemen,</line>
+               <line>let nothing you dismay;</line>
+               <line>remember Christ, our Savior</line>
+               <line>was born on Christmas Day</line>
+               <line>to save us all from Satan’s pow’r</line>
+               <line>when we were gone astray.</line>
+            </verse>
+            <refrain>
+               <line>O tidings of comfort and joy, comfort and joy,</line>
+               <line>O tidings of comfort and joy.</line>
+            </refrain>
+            <verse>
+               <line>From God our heav’nly Father</line>
+               <line>a blessed angel came</line>
+               <line>and unto certain shepherds</line>
+               <line>brought tidings of the same,</line>
+               <line>how that in Bethlehem was born</line>
+               <line>the son of God by name.</line>
+            </verse>
+            <verse>
+               <line>"Fear not," then said the angel,</line>
+               <line>"let nothing you affright;</line>
+               <line>this day is born a Savior,</line>
+               <line>the true and radiant light,</line>
+               <line>to free all those who trust in him</line>
+               <line>from Satan’s pow’r and might."</line>
+            </verse>
+            <verse>
+               <line>Now to the Lord sing praises,</line>
+               <line>all you within this place,</line>
+               <line>and in true love and fellowship</line>
+               <line>each other now embrace;</line>
+               <line>this holy tide of Christmas</line>
+               <line>is filled with heav’nly grace.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="22">
+         <contributor type="author" ref="charles-wesley" year="1739"/>
+         <topic ref="christmas"/>
+         <origin ref="england"/>
+         <tune ref="mendelssohn"/>
+         <title>Hark! the herald angels sing</title>
+         <verses>
+            <verse>
+               <line>Hark! the herald angels sing,</line>
+               <line>glory to the new born King;</line>
+               <line>peace on earth and mercy mild,</line>
+               <line>God and sinners reconciled!</line>
+               <line>Joyful, all ye nations, rise,</line>
+               <line>join the triumph of the skies;</line>
+               <line>universal nature say,</line>
+               <line>Christ the Lord is born today.</line>
+            </verse>
+            <refrain>
+               <line>Hark! the herald angels sing,</line>
+               <line>glory to the new born King!</line>
+            </refrain>
+            <verse>
+               <line>Christ, by highest heaven adored,</line>
+               <line>Christ, the everlasting Lord.</line>
+               <line>Late in time behold Him come</line>
+               <line>offspring of a Virgin’s womb:</line>
+               <line>veiled in flesh the Godhead see,</line>
+               <line>hail the incarnate Deity.</line>
+               <line>Pleased as man with man to dwell</line>
+               <line>Jesus, our Emmanuel.</line>
+            </verse>
+            <verse>
+               <line>Hail the heavenly Prince of Peace,</line>
+               <line>hail the Sun of Righteousness;</line>
+               <line>life and light to all He brings,</line>
+               <line>risen with healing in His wings.</line>
+               <line>Mild, He lays His glory by,</line>
+               <line>born that man no more may die,</line>
+               <line>born to raise the sons of earth,</line>
+               <line>born to give them second birth.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="23">
+         <contributor type="author" ref="unknown" year="c. 17th century"/>
+         <contributor type="author" ref="william-sandys" year="1833"/>
+         <topic ref="christmas" />
+         <origin ref="england" />
+         <tune ref="i-saw-three-ships" />
+         <title>I Saw Three Ships</title>
+         <verses>
+            <verse>
+               <line>I saw three ships come sailing in</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>I saw three ships come sailing in</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>And what was in those ships all three,</line>
+               <line>on Christmas day, on Christmas day?</line>
+               <line>And what was in those ships all three,</line>
+               <line>on Christmas day in the morning?</line>
+            </verse>
+            <verse>
+               <line>Our Saviour Christ and his lady,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>our Saviour Christ and his lady,</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>Pray whither sailed those ships all three,</line>
+               <line>on Christmas day, on Christmas day?</line>
+               <line>Pray whither sailed those ships all three,</line>
+               <line>on Christmas day in the morning?</line>
+            </verse>
+            <verse>
+               <line>O they sailed into Bethlehem,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>O they sailed into Bethlehem,</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>And all the bells on earth shall ring,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>and all the bells on earth shall ring,</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>And all the Angels in Heaven shall sing,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>and all the Angels in Heaven shall sing,</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>And all the Souls on Earth shall sing,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>and all the Souls on Earth shall sing,</line>
+               <line>on Christmas day in the morning.</line>
+            </verse>
+            <verse>
+               <line>Then let us all rejoice amain,</line>
+               <line>on Christmas day, on Christmas day;</line>
+               <line>then let us all rejoice amain,</line>
+               <line>on Christmas day in the morning. </line>
+            </verse>
+         </verses>
+      </page>
+      <page id="24">
+         <contributor type="author" ref="isaac-watts" year="1719"/>
+         <topic ref="christmas"/>
+         <origin ref="england"/>
+         <tune ref="antioch"/>
+         <title>Joy to the world!</title>
+         <verses>
+            <verse>
+               <line>Joy to the world! the Lord is come;</line>
+               <line>let earth receive her King;</line>
+               <line>let every heart prepare Him room,</line>
+               <repeat>
+                  <line>and heaven and nature sing,</line>
+               </repeat>
+               <line>and heaven, and heaven and nature sing.</line>
+            </verse>
+            <verse>
+               <line>Joy to the world! the Savior reigns:</line>
+               <line>let men their songs employ</line>
+               <line>while fields and floods, rocks, hills and plains:</line>
+               <repeat>
+                  <line>repeat the sounding joy,</line>
+               </repeat>
+               <line>repeat, repeat the sounding joy.</line>
+            </verse>
+            <verse>
+               <line>No more let sins and sorrows grow,</line>
+               <line>nor thorns infest the ground;</line>
+               <line>He comes to make His blessings flow,</line>
+               <repeat>
+                  <line>far as the curse is found,</line>
+               </repeat>
+               <line>far as, far as the curse is found.</line>
+            </verse>
+            <verse>
+               <line>He rules the world with truth and grace,</line>
+               <line>and makes the nations prove</line>
+               <line>the glories of His righteousness,</line>
+               <repeat>
+                  <line>and wonders of His love,</line>
+               </repeat>
+               <line>and wonders, and wonders of His Love.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="25">
+         <contributor type="author" ref="john-francis-wade" year="1711–1786"/>
+         <contributor type="translator" ref="frederick-oakeley" year="1841"/>
+         <topic ref="christmas"/>
+         <origin ref="england" />
+         <tune ref="adeste-fideles"/>
+         <title>O come, all ye faithful</title>
+         <verses>
+            <verse>
+               <line>O come, all ye faithful, joyful and triumphant!</line>
+               <line>O come ye, O come ye to Bethlehem;</line>
+               <line>come and behold him, born the King of Angels:</line>
+            </verse>
+            <refrain>
+               <repeat times="3">
+                  <line>O come, let us adore Him,</line>
+               </repeat>
+               <line>Christ the Lord.</line>
+            </refrain>
+            <verse>
+               <line>God of God, light of light,</line>
+               <line>lo, he abhors not the Virgin’s womb;</line>
+               <line>very God, begotten, not created:</line>
+            </verse>
+            <verse>
+               <line>Sing, choirs of angels, sing in exultation,</line>
+               <line>sing, all ye citizens of Heaven above!</line>
+               <line>Glory to God, glory in the highest:</line>
+            </verse>
+            <verse>
+               <line>Yea, Lord, we greet thee, born this happy morning;</line>
+               <line>Jesus, to thee be glory given!</line>
+               <line>Word of the Father, now in flesh appearing!</line>
+            </verse>
+            <verse>
+               <line>Lo! The flock abandoned, the summoned shepherds</line>
+               <line>hurry lowly to the cradle:</line>
+               <line>may we too make haste with exultant gait!</line>
+            </verse>
+            <verse>
+               <line>A star leading, the Magi, worshipping Christ,</line>
+               <line>give gifts: gold, frankincense, myrrh.</line>
+               <line>May we proffer our hearts to the infant Christ!</line>
+            </verse>
+            <verse>
+               <line>We shall see the eternal splendour</line>
+               <line>of the eternal father, veiled in flesh,</line>
+               <line>the infant God wrapped in cloths.</line>
+            </verse>
+            <verse>
+               <line>May we warm him, needy and lying on hay,</line>
+               <line>with our pious embraces:</line>
+               <line>who does not love him who loves us thus?</line>
+            </verse>
+            <verse>
+               <line>Sing now choir of angels hymns!</line>
+               <line>Sing now halls of the heavenly!</line>
+               <line>Glory to God in the highest!</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="26">
+         <contributor type="author" ref="john-francis-wade" year="1711–1786"/>
+         <contributor type="translator" ref="edward-caswall" year="1870"/>
+         <topic ref="christmas"/>
+         <origin ref="england" />
+         <tune ref="adeste-fideles"/>
+         <title>Come hither, ye faithful, triumphantly sing!</title>
+         <verses>
+            <verse>
+               <line>Come hither, ye faithful, triumphantly sing!</line>
+               <line>Come, see in the manger the angel’s great King!</line>
+               <line>To Bethlehem hasten with joyful accord;</line>
+               <repeat>
+                  <line>O come ye, come hither to worship the Lord!</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>True Son of the Father, He comes from the skies;</line>
+               <line>to be born of a virgin He does not despise:</line>
+               <line>to Bethlehem hasten with joyful accord;</line>
+               <repeat>
+                  <line>O come ye, come hither to worship the Lord!</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Hark! hark to the angels! all singing in heaven.</line>
+               <line>“To God in the highest all glory be given!”</line>
+               <line>To Bethlehem hasten with joyful accord;</line>
+               <repeat>
+                  <line>O come ye, come hither to worship the Lord!</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>To Thee, then, O Jesus, this day of Thy birth,</line>
+               <line>be glory and honor through heaven and earth;</line>
+               <line>true Godhead incarnate! Omnipotent Word!</line>
+               <repeat>
+                  <line>O come, let us hasten to worship the Lord!</line>
+               </repeat>
+            </verse>
+         </verses>
+      </page>
+      <page id="27">
+         <contributor type="author" ref="placide-cappeau" year="1847" />
+         <contributor type="translator" ref="john-s-dwight" />
+         <topic ref="christmas"/>
+         <tune ref="cantique-de-noel"/>
+         <day ref="christmas-evening"/>
+         <title>O holy night!</title>
+         <verses>
+            <verse>
+               <line>O holy night! the stars are brightly shining,</line>
+               <line>it is the night of our dear Saviour’s birth!</line>
+               <line>Long lay the world in sin and error pining,</line>
+               <line>till He appeared and the soul felt its worth.</line>
+               <line>A thrill of hope the weary world rejoices,</line>
+               <line>for yonder breaks a new and glorious morn!</line>
+            </verse>
+            <chorus>
+               <line>Fall on your knees!</line>
+               <line>O hear the angel voices!</line>
+               <line>O night divine</line>
+               <line>O night when Christ was born,</line>
+               <line>O night divine! O night, O night divine!</line>
+            </chorus>
+            <verse>
+               <line>Led by the light of faith serenely beaming,</line>
+               <line>with glowing hearts by His cradle we stand.</line>
+               <line>So led by light of a star sweetly gleaming,</line>
+               <line>here came the wise men from the Orient land.</line>
+               <line>The King of kings lay thus in lowly manger.</line>
+               <line>In all our trials born to be our Friend!</line>
+            </verse>
+            <verse>
+               <line>Truly He taught us to love one another;</line>
+               <line>His law is love and His gospel is peace.</line>
+               <line>Chains shall He break, for the slave is our brother,</line>
+               <line>and in His name all oppression shall cease.</line>
+               <line>Sweet hymns of joy in grateful chorus raise we,</line>
+               <line>let all within us praise His holy name!</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="28">
+         <contributor type="author" ref="william-chatterton-dix" year="1856"/>
+         <topic ref="christmas"/>
+         <origin ref="england"/>
+         <tune ref="greensleeves"/>
+         <title>What child is this</title>
+         <verses>
+            <verse>
+               <line>What child is this, who, laid to rest,</line>
+               <line>on Mary’s lap is sleeping?</line>
+               <line>Whom angels greet with anthems sweet,</line>
+               <line>while shepherds watch are keeping?</line>
+            </verse>
+            <chorus>
+               <line>This, this is Christ the King,</line>
+               <line>whom shepherds guard and angels sing;</line>
+               <line>haste, haste to bring him laud,</line>
+               <line>the Babe, the son of Mary.</line>
+            </chorus>
+            <verse>
+               <line>Why lies He in such mean estate,</line>
+               <line>where ox and ass are feeding?</line>
+               <line>Good Christian, fear, for sinners here,</line>
+               <line>the silent Word is pleading.</line>
+            </verse>
+            <verse>
+               <line>So bring Him incense, gold, and myrrh,</line>
+               <line>come, peasant, king, to own Him;</line>
+               <line>the King of kings salvation brings,</line>
+               <line>let loving hearts enthrone Him.</line>
+            </verse>
+         </verses>
+      </page>
+      <page id="29">
+         <contributor type="author" ref="nahum-tate" year="1700"/>
+         <topic ref="christmas"/>
+         <origin ref="england"/>
+         <tune ref="winchester-old"/>
+         <tune ref="christmas"/>
+         <title>While shepherds watched their flocks by night</title>
+         <verses>
+            <verse>
+               <line>While shepherds watched their flocks by night,</line>
+               <line>all seated on the ground,</line>
+               <line>the angel of the Lord came down,</line>
+               <repeat after=".">
+                  <line>and glory shown around</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>“Fear not!” said he; for mighty dread</line>
+               <line>had seized their troubled mind.</line>
+               <line>“Glad tidings of great joy I bring,</line>
+               <repeat after=".”">
+                  <line>to you and all mankind</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>“To you, In David’s town this day,</line>
+               <line>is born of David’s line,</line>
+               <line>the Savior who is Christ the Lord;</line>
+               <repeat after=":”">
+                  <line>and this shall be the sign</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>“The heavenly babe you there shall find,</line>
+               <line>to human view displayed,</line>
+               <line>all meanly wrapped in swathing-bands,</line>
+               <repeat after=".”">
+                  <line>and in a manger laid</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>“All glory be to God on high,</line>
+               <line>and to the earth be peace;</line>
+               <line>good will henceforth from heaven to men,</line>
+               <repeat after=".”">
+                  <line>begin and never cease</line>
+               </repeat>
+            </verse>
+         </verses>
+      </page>
+      <page id="30">
+         <contributor type="author" ref="joseph-mohr" year="1818"/>
+         <contributor type="translator" ref="john-freeman-young" year="1863"/>
+         <topic ref="christmas"/>
+         <origin ref="austria"/>
+         <tune ref="stille-nacht"/>
+         <title>Silent night! Holy night!</title>
+         <verses>
+            <verse>
+               <line>Silent night! Holy night!</line>
+               <line>All is calm, all is bright,</line>
+               <line>round yon Virgin Mother and Child;</line>
+               <line>Holy Infant, so tender and mild,</line>
+               <repeat after=".">
+                  <line>sleep in heavenly peace</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Silent night! Holy night!</line>
+               <line>Shepherds quake at the sight:</line>
+               <line>glories stream from heaven afar;</line>
+               <line>heavenly hosts sing Alleluia,</line>
+               <repeat>
+                  <line>Christ the Savior is born!</line>
+               </repeat>
+            </verse>
+            <verse>
+               <line>Silent night! Holy night!</line>
+               <line>Son of God, love’s pure light,</line>
+               <line>radiant beams from Thy holy face,</line>
+               <line>with the dawn of redeeming grace,</line>
+               <repeat after=".">
+                  <line>Jesus Lord at Thy birth</line>
+               </repeat>
+            </verse>
+         </verses>
+      </page>
+      <page id="31">
+         <contributor type="author" ref="unknown" year="c. 12th century"/>
+         <contributor type="translator" ref="john-mason-neale" year="1851"/>
+         <topic ref="advent"/>
+         <origin ref="latin"/>
+         <tune ref="veni-emmanuel"/>
+         <title>O come, O come Immanuel</title>
+         <verses>
+            <verse>
+               <line>O come, O come Immanuel,</line>
+               <line>and ransom captive Israel,</line>
+               <line>that mourns in lonely exile here,</line>
+               <line>until the Son of God appear.</line>
+            </verse>
+            <refrain>
+               <line>Rejoice! Rejoice! Immanuel</line>
+               <line>has come to thee, O Israel.</line>
+            </refrain>
+            <verse>
+               <line>O come, Thou Rod of Jesse, free,</line>
+               <line>Thine own from Satan’s tyranny;</line>
+               <line>from depths of hell Thy people save,</line>
+               <line>and give them victory o’er the grave.</line>
+            </verse>
+            <verse>
+               <line>O come, Thou Key of David, come,</line>
+               <line>and open wide our heavenly home;</line>
+               <line>make safe the way that leads on high,</line>
+               <line>and close the path to misery.</line>
+            </verse>
+            <verse>
+               <line>O come, O come, Thou Lord of might,</line>
+               <line>who to Thy tribes on Sinai’s height,</line>
+               <line>in ancient time didst give the law,</line>
+               <line>i  n cloud of majesty and awe.</line>
+            </verse>
+         </verses>
+      </page>
+   </pages>
+</hymnal>

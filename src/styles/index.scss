@@ -1,100 +1,100 @@
-:root[data-color-scheme="light"],
 :root {
-   --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+   --PAGE-font-weight: 400;
+   --PAGE-background-color: white;
 
-   --page-font-weight: 400;
-   --page-background: white;
-   --background1: hsl(240, 18%, 96%);
-   --background2: hsl(240, 14%, 99%);
+   --DIALOG-background-color: hsla(240, 18%, 96%, 0.75);
+
+   --TOOLBAR-background-color: hsla(0, 0%, 100%, 0.75);
+   --TOOLBAR-height: max(44px, 2em);
+
    --background3: white;
    --background4: hsl(240, 18%, 90%);
    --background5: hsl(0, 0%, 96%); //menu
    --background-tinted1: hsl(219, 40%, 94%);
    --background-tinted2: hsl(219, 40%, 85%);
-   --page-background: var(--background3);
-   --toolbar-background: hsla(0, 0%, 96%, 0.85);
+   --background-tinted4: hsl(219, 40%, 92%);
+
    --color: black;
+   --color-inverted: white;
    --color2: hsl(240, 2%, 67%);
    --color3: hsl(0, 0%, 50%);
    --color-warning: hsl(0, 100%, 41%);
-   --link-color: #003c8b;
-   --accent-color: hsl(250, 50%, 40%);
-   --focus-color: rebeccapurple;
+
+   --LINK-color: #003c8b;
+
+   --accent-color: #3478f6;
+   --focus-color: rgb(50, 39, 155);
    --focus-outline: 2px solid var(--focus-color);
-   --selected-background: hsl(39, 100%, 86%);
-   --button-color: #3478f6;
-   // --button-color: #003c8b;
-   --button-background: var(--background2);
-   --button-active-background: #b7e3f0;
-   --button-disabled-background: hsl(0 0% 80%);
-   --button-disabled-color: #a9a9ac;
-   --input-background: #e3e3e8;
-}
 
-:root[data-color-scheme="dark"] {
-   --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+   --BUTTON-color: #3478f6;
+   --BUTTON-color--disabled: #a9a9ac;
+   --BUTTON-background: hsl(240, 14%, 99%);
+   --BUTTON-background--hover: hsl(219, 40%, 94%);
+   --BUTTON-background--active: #b7e3f0;
+   --BUTTON-background--disabled: hsl(0 0% 80%);
 
-   --background1: black;
-   --background2: hsl(240, 3%, 7%);
-   --background3: hsl(240, 3%, 11%);
-   --background4: hsl(240, 4%, 20%);
-   --background5: hsl(0, 0%, 14%); //menu
-   --background-tinted1: hsl(219, 20%, 12%);
-   --background-tinted2: hsl(219, 20%, 20%);
-   --page-background: var(--background1);
-   --toolbar-background: hsla(240, 3%, 7%, 0.65);
-   --page-font-weight: 300;
-   --color: hsl(0, 0%, 90%);
-   --color2: hsl(0, 0%, 34%);
-   --color3: hsl(0, 0%, 75%);
-   --color-warning: hsl(0, 82%, 46%);
-   --link-color: #aed1ff;
-   --accent-color: hsl(225, 58%, 54%);
-   --focus-color: rebeccapurple;
-   --focus-outline: 2px solid var(--focus-color);
-   --selected-background: hsl(129, 95%, 15%);
-   --button-color: #5a91f7;
-   // --button-color: #aed1ff;
-   --button-background: #121213;
-   --button-active-background: hsl(194, 20%, 34%);
-   --button-disabled-background: hsl(250, 4%, 12%);
-   --button-disabled-color: hsl(0, 0%, 34%);
-   --input-background: #303030;
-}
-
-:root {
-   --titlebar-height: 28px;
-   --page-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-   --toolbar-height: 44px;
-   --toolbar-height: Max(44px, 1.75em);
+   --input-background: hsla(240, 10%, 93%, 0.75);
 
    text-size-adjust: none;
-   // overscroll-behavior-y: none;
    font: -apple-system-body;
    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
       Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
    line-height: 1.25;
    box-sizing: border-box;
    background: var(--background4);
+   scrollbar-color: var(--color2) var(--background4);
+   scrollbar-gutter: stable;
+   overscroll-behavior: contain;
+   min-height: -webkit-fill-available;
+   height: 100dvh;
 
-   height: 100%;
+   --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='black' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
+}
 
-   scroll-snap-type: mandatory;
-   overflow: auto;
+:root[data-color-scheme="dark"] {
+   --PAGE-font-weight: 350;
+   --PAGE-background-color: black;
+
+   --DIALOG-background-color: hsla(0, 0%, 0%, 0.5);
+   --TOOLBAR-background-color: hsla(0, 0%, 0%, 0.75);
+
+   --background3: hsl(240, 3%, 11%);
+   --background4: hsl(240, 4%, 20%);
+   --background5: hsl(0, 0%, 14%); //menu
+   --background-tinted1: hsl(219, 20%, 12%);
+   --background-tinted2: hsl(219, 20%, 20%);
+   --background-tinted4: hsl(219, 20%, 14%);
+
+   --color: hsl(0, 0%, 90%);
+   --color-inverted: black;
+   --color2: hsl(0, 0%, 34%);
+   --color3: hsl(0, 0%, 75%);
+   --color-warning: hsl(0, 82%, 46%);
+
+   --LINK-color: #aed1ff;
+   --accent-color: hsl(225, 58%, 54%);
+   --focus-color: rebeccapurple;
+   --focus-outline: 2px solid var(--focus-color);
+
+   --BUTTON-color: #5a91f7;
+   --BUTTON-background: #121213;
+   --BUTTON-background--active: hsl(194, 20%, 34%);
+   --BUTTON-background--disabled: hsl(250, 4%, 12%);
+   --BUTTON-color--disabled: hsl(0, 0%, 34%);
+
+   --input-background: hsla(0, 0%, 19%, 0.75);
+
+   --select-arrow-url: url("data:image/svg+xml;utf8,<svg viewBox='0 0 20 20' width='20' height='20' fill='white' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 20,5 10,15'/></svg>");
 }
 
 body {
-   height: 100%;
-   margin-inline: auto;
-   margin-block: 0;
+   margin: 0 auto;
    color: var(--color);
-   max-width: 960px;
-   // max-width: 1200px;
+   width: min(100%, 1200px);
 }
 
 #react-root {
-   height: 100%;
+   box-shadow: 0 0 1px;
 }
 
 * {
@@ -102,10 +102,11 @@ body {
    -webkit-tap-highlight-color: transparent;
 }
 
-*::selection {
-   // background: var(--accent-color);
-   // color: white;
-}
+// *::selection {
+//    background: #0078d7;
+//    color: white;
+//    text-shadow: none;
+// }
 
 html * {
    /* Disable font-boosting on Android Chrome */
@@ -125,7 +126,7 @@ h6 {
 }
 
 a {
-   color: var(--link-color);
+   color: var(--LINK-color);
    text-decoration: none;
 }
 a:focus {
@@ -136,6 +137,13 @@ a:focus:not(:focus-visible) {
 }
 a:hover {
    text-decoration: underline;
+}
+
+dl {
+   margin: 0;
+}
+dd {
+   margin: 0;
 }
 
 %form-control {
@@ -149,15 +157,13 @@ a:hover {
    &:active {
       outline: none;
    }
-   // &:focus:not(:focus-visible) {
-   //     outline: none;
-   // }
-   // &:focus {
-   //     outline: var(--focus-outline);
-   // }
+   &:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: -4px;
+   }
    &:disabled,
    &[aria-disabled] {
-      color: var(--button-disabled-color);
+      color: var(--BUTTON-color--disabled);
       user-select: none;
    }
 
@@ -174,17 +180,17 @@ a:hover {
    }
 }
 
-input,
-button,
-select {
-   accent-color: var(--accent-color);
-   color: var(--color);
-}
-
-select {
+select,
+.Select {
    @extend %form-control;
-   background: var(--button-background);
+   background: var(--background-tinted1);
+   border: 1px solid var(--background-tinted2);
    color: var(--color);
+   justify-content: flex-start;
+   min-height: 36px;
+   cursor: default;
+   user-select: none;
+   padding-inline: 8px;
 
    // open arrow
    appearance: none;
@@ -243,27 +249,31 @@ input[type="range"] {
 
 .Button {
    @extend %form-control;
-   background: var(--button-background);
+   background: var(--BUTTON-background);
    background: none;
-   color: var(--button-color);
-   padding-inline: 4px;
+   // padding-inline: 12px;
+   color: var(--BUTTON-color);
    user-select: none;
    white-space: nowrap;
-   cursor: default;
-
-   &:active:not(:disabled):not([aria-disabled]) {
-      // background: var(--button-active-background);
+   border-radius: 0;
+   // cursor: default;
+   @media (hover: hover) {
+      &:hover:not(:disabled, [aria-disabled]) {
+         background: var(--BUTTON-background--hover);
+      }
    }
-   // &:disabled,
-   // &[aria-disabled] {
-   //     color: var(--button-disabled-color);
-   // }
+
+   &:active:not(:disabled, [aria-disabled]),
+   &.--active:not(:disabled, [aria-disabled]) {
+      background: var(--BUTTON-background--active);
+   }
+   &:disabled,
+   &[aria-disabled] {
+      color: var(--BUTTON-color--disabled);
+   }
 }
 
-legend {
-   padding: 0;
-   display: table;
-}
+// Reset fieldset styling, including leged
 fieldset {
    border: 0;
    padding: 0.01em 0 0 0;
@@ -273,20 +283,27 @@ fieldset {
 body:not(:-moz-handler-blocked) fieldset {
    display: table-cell;
 }
+legend {
+   padding: 0;
+   display: table;
+}
 
-@import "AddDialog.scss";
+@import "ImportDialog.scss";
 @import "Book.scss";
 @import "BookCover.scss";
-@import "BookIndex.scss";
 @import "fonts.scss";
 @import "Home.scss";
 @import "Hymn.scss";
+@import "ListBox.scss";
 @import "Menu.scss";
 @import "NavigationBar.scss";
-@import "OptionsPanel.scss";
+@import "OptionsDialog.scss";
+@import "Page.scss";
+@import "Search.scss";
 @import "SearchBar.scss";
+@import "Switch.scss";
 @import "Spinner.scss";
-@import "TabList.scss";
+@import "Verse.scss";
 
 // Visually hidden, still accessible to screen readers.
 // Parent element may need `position: relative` to avoid breaking nested scrolling layouts.
@@ -312,6 +329,12 @@ body:not(:-moz-handler-blocked) fieldset {
    background: none;
    list-style: none;
    text-align: left;
+}
+.inline {
+   display: inline;
+}
+.nowrap {
+   white-space: nowrap;
 }
 
 .relative {
@@ -357,7 +380,7 @@ body:not(:-moz-handler-blocked) fieldset {
    color: var(--color3);
 }
 .color-button {
-   color: var(--button-color);
+   color: var(--BUTTON-color);
 }
 .color-warning {
    color: var(--color-warning);

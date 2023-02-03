@@ -1,0 +1,74 @@
+.ListBox {
+   max-width: 100%;
+   position: relative;
+   border: 1px solid var(--background-tinted2);
+   border-radius: 8px;
+   background: var(--background5);
+   color: var(--color);
+   user-select: none;
+   &:focus {
+      outline: none;
+   }
+
+   overflow: auto;
+   overscroll-behavior: contain;
+
+   & > optgroup {
+      display: flex;
+      flex-direction: column;
+      border-top: 6px solid var(--background4);
+   }
+
+   & > h-option,
+   & > optgroup > h-option {
+      min-height: 36px;
+      padding-block: 2px;
+      padding-inline: calc(16px + 0.75rem) 16px;
+      border: none;
+      font: inherit;
+      background: none;
+      text-decoration: none;
+      text-align: start;
+      &:focus-visible {
+         background: hsla(0, 0%, 0%, 0.1);
+         background: var(--background-tinted1);
+         outline: none;
+      }
+      @media (hover: hover) {
+         &:hover {
+            background: var(--background-tinted1);
+         }
+      }
+      &[disabled],
+      &[aria-disabled] {
+         color: var(--BUTTON-color--disabled);
+         text-decoration: line-through;
+         &:focus {
+            background: var(--BUTTON-background--disabled);
+         }
+      }
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+
+      & svg {
+         display: inline-block;
+         height: 1.2em;
+         width: 1.2em;
+         flex-shrink: 0;
+      }
+
+      & > .-marker {
+         font-weight: bold;
+         position: absolute;
+         left: 8px;
+      }
+   }
+
+   & > h-option + h-option,
+   & > optgroup > h-option + h-option {
+      border-top: 0.5px solid var(--color2);
+   }
+}

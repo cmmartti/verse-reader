@@ -3,16 +3,17 @@ import createUseStore from "zustand";
 import { persist } from "zustand/middleware";
 
 import * as types from "./types";
-import { IndexState } from "./components/BookIndex";
+
+export type IndexState = {
+   index: types.IndexType;
+   sort: { [context: string]: string | undefined };
+   search: string;
+   expandedCategories: { [context: string]: string[] | "all" };
+};
 
 type AppState = {
-   [key: `book/${types.DocumentId}/loc`]: types.HymnId | null;
-   [key: `book/${types.DocumentId}/index`]: IndexState;
-   [key: `book/${types.DocumentId}/history`]: Array<{
-      id: types.HymnId;
-      timestamp: number;
-      note: string;
-   }>;
+   [key: `book/${string}/loc`]: types.HymnId | null;
+   [key: `book/${string}/index`]: IndexState;
 };
 
 const defaultState: AppState = {};

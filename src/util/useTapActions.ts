@@ -23,6 +23,10 @@ export function useTapActions<E extends HTMLElement>(
       let doubleTapTimeout: NodeJS.Timeout | null = null;
 
       function touchStartHandler(event: TouchEvent) {
+         if (event.target instanceof HTMLElement && event.target.tabIndex >= 0) {
+            return;
+         }
+
          if (event.touches.length === 1) {
             touchStart = event.touches[0]!;
             releaseTimeout = setTimeout(() => (releaseTimeout = null), TOUCH_END_DELAY);
@@ -53,22 +57,25 @@ export function useTapActions<E extends HTMLElement>(
                return;
             }
 
-            let ratio = touchStart.clientX / page.clientWidth;
+            let pageRect = page.getBoundingClientRect();
+            let ratio = (touchStart.clientX - pageRect.left) / pageRect.width;
 
             // Left side
-            if (ratio <= 0.33) {
+            if (ratio <= 0.25) {
                event.preventDefault();
                left?.();
             }
 
             // Right side
-            else if (ratio >= 0.66) {
+            else if (ratio >= 0.75) {
                event.preventDefault();
                right?.();
             }
 
             // Middle
             else {
+               // middle?.();
+               // event.preventDefault();
                if (doubleTapTimeout) {
                   middle?.();
                   event.preventDefault();

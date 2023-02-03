@@ -1,4 +1,3 @@
-export type DocumentId = string;
 export type LanguageId = string;
 export type HymnId = string;
 export type ContributorId = string;
@@ -9,7 +8,6 @@ export type DayId = string;
 export type IndexType = string;
 
 export type Hymnal = {
-   id: DocumentId;
    year: string;
    title: string;
    subtitle: string | null;
@@ -72,7 +70,7 @@ export type Hymn = {
    links: {
       book: string;
       edition: string;
-      id: DocumentId;
+      id: string;
    }[];
    verses: Verse[];
    refrain: Verse | null;
@@ -80,24 +78,16 @@ export type Hymn = {
 };
 export type Verse = {
    isDeleted: boolean;
-   lines: (Line | RepeatLines)[];
+   nodes: (Line | RepeatLines)[];
 };
-export type Line = string;
+export type Line = {
+   kind: "line";
+   text: string;
+};
 export type RepeatLines = {
    kind: "repeat";
    times: number;
    lines: Line[];
    before?: string;
    after?: string;
-};
-
-export type Summary = {
-   id: DocumentId;
-   title: Hymnal["title"];
-   subtitle: Hymnal["subtitle"];
-   publisher: Hymnal["publisher"];
-   year: Hymnal["year"];
-   language: Hymnal["language"];
-   pageCount: number;
-   initialPage: HymnId | null;
 };

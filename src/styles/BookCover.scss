@@ -1,34 +1,43 @@
 .BookCover {
-   border: 0.5px solid var(--background-tinted2);
+   border: 1px solid var(--background-tinted2);
    background: var(--background-tinted1);
-   box-shadow: 0 0 6px hsla(210, 19%, 11%, 0.15);
-   &.--empty {
+   box-shadow: 0 0 4px hsla(210, 19%, 11%, 0.25);
+   &.--ghost {
       border: 2px dashed var(--background-tinted2);
       background: none;
       box-shadow: none;
    }
-   user-select: none;
-   overflow: hidden;
    border-radius: 8px;
 
    width: 225px;
    min-height: 300px;
    display: flex;
    flex-direction: column;
+   position: relative;
 
-   & > .-top {
+   & .-menuButton {
+      position: absolute;
+      right: 0;
+      min-width: 2em;
       min-height: 36px;
-
-      display: flex;
-      justify-content: flex-end;
-
-      & > * {
-         // border: 1px solid red;
-         min-width: 2em;
+      aspect-ratio: 1;
+      @media (hover: hover) {
+         &:hover {
+            border: 1px solid var(--background-tinted2);
+            box-shadow: 0 0 8px var(--background-tinted2);
+         }
       }
    }
 
-   & > .-link {
+   & > .-linkOverlay {
+      position: absolute;
+      inset: 0;
+      border: 1px solid red;
+      z-index: 0;
+      opacity: 0;
+   }
+
+   & > .-container {
       font-size: 1.25rem;
       flex: 1;
       display: flex;
@@ -36,14 +45,28 @@
       text-align: center;
       align-items: center;
       padding: 8px;
-      gap: 8px;
+      row-gap: 8px;
+      border-radius: 8px;
+
+      display: grid;
+      grid-template:
+         ". ." 36px
+         "icon icon"
+         "title title"
+         "subtitle subtitle"
+         "publisher publisher" 1fr
+         "year pages"
+         / auto auto;
 
       text-decoration: none;
-      &:hover > .-title {
-         text-decoration: underline;
+      @media (hover: hover) {
+         &:hover > .-title {
+            text-decoration: underline;
+         }
       }
 
       & > .-icon {
+         grid-area: icon;
          padding-block: 4px;
 
          & svg {
@@ -54,32 +77,37 @@
       }
 
       & > .-title {
-         // font-size: 1.15rem;
+         grid-area: title;
          font-weight: 600;
          text-align: center;
-         padding-inline: 8px;
+         padding-inline: 16px;
       }
       & > .-subtitle {
+         grid-area: subtitle;
          text-align: center;
          font-size: 0.8em;
-         padding-inline: 8px;
+         padding-inline: 16px;
       }
-
-      & > .-spacer {
-         flex: 1;
-      }
-
       & > .-publisher {
+         grid-area: publisher;
          flex: 1;
          color: var(--color3);
          font-size: 0.8em;
-         padding-inline: 8px;
+         padding-inline: 16px;
+      }
+      & > .-year {
+         grid-area: year;
+         padding-inline: 4px;
+         color: var(--color3);
+         font-size: 0.6em;
+         text-align: start;
       }
       & > .-pages {
+         grid-area: pages;
+         padding-inline: 4px;
          color: var(--color3);
          font-size: 0.6em;
          text-align: end;
-         align-self: end;
       }
    }
 }

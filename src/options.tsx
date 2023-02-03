@@ -1,22 +1,31 @@
 import React from "react";
 
-import { fonts } from "./fonts";
+import fonts from "./fonts";
 import { useMatchMedia } from "./util/useMatchMedia";
 
 const DEFAULT_OPTIONS = {
-   expandRepeatedLines: false,
+   condenseRepeatedLines: true,
    repeatRefrain: true,
    repeatChorus: false,
    colorScheme: "light",
-   fontSize: 1.2,
+   fontSize: 20,
    fontFamily: "charter",
-   pageMargins: 1,
+   pageMargins: 25,
+   lineHeight: 1.4,
+   paragraphSpacing: 0.5,
+   hyphenation: true,
+   separatorColor: "gray" as "red" | "gray" | "off",
+   currentTab: "font" as "font" | "format" | "layout",
+   showSearchResultDetails: false,
 };
 
-type Options = typeof DEFAULT_OPTIONS;
+export type Options = typeof DEFAULT_OPTIONS;
 
 type ContextValue = [Options, React.Dispatch<React.SetStateAction<Options>>];
 const OptionsContext = React.createContext<ContextValue | undefined>(undefined);
+
+let setVar = (name: string, value: string) =>
+   document.documentElement.style.setProperty(name, value);
 
 export function OptionsProvider({ children }: { children: React.ReactNode }) {
    let [options, setOptions] = React.useState(() => loadOptions());
@@ -37,25 +46,42 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
    }, [options.colorScheme, systemColorScheme]);
 
    React.useLayoutEffect(() => {
-      document.documentElement.style.setProperty(
-         "--ui-scale-factor",
-         options.fontSize.toString()
-      );
+      setVar("--OPTION-fontSize", options.fontSize + "px");
    }, [options.fontSize]);
 
    React.useLayoutEffect(() => {
-      document.documentElement.style.setProperty(
-         "--page-font-family",
+      setVar(
+         "--OPTION-fontFamily",
          (fonts.find(font => font.id === options.fontFamily) ?? fonts[0]!).value
       );
    }, [options.fontFamily]);
 
    React.useLayoutEffect(() => {
-      document.documentElement.style.setProperty(
-         "--page-margins",
-         options.pageMargins + "rem"
-      );
+      setVar("--OPTION-pageMargins", options.pageMargins + "px");
    }, [options.pageMargins]);
+
+   React.useLayoutEffect(() => {
+      setVar("--OPTION-lineHeight", options.lineHeight.toString());
+   }, [options.lineHeight]);
+
+   React.useLayoutEffect(() => {
+      setVar("--OPTION-paragraphSpacing", options.paragraphSpacing + "em");
+   }, [options.paragraphSpacing]);
+
+   React.useLayoutEffect(() => {
+      setVar("--OPTION-hyphenation", options.hyphenation ? "auto" : "none");
+   }, [options.hyphenation]);
+
+   React.useLayoutEffect(() => {
+      setVar(
+         "--OPTION-separatorColor",
+         options.separatorColor === "red"
+            ? "red"
+            : options.separatorColor === "gray"
+            ? "var(--color2)"
+            : "transparent"
+      );
+   }, [options.separatorColor]);
 
    return (
       <OptionsContext.Provider value={[options, setOptions]}>
@@ -66,7 +92,7 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
 
 export function useOption<K extends keyof Options>(
    key: K
-): [Options[K], (value: Options[K]) => void] {
+): [Options[K], (value?: Options[K]) => void] {
    let context = React.useContext(OptionsContext);
    if (context === undefined) {
       throw new Error("useOption must be within OptionsProvider");
@@ -76,7 +102,11 @@ export function useOption<K extends keyof Options>(
    return [
       options[key],
       React.useCallback(
-         value => setOptions(prevOptions => ({ ...prevOptions, [key]: value })),
+         value =>
+            setOptions(prevOptions => ({
+               ...prevOptions,
+               [key]: value !== undefined ? value : DEFAULT_OPTIONS[key],
+            })),
          [key, setOptions]
       ),
    ];

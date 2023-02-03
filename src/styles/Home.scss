@@ -1,71 +1,70 @@
 .Home {
-   min-height: 100%;
-   background: var(--background1);
+   min-height: 100vh;
+   min-height: 100dvh;
+
+   background: var(--PAGE-background-color);
 
    display: flex;
    flex-direction: column;
 
-   & > .-header {
-      // background: var(--toolbar-background);
-      // backdrop-filter: blur(12px);
-      // border-bottom: 0.5px solid var(--color2);
-      // position: sticky;
-      // top: 0;
-      // z-index: 1;
-      // padding-block: 8px;
-      // padding-inline: 16px;
-
-      display: flex;
-      flex-flow: row wrap;
-      align-items: baseline;
-      background: var(--toolbar-background);
-      backdrop-filter: blur(12px);
-
-      & > .-title {
-         flex: 1;
-         font-weight: bold;
-         font-size: 2rem;
-         padding: 32px;
-         text-align: center;
-         // color: var(--button-color);
-      }
+   & > .-title {
+      font-weight: bold;
+      font-size: 2rem;
+      padding: 32px;
+      text-align: center;
    }
 
    & > .-contents {
       flex: 1;
-      padding: 32px 16px;
+      padding: 32px;
 
       display: flex;
-      flex-flow: row wrap;
+      flex-direction: column;
       justify-content: center;
       align-content: center;
       justify-items: center;
       align-items: center;
       gap: 32px;
 
+      & > .-titles {
+         display: flex;
+         flex-flow: row wrap;
+         justify-content: center;
+         align-content: center;
+         justify-items: center;
+         align-items: flex-end;
+         gap: 32px;
+      }
+
       & > .-buttons {
          width: 100%;
          display: flex;
          justify-content: center;
+         gap: 32px;
 
          & > .-button {
-            min-width: 225px;
             font: inherit;
-            color: var(--button-color);
-            accent-color: var(--accent-color);
-            border: none;
-            padding: 12px;
+            min-width: 225px;
+            min-height: 36px;
+            color: var(--BUTTON-color);
+            padding: 4px;
             border-radius: 8px;
             line-height: 1;
             background: var(--background-tinted1);
-            border: 0.5px solid var(--background-tinted2);
-            box-shadow: 0 0 6px hsla(210, 19%, 11%, 0.15);
+            border: 1px solid var(--background-tinted2);
+            // box-shadow: 0 0 6px hsla(210, 19%, 11%, 0.15);
+            @media (hover: hover) {
+               &:hover {
+                  // border: 1px solid var(--background-tinted2);
+                  background: var(--background-tinted4);
+               }
+            }
             &:active {
                outline: none;
             }
             &:disabled,
             &[aria-disabled] {
-               color: var(--button-disabled-color);
+               color: var(--BUTTON-color--disabled);
                user-select: none;
             }
 
@@ -95,30 +94,53 @@
       align-content: center;
 
       & > .-radioSet {
-         display: flex;
-         align-items: baseline;
+         // box-shadow: 0 0 4px hsla(210, 19%, 11%, 0.25);
+         border-radius: 8px;
+         min-width: 225px;
+         border: 1px solid var(--background-tinted2);
+         padding: 4px;
          gap: 4px;
 
+         display: flex;
+
+         & > input[type="radio"] {
+            position: absolute;
+            overflow: hidden;
+            width: 1px;
+            height: 1px;
+            clip: rect(0 0 0 0);
+            user-select: none;
+         }
+
+         & > input[type="radio"]:checked + label {
+            background: var(--background-tinted1);
+            border: 1px solid var(--background-tinted2);
+         }
+
+         & > input[type="radio"]:focus-visible + label {
+            outline: 2px solid var(--focus-color);
+         }
+
          & > label {
-            padding: 8px 16px;
-            color: var(--button-color);
+            flex: 1;
+            min-height: 36px;
+            user-select: none;
+            padding: 4px 16px;
+            padding-inline: 8px;
+            color: var(--BUTTON-color);
             border-radius: 8px;
             border: 1px solid transparent;
-            &.--checked {
-               background: var(--background-tinted1);
-               border: 1px solid var(--background-tinted2);
-            }
-
+            // white-space: nowrap;
             @media (hover: hover) {
                &:hover {
-                  // background: var(--background-tinted1);
                   border: 1px solid var(--background-tinted2);
                }
             }
 
-            & > input[type="radio"] {
-               display: none;
-            }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
          }
       }
    }
@@ -150,18 +172,18 @@
          height: 1.375em;
          width: 1.375em;
          flex-shrink: 0;
-         color: var(--button-color);
+         color: var(--BUTTON-color);
       }
    }
 
    & > .section-button {
-      color: var(--button-color);
+      color: var(--BUTTON-color);
       border: none;
       background: none;
       font: inherit;
 
       &:disabled {
-         color: var(--button-disabled-color);
+         color: var(--BUTTON-color--disabled);
       }
    }
    & > .section-input {

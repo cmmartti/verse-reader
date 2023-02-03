@@ -1,0 +1,114 @@
+.Page {
+   // min-height: 100vh;
+   // min-height: 100dvh;
+   background: var(--PAGE-background-color);
+
+   --padding-block: calc(0.675 * var(--OPTION-pageMargins));
+   --padding-block: var(--OPTION-pageMargins);
+   --padding-inline: var(--OPTION-pageMargins);
+   @media (min-width: 29rem) {
+      --padding-block: calc(0.675 * (var(--OPTION-pageMargins) + 40px));
+      // --padding-block: calc((var(--OPTION-pageMargins) + 20px));
+
+      --padding-inline: 10px;
+      --w: calc(var(--OPTION-pageMargins) + 30px);
+      --article-height: calc(100vh - var(--TOOLBAR-height));
+
+      display: grid;
+      grid-template:
+         "prev contents next" var(--article-height)
+         ".    contents ."
+         / var(--w) 1fr var(--w);
+   }
+
+   & > .-contents {
+      grid-area: contents;
+      padding: var(--padding-block) var(--padding-inline);
+      line-height: var(--OPTION-lineHeight, 1.4);
+      font-weight: var(--PAGE-font-weight);
+      font-size: var(--OPTION-fontSize, 1rem);
+      font-family: var(--OPTION-fontFamily);
+      font-size-adjust: 0.5;
+
+      display: grid;
+      grid-template-rows: auto 1fr;
+
+      & > .-goTo {
+         display: flex;
+         justify-content: center;
+
+         & > input {
+            flex: 1;
+
+            font: inherit;
+            font-weight: 600;
+            font-size: 1.25em;
+            min-width: 0;
+            width: 100%;
+            max-width: 15em;
+            min-height: 1.375em;
+            line-height: 1;
+            text-align: center;
+            padding: 0 12px;
+            border: none;
+            background: var(--input-background);
+            border-radius: 8px;
+            // box-shadow: inset 0 0 3px -1px;
+            &:focus {
+               outline: none;
+            }
+         }
+      }
+   }
+
+   & > .-nav {
+      &.--prev {
+         grid-area: prev;
+         & > a {
+            padding-inline-start: 10px;
+         }
+      }
+      &.--next {
+         grid-area: next;
+         & > a {
+            padding-inline-end: 10px;
+         }
+      }
+
+      color: var(--BUTTON-color);
+      position: sticky;
+      top: var(--TOOLBAR-height);
+
+      display: flex;
+      flex-direction: column;
+
+      & > a {
+         color: inherit;
+         flex: 1;
+         &:focus {
+            outline: none;
+         }
+         @media (hover: hover) {
+            &:hover > svg {
+               background-color: var(--background-tinted1);
+            }
+         }
+
+         display: flex;
+         align-items: center;
+         justify-content: center;
+
+         &:focus-visible > * {
+            outline: 2px solid var(--focus-color);
+         }
+         overflow: hidden;
+         & > svg {
+            flex: 0 0 32px;
+            padding: 6px;
+            height: 32px;
+            width: 32px;
+            border-radius: 16px;
+         }
+      }
+   }
+}

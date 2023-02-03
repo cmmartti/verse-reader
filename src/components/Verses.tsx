@@ -1,283 +1,272 @@
+/* eslint-disable jsx-a11y/aria-role */ // role="text" has not yet been standardised.
+
 import React from "react";
 
 import * as types from "../types";
-import c from "../util/c";
 import { useOption } from "../options";
 
-type VerseFragment = {
-    kind: "verse";
-    verseNumber: number;
-    lines: (types.Line | types.RepeatLines | PointerFragment | SpecialFragment)[];
-    attachment?: SpecialFragment;
-    isDeleted: boolean;
+type InlineNode = types.Line | types.RepeatLines | PointerNode | GroupNode;
+
+type VerseNode = {
+   childNodes: InlineNode[];
+   isDeleted: boolean;
+   label?: string;
+   ariaLabel?: string;
+   isChorus: boolean;
 };
 
-type SpecialFragment = {
-    kind: "special";
-    lines: (types.Line | types.RepeatLines)[];
-    label?: string;
+type PointerNode = {
+   kind: "pointer";
+   label?: string;
+   ariaLabel?: string;
 };
 
-type PointerFragment = {
-    kind: "pointer";
-    text: string;
-    a11yText: string;
+type GroupNode = {
+   kind: "group";
+   childNodes: InlineNode[];
 };
-
-// export let Verses = React.memo(_Verses);
 
 export function Verses({ hymn }: { hymn: types.Hymn }) {
-    let [expandRepeatedLines] = useOption("expandRepeatedLines");
-    let [repeatRefrain] = useOption("repeatRefrain");
-    let [repeatChorus] = useOption("repeatChorus");
+   let [condenseRepeatedLines] = useOption("condenseRepeatedLines");
+   let [repeatRefrain] = useOption("repeatRefrain");
+   let [repeatChorus] = useOption("repeatChorus");
 
-    let verses: VerseFragment[] = hymn.verses.map((verse, i) => {
-        let verseNumber = i + 1;
+   let verseNodes: VerseNode[] = [];
+   let currentVerseNumber = 1;
 
-        let lines: (
-            | types.Line
-            | types.RepeatLines
-            | PointerFragment
-            | SpecialFragment
-        )[] = parseLines(verse.lines, expandRepeatedLines);
+   for (let verse of hymn.verses) {
+      let verseNumber = currentVerseNumber++;
 
-        let attachment: SpecialFragment | undefined;
+      let verseNode: VerseNode = {
+         label: `${verseNumber}.`,
+         ariaLabel: `Verse ${verseNumber}.`,
+         childNodes: parseRepeats(verse.nodes, condenseRepeatedLines),
+         isDeleted: verse.isDeleted,
+         isChorus: false,
+      };
 
-        if (hymn.chorus) {
-            if (repeatChorus) {
-                attachment = {
-                    kind: "special" as const,
-                    lines: parseLines(hymn.chorus.lines, expandRepeatedLines),
-                };
-            } else if (verseNumber === 1) {
-                attachment = {
-                    kind: "special",
-                    lines: parseLines(hymn.chorus.lines, expandRepeatedLines),
-                    label: "Chorus:",
-                } as SpecialFragment;
-            } else {
-                lines.push({
-                    kind: "pointer",
-                    text: "Chorus:",
-                    a11yText: "Chorus repeats here.",
-                } as PointerFragment);
-            }
-        }
+      verseNodes.push(verseNode);
 
-        if (hymn.refrain) {
-            if (repeatRefrain) {
-                lines.push({
-                    kind: "special",
-                    lines: parseLines(hymn.refrain.lines, expandRepeatedLines),
-                    label: "Refrain:",
-                } as SpecialFragment);
-            } else if (verseNumber === 1) {
-                attachment = {
-                    kind: "special",
-                    lines: parseLines(hymn.refrain.lines, expandRepeatedLines),
-                    label: "Refrain:",
-                } as SpecialFragment;
-            } else {
-                lines.push({
-                    kind: "pointer",
-                    text: "[Refrain]",
-                    a11yText: "Refrain repeats here.",
-                } as PointerFragment);
-            }
-        }
+      if (hymn.chorus) {
+         let childNodes = parseRepeats(hymn.chorus.nodes, condenseRepeatedLines);
+         if (repeatChorus) {
+            verseNodes.push({
+               childNodes,
+               isDeleted: hymn.chorus.isDeleted,
+               ariaLabel: "Chorus:",
+               isChorus: true,
+            });
+         } else if (verseNumber === 1) {
+            verseNodes.push({
+               childNodes,
+               isDeleted: hymn.chorus.isDeleted,
+               label: "Chorus:",
+               isChorus: true,
+            });
+         } else {
+            verseNode.childNodes.push({
+               kind: "pointer",
+               label: "[Chorus]",
+               ariaLabel: "[Repeat Chorus]",
+            });
+            // verseNodes.push({
+            //    childNodes: [
+            //       {
+            //          kind: "pointer",
+            //          label: "[Chorus]",
+            //          ariaLabel: "[Repeat Chorus]",
+            //       },
+            //    ],
+            //    isChorus: true,
+            //    isDeleted: false,
+            // });
+         }
+      }
 
-        return {
-            kind: "verse",
-            verseNumber,
-            lines,
-            attachment,
-            isDeleted: verse.isDeleted,
-        };
-    });
+      if (hymn.refrain) {
+         let childNodes = parseRepeats(hymn.refrain.nodes, condenseRepeatedLines);
+         if (repeatRefrain) {
+            verseNode.childNodes.push({
+               kind: "group",
+               childNodes,
+            });
+         } else if (verseNumber === 1) {
+            verseNodes.push({
+               childNodes,
+               isDeleted: hymn.refrain.isDeleted,
+               label: "Refrain:",
+               isChorus: true,
+            });
+         } else {
+            verseNode.childNodes.push({
+               kind: "pointer",
+               label: "[Refrain]",
+               ariaLabel: "[Repeat refrain].",
+            });
+         }
+      }
+   }
 
-    return (
-        <div className="Hymn-verses">
-            {verses.map(verse => (
-                <React.Fragment key={verse.verseNumber}>
-                    <p className={"Hymn-verse" + c("is-deleted", verse.isDeleted)}>
-                        <span className="Hymn-verseNumber">
-                            <span className="visually-hidden" role="presentation">
-                                Verse{" "}
-                            </span>
-                            {verse.verseNumber}
-                            {verse.isDeleted && (
-                                <span className="visually-hidden" role="presentation">
-                                    , deleted{" "}
-                                </span>
-                            )}
-                            .
-                        </span>{" "}
-                        <span className="Hymn-verseLines">
-                            <Lines lines={verse.lines} isLast />
-                        </span>
-                    </p>
+   return (
+      <>
+         {verseNodes.map((node, i) => (
+            <Verse key={i} node={node} />
+         ))}
+      </>
+   );
+}
 
-                    {verse.attachment && (
-                        <p className="Hymn-attachment">
-                            {verse.attachment.label && (
-                                <span className="Hymn-attachmentLabel">
-                                    {verse.attachment.label}{" "}
-                                </span>
-                            )}
-                            <span className="Hymn-verseLines">
-                                <Lines lines={verse.attachment.lines} isLast />
-                            </span>
-                        </p>
-                    )}
-                </React.Fragment>
+function parseRepeats(
+   nodes: InlineNode[],
+   condenseRepeatedLines: boolean
+): InlineNode[] {
+   return nodes.flatMap(node => {
+      switch (node.kind) {
+         case "repeat": {
+            let repeat = node;
+            if (condenseRepeatedLines)
+               return {
+                  kind: "repeat" as const,
+                  times: repeat.times,
+                  lines: addLeadingTrailingText(
+                     repeat.lines,
+                     repeat.before,
+                     repeat.after
+                  ),
+               };
+            else
+               return addLeadingTrailingText(
+                  range(repeat.times).flatMap(() => repeat.lines),
+                  repeat.before,
+                  repeat.after
+               );
+         }
+         default:
+            return node;
+      }
+   });
+}
+
+function addLeadingTrailingText(lines: types.Line[], before?: string, after?: string) {
+   return lines.map(({ text }, i) => {
+      if (before && i === 0) text = before + text;
+      if (after && i === lines.length - 1) text = text + after;
+      return { kind: "line" as const, text };
+   });
+}
+
+function Verse({ node }: { node: VerseNode }) {
+   return (
+      <p
+         className={
+            "Verse" +
+            (node.isDeleted ? " --deleted" : "") +
+            (node.isChorus ? " --chorus" : "")
+         }
+      >
+         {node.isDeleted && <span className="visually-hidden">Deleted </span>}
+         {node.label && (
+            <span className="-label" aria-hidden={Boolean(node.ariaLabel)}>
+               {node.label}{" "}
+            </span>
+         )}
+         {node.ariaLabel && <span className="visually-hidden">{node.ariaLabel} </span>}
+
+         <span className="-lines">
+            <RenderInlineNodes nodes={node.childNodes} isLast />
+         </span>
+      </p>
+   );
+}
+
+function RenderInlineNodes({
+   nodes,
+   isLast = false,
+}: {
+   nodes: InlineNode[];
+   isLast?: boolean;
+}) {
+   return (
+      <React.Fragment>
+         {nodes.map((node, i) => {
+            let _isLast = isLast && i === nodes.length - 1;
+            return (
+               <React.Fragment key={i}>
+                  {node.kind === "line" && node.text.trim()}
+                  {node.kind === "repeat" && <RepeatLines repeat={node} />}
+                  {node.kind === "group" && <Group node={node} isLast={_isLast} />}
+                  {node.kind === "pointer" && <Pointer pointer={node} />}
+                  {!_isLast && <LineSeparator />}
+               </React.Fragment>
+            );
+         })}
+      </React.Fragment>
+   );
+}
+
+function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {
+   return (
+      <span className="Verse-repeat">
+         <RenderInlineNodes nodes={repeat.lines} />
+
+         <span className="visually-hidden">
+            {range(repeat.times - 1).map(i => (
+               <RenderInlineNodes key={i} nodes={repeat.lines} isLast />
             ))}
-        </div>
-    );
+         </span>
+
+         <span className="Verse-repeatMarker" aria-hidden>
+            {range(repeat.times - 1).map(i => (
+               <React.Fragment key={i}>
+                  […]{i !== repeat.times - 2 && <LineSeparator />}
+               </React.Fragment>
+            ))}
+         </span>
+      </span>
+   );
 }
 
-function parseLines(
-    lines: (types.Line | types.RepeatLines)[],
-    expandRepeatedLines: boolean
-): (types.RepeatLines | string)[] {
-    return lines.flatMap(line => {
-        if (typeof line === "string") {
-            return line;
-        } else if (line.kind === "repeat") {
-            let repeat = line;
-
-            if (expandRepeatedLines)
-                return wrapLines(
-                    [...Array(repeat.times)].flatMap(() => repeat.lines),
-                    repeat.before,
-                    repeat.after
-                );
-
-            return {
-                kind: "repeat",
-                times: repeat.times,
-                lines: wrapLines(repeat.lines, repeat.before, repeat.after),
-            } as types.RepeatLines;
-        }
-
-        return line;
-    });
+function Group({ node, isLast }: { node: GroupNode; isLast: boolean }) {
+   return (
+      <span className="Verse-lineGroup">
+         <RenderInlineNodes nodes={node.childNodes} isLast={isLast} />
+      </span>
+   );
 }
 
-function wrapLines(lines: string[], before?: string, after?: string) {
-    return lines.map((line, i) => {
-        if (before && i === 0) {
-            line = before + line;
-        }
-        if (after && i === lines.length - 1) {
-            line = line + after;
-        }
-        return line;
-    });
-}
-
-function Lines({
-    lines,
-    isLast = false,
-}: {
-    lines: (types.Line | types.RepeatLines | PointerFragment | SpecialFragment)[];
-    isLast?: boolean;
-}) {
-    return (
-        <React.Fragment>
-            {lines.map((line, i) => {
-                let _isLast = isLast && i === lines.length - 1;
-                if (typeof line === "string")
-                    return <Line key={i} line={line} isLast={_isLast} />;
-                if (line.kind === "repeat")
-                    return <RepeatLines key={i} repeat={line} isLast={_isLast} />;
-                if (line.kind === "special")
-                    return <SpecialLines key={i} special={line} isLast={_isLast} />;
-                if (line.kind === "pointer")
-                    return <Pointer key={i} pointer={line} isLast={_isLast} />;
-                return null;
-            })}
-        </React.Fragment>
-    );
-}
-
-function Line({ line, isLast }: { line: types.Line; isLast: boolean }) {
-    if (isLast) {
-        return <span className="Hymn-line">{line}</span>;
-    }
-
-    let start = line.slice(0, line.length - 1);
-    let lastChar = line.slice(line.length - 1);
-    return (
-        <span className="Hymn-line">
-            {start}
-
-            <span style={{ whiteSpace: "nowrap" }}>
-                {lastChar}
-                <span className="Hymn-lineSeparator"></span>
+function Pointer({ pointer }: { pointer: PointerNode }) {
+   return (
+      <span className="Verse-pointer">
+         {pointer.label && (
+            <span aria-hidden={Boolean(pointer.ariaLabel)} role="text">
+               {pointer.label}
             </span>
-
-            <span style={{ display: "inline-block", width: 0 }}> </span>
-        </span>
-    );
-}
-
-function RepeatLines({
-    repeat,
-    isLast,
-}: {
-    repeat: types.RepeatLines;
-    isLast: boolean;
-}) {
-    return (
-        <strong className="Hymn-repeat" role="presentation">
-            <Lines lines={repeat.lines} />
-
-            {/* <span className="visually-hidden" role="presentation">
-                {[...Array(repeat.times - 1)].map((_, i) => (
-                    <Lines key={i} lines={repeat.lines} isLast />
-                ))}
-            </span> */}
-
-            <span style={{ whiteSpace: "nowrap" }}>
-                <span className="Hymn-repeatLabel" aria-hidden>
-                    {[...Array(repeat.times - 1)].map((_, i) => (
-                        <React.Fragment key={i}>
-                            […]
-                            {i !== repeat.times - 2 && (
-                                <span className="Hymn-lineSeparator"> </span>
-                            )}
-                        </React.Fragment>
-                    ))}
-                </span>
-                {!isLast && <span className="Hymn-lineSeparator"> </span>}
+         )}
+         {pointer.ariaLabel && (
+            <span className="visually-hidden" role="text">
+               {pointer.ariaLabel}
             </span>
-        </strong>
-    );
+         )}
+      </span>
+   );
 }
 
-function SpecialLines({
-    special,
-    isLast,
-}: {
-    special: SpecialFragment;
-    isLast: boolean;
-}) {
-    return (
-        <span className="Hymn-specialLines">
-            {special.label && <span className="visually-hidden">{special.label}</span>}
-            <Lines lines={special.lines} isLast={isLast} />
-        </span>
-    );
+function LineSeparator() {
+   let [separatorColor] = useOption("separatorColor");
+   if (separatorColor === "off") return <>{"\n"}</>;
+
+   let ZERO_WIDTH_NON_BREAKING_SPACE = "\uFEFF"; // acts as a glue character
+   return (
+      <>
+         <span className="Verse-lineSeparator">
+            <span aria-hidden>{ZERO_WIDTH_NON_BREAKING_SPACE}</span>{" "}
+            <span className="-bullet"></span>
+            <span className="visually-hidden">{" \n"}</span>
+         </span>{" "}
+      </>
+   );
 }
 
-function Pointer({ pointer, isLast }: { pointer: PointerFragment; isLast: boolean }) {
-    return (
-        <span className="Hymn-pointer">
-            <span aria-hidden>{pointer.text}</span>
-            <span className="visually-hidden" role="presentation">
-                {pointer.a11yText}
-            </span>
-            {!isLast && <span className="Hymn-lineSeparator"> </span>}
-        </span>
-    );
+function range(size: number, startAt = 0) {
+   return [...Array(size).keys()].map(i => i + startAt);
 }

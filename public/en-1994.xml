@@ -3,11 +3,11 @@
     xmlns="hymnalreader.net"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="hymnalreader.net schema.xsd"
-    title="Selected Hymns"
+    title="Hymnal 1994+"
+    subtitle="America"
     year="1994+"
-    id="en-1994"
     language="en"
-    publisher="OALC"
+    publisher="Old Apostolic Lutheran Church"
 >
     <languages>
         <language id="en" name="English"/>
@@ -286,6 +286,7 @@
         <tune name="" id="when-i-go-in-valleys"/>
         <tune name="" id="when-upon-lifes-billows"/>
         <tune name="Wie Schön Leuchtet" id="wie-schön-leuchtet"/>
+        <tune name="Winchester Old" id="winchester-old"/>
         <tune name="Woodworth" id="woodworth"/>
         <tune name="" id="work-while-the-night-is-coming"/>
         <tune name="Yield Not To Temptation" id="yield-not-to-temptation"/>
@@ -4101,6 +4102,7 @@
         <page id="92">
             <topic ref="christmas"/>
             <tune ref="christmas"/>
+            <tune ref="winchester-old"/>
             <day ref="christmas-evening"/>
             <link book="en" edition="1977" id="91"/>
             <link book="en" edition="2021" id="65"/>
@@ -5172,10 +5174,10 @@
                     <line>May ev’ry one behold Him,</line>
                     <line>Who weary walks that way.</line>
                 </verse>
-                <chorus>
+                <refrain>
                     <line>The way doth lead to perfect bliss,</line>
                     <line>But a way of pain it is.</line>
-                </chorus>
+                </refrain>
                 <verse>
                     <line>In nameless woe our Savior,</line>
                     <line>Here pass’d with troubled breath,</line>
@@ -5659,45 +5661,35 @@
             <title>Praise the Savior</title>
             <verses>
                 <verse>
-                    <line>Praise the Savior,</line>
-                    <line>Now and ever!</line>
+                    <line>Praise the Savior, Now and ever!</line>
                     <line>Praise Him all beneath the skies!</line>
-                    <line>Prostrate lying,</line>
-                    <line>Suffering, dying,</line>
+                    <line>Prostrate lying, Suffering, dying,</line>
                     <line>On the cross, a sacrifice;</line>
                     <line>Victory gaining, Life obtaining,</line>
                     <line>Now in glory, He doth rise.</line>
                 </verse>
                 <verse>
-                    <line>All is finished,</line>
-                    <line>And accomplished;</line>
+                    <line>All is finished, And accomplished;</line>
                     <line>Christ is now our righteousness.</line>
-                    <line>He our Savior,</line>
-                    <line>Hath forever,</line>
+                    <line>He our Savior, Hath forever,</line>
                     <line>Set us free from dire distress.</line>
                     <line>Through His merit, we inherit,</line>
                     <line>Light and peace and happiness.</line>
                 </verse>
                 <verse>
-                    <line>We’re delivered,</line>
-                    <line>Our bonds severed,</line>
+                    <line>We’re delivered, Our bonds severed,</line>
                     <line>Christ hath bruised the serpent’s head;</line>
-                    <line>Death no longer</line>
-                    <line>is the stronger,</line>
+                    <line>Death no longer is the stronger,</line>
                     <line>Hell itself is captive led.</line>
-                    <line>Christ hath risen,</line>
-                    <line>From death’s prison,</line>
+                    <line>Christ hath risen, From death’s prison,</line>
                     <line>O’er the tomb, He light hath shed.</line>
                 </verse>
                 <verse>
-                    <line>Praise forever,</line>
-                    <line>For His favor,</line>
+                    <line>Praise forever, For His favor,</line>
                     <line>Unto God the Father sing;</line>
-                    <line>Praise the Savior,</line>
-                    <line>Praise Him ever,</line>
+                    <line>Praise the Savior, Praise Him ever,</line>
                     <line>Son of God, our Lord and King;</line>
-                    <line>Praise the Spirit,</line>
-                    <line>Through Christ’s merit,</line>
+                    <line>Praise the Spirit, Through Christ’s merit,</line>
                     <line>He doth us salvation bring.</line>
                 </verse>
             </verses>
@@ -6369,36 +6361,30 @@
             <link book="en" edition="2021" id="101"/>
             <title>Holy, holy, holy!</title>
             <verses>
-                <verse>
-                    <line>Holy, holy, holy!</line>
-                    <line>Lord God Almighty!</line>
-                    <line>Early in the morning our song shall rise to Thee;</line>
-                    <line>Holy, holy, holy, merciful and mighty;</line>
-                    <line>God in three Persons, blessed Trinity!</line>
-                </verse>
-                <verse>
-                    <line>Holy, holy, holy!</line>
-                    <line>All the saints adore Thee!</line>
-                    <line>Casting down their golden crowns around the glassy sea;</line>
-                    <line>Cherubim and seraphim falling down before Thee,</line>
-                    <line>Which wert and art and evermore shalt be.</line>
-                </verse>
-                <verse>
-                    <line>Holy, holy, holy!</line>
-                    <line>Though the darkness hide Thee!</line>
-                    <line>Though the eye of sinful man</line>
-                    <line>Thy glory may not see;</line>
-                    <line>Only Thou art holy; there is none beside Thee,</line>
-                    <line>Perfect in power, in love and purity.</line>
-                </verse>
-                <verse>
-                    <line>Holy, holy, holy!</line>
-                    <line>Lord God Almighty!</line>
-                    <line>All Thy works shall praise Thy name,</line>
-                    <line>in earth and sky and sea;</line>
-                    <line>Holy, holy, holy, merciful and mighty;</line>
-                    <line>God in three Persons, blessed Trinity!</line>
-                </verse>
+               <verse>
+                  <line>Holy, holy, holy! Lord God Almighty!</line>
+                  <line>Early in the morning our song shall rise to Thee;</line>
+                  <line>Holy, holy, holy, merciful and mighty;</line>
+                  <line>God in three Persons, blessed Trinity!</line>
+               </verse>
+               <verse>
+                  <line>Holy, holy, holy! All the saints adore Thee!</line>
+                  <line>Casting down their golden crowns around the glassy sea;</line>
+                  <line>Cherubim and seraphim falling down before Thee,</line>
+                  <line>Which wert and art and evermore shalt be.</line>
+               </verse>
+               <verse>
+                  <line>Holy, holy, holy! Though the darkness hide Thee!</line>
+                  <line>Though the eye of sinful man Thy glory may not see;</line>
+                  <line>Only Thou art holy; there is none beside Thee,</line>
+                  <line>Perfect in power, in love and purity.</line>
+               </verse>
+               <verse>
+                  <line>Holy, holy, holy! Lord God Almighty!</line>
+                  <line>All Thy works shall praise Thy name, in earth and sky and sea;</line>
+                  <line>Holy, holy, holy, merciful and mighty;</line>
+                  <line>God in three Persons, blessed Trinity!</line>
+               </verse>
             </verses>
         </page>
         <page id="144">
@@ -9682,8 +9668,7 @@
                     <line>Who purchased me with His own true blood.</line>
                 </verse>
                 <verse>
-                    <line>Behold, He cometh;</line>
-                    <line>He who is faithful,</line>
+                    <line>Behold, He cometh; He who is faithful,</line>
                     <line>And His reward shall He bring one day;</line>
                     <line>There is no night there; no need for candle;</line>
                     <line>And God shall wipe all my tears away.</line>
@@ -15076,7 +15061,7 @@
             <tune ref="god-cares"/>
             <link book="en" edition="1977" id="283"/>
             <link book="en" edition="2021" id="255"/>
-            <title>Be not dismayed</title>
+            <title>God will take care of you</title>
             <verses>
                 <verse>
                     <line>Be not dismayed whate’er betide,</line>

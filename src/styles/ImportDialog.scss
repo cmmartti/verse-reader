@@ -1,0 +1,167 @@
+.AddDialog {
+   position: fixed;
+   z-index: 100;
+   overflow: auto;
+   inset: 0;
+   z-index: 1;
+   user-select: contain;
+
+   &:not([open]) {
+      // display: none;
+   }
+   &:focus {
+      outline: none;
+   }
+   &:focus-visible .AddDialog-titlebar {
+      outline: var(--focus-outline);
+      outline-offset: -0.325rem;
+   }
+   padding-top: 1rem;
+   @media (min-width: 29rem) {
+      padding: 1.5rem;
+   }
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   & > .-overlay {
+      z-index: -1;
+      position: fixed;
+      inset: 0;
+      background: var(--color);
+      opacity: 0.15;
+   }
+
+   & > .-window {
+      background: var(--DIALOG-background-color);
+      height: 100%;
+      box-shadow: 0 0 80px hsla(210, 19%, 11%, 0.25);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      @media (min-width: 29rem) {
+         border-radius: 12px;
+         max-height: 45rem;
+         max-width: 30rem;
+      }
+
+      transition: background-color 100ms ease-in;
+      &.is-over {
+         background: rgb(239, 221, 175);
+      }
+
+      display: grid;
+      grid-template:
+         "titlebar"
+         "contents" 1fr;
+
+      & > .-titlebar {
+         min-height: 48px;
+
+         display: grid;
+         grid-template-columns: 1fr auto 1fr;
+
+         & > .-gutter {
+            display: flex;
+            &:last-child {
+               justify-content: flex-end;
+            }
+            &:first-child {
+               justify-content: flex-start;
+            }
+            & > * {
+               padding-inline: 16px;
+            }
+         }
+
+         & > .-title {
+            padding: 4px;
+            display: flex;
+            align-items: center;
+         }
+      }
+
+      & > .-contents {
+         display: flex;
+         flex-direction: column;
+         gap: 8px;
+         padding-inline: 16px;
+         padding-block: 0 16px;
+         overflow: auto;
+         overscroll-behavior: none;
+
+         & > .dropMessage {
+            padding-inline: 0.9rem;
+            font-size: 0.9rem;
+            color: var(--color3);
+            p {
+               margin-top: 8px;
+            }
+            a {
+               text-decoration: underline;
+            }
+         }
+      }
+   }
+}
+
+.ImportItem {
+   border-radius: 8px;
+   background: var(--background3);
+
+   display: flex;
+   flex-direction: column;
+
+   & > * {
+      position: relative;
+      min-height: 2.325rem;
+      padding: 0.325rem 0.9rem;
+   }
+
+   // & > *:not(:last-child)::after {
+   //     pointer-events: none;
+   //     content: "";
+   //     position: absolute;
+   //     inset-inline: 0;
+   //     inset-block: 0;
+   //     border-bottom: 0.5px solid var(--color2);
+   // }
+
+   & > .-stats {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      border-bottom: 0.5px solid var(--color2);
+
+      & > * {
+         padding: 4px 0;
+         color: var(--color);
+
+         position: relative;
+         display: flex;
+         justify-content: flex-start;
+         align-items: center;
+         gap: 8px;
+         text-align: left;
+
+         display: flex;
+         justify-content: space-between;
+
+         & > *:first-child {
+            color: var(--color3);
+         }
+         & > *:last-child {
+            text-align: right;
+         }
+      }
+
+      & > *:not(:last-child)::after {
+         pointer-events: none;
+         content: "";
+         position: absolute;
+         inset: 0;
+         border-bottom: 0.5px dashed var(--color2);
+      }
+   }
+}

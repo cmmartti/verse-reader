@@ -1,3 +1,9 @@
+## Terminology
+
+### `loc
+
+Short for location. The short-form `loc` specifically refers to an address/ID of a page. Inspired by Kindle's use of the term to identify precise locations within a (unpaginated) e-book.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

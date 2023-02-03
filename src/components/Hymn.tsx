@@ -1,200 +1,191 @@
-import React from "react";
+// role="text" has not yet been standardised.
+/* eslint-disable jsx-a11y/aria-role */
 
-import * as types from "../types";
-import { Verses } from "./Verses";
+import React from "react";
 import { Link } from "react-router-dom";
 
-export let Hymn = React.memo(_Hymn);
+import * as db from "../db";
+import { generateURL } from "../router";
+import * as types from "../types";
+import { Verses } from "./Verses";
 
-function _Hymn({ hymn, book }: { hymn: types.Hymn; book: types.Hymnal }) {
-   let contributors = hymn.contributors.map(({ type, id, year, note }) => {
-      return {
-         type,
-         id,
-         name: (id ? book.contributors?.[id]?.name : null) ?? id,
-         year,
-         note,
-      };
-   });
+export let Hymn = React.forwardRef(
+   (
+      { record, hymn }: { record: db.BookRecord; hymn: types.Hymn },
+      ref: React.ForwardedRef<HTMLElement>
+   ) => {
+      let htmlId = React.useId();
 
-   let authors = contributors.filter(c => c.type === "author");
-   let translators = contributors.filter(c => c.type === "translator");
+      let contributors = hymn.contributors.map(({ type, id, year, note }) => {
+         let name = (id ? record.data.contributors?.[id]?.name : null) ?? id;
+         return { type, id, name, year, note };
+      });
+      let authors = contributors.filter(c => c.type === "author");
+      let translators = contributors.filter(c => c.type === "translator");
 
-   function getURL(search: string) {
-      return `index?q=${encodeURIComponent(search)}`;
-   }
+      let getURL = (search: string) =>
+         generateURL({
+            id: record.id,
+            loc: hymn.id,
+            search,
+         });
 
-   return (
-      <article
-         className={"Hymn" + (hymn.isDeleted ? " isDeleted" : "")}
-         lang={hymn.language}
-      >
-         <header className="Hymn-header">
-            <h2 className="Hymn-title">
-               <span role="presentation" style={{ whiteSpace: "nowrap" }}>
-                  {hymn.id}.{" "}
-                  {hymn.isRestricted && <span className="Hymn-asterisk">*</span>}
-                  {hymn.isDeleted && <span className="visually-hidden">deleted </span>}
-               </span>
-               <span role="presentation">{hymn.title}</span>
+      return (
+         <article
+            className={"Hymn" + (hymn.isDeleted ? " --deleted" : "")}
+            ref={ref}
+            tabIndex={-1}
+            aria-labelledby={htmlId + "title"}
+         >
+            <h2 className="visually-hidden">
+               {hymn.id}
+               {hymn.isDeleted && " deleted"}
+               {hymn.isRestricted && " restricted"}
             </h2>
 
-            {hymn.topics.length > 0 && (
-               <p className="Hymn-topics">
-                  <span className="visually-hidden" role="presentation">
-                     Topic{hymn.topics.length !== 1 && "s"}:{" "}
-                  </span>
-                  {hymn.topics
-                     .map(
-                        topicId =>
-                           book.topics?.[topicId] ?? {
-                              id: topicId,
-                              name: topicId,
-                           }
-                     )
-                     .map((topic, index) => (
-                        <React.Fragment key={topic.id}>
-                           <Link
-                              className="Hymn-topic"
-                              to={getURL(`#topic=${topic.id}`)}
-                           >
-                              {topic.name}
-                           </Link>
-                           {index < hymn.topics.length - 1 && ", "}
-                        </React.Fragment>
-                     ))}
-               </p>
-            )}
-         </header>
-
-         {/* {hymn.tunes.length > 0 && (
-                <div className="Hymn-tunes">
-                    Tune:{" "}
-                    {hymn.tunes
-                        .map(
-                            tuneId =>
-                                book.tunes?.[tuneId] ?? {
-                                    id: tuneId,
-                                    name: tuneId,
-                                }
-                        )
-                        .map((tune, index) => {
-                            return (
-                                <React.Fragment key={tune.id}>
-                                    <Link>{tune.name || tune.id}</Link>
-                                    {index < hymn.tunes.length - 1 && ", "}
-                                </React.Fragment>
-                            );
-                        })}
-                </div>
-            )} */}
-
-         <Verses hymn={hymn} />
-
-         <footer className="Hymn-footer">
-            {hymn.language !== book.language && (
-               <span className="Hymn-link">
-                  <h3>Language</h3>
-                  <Link to={getURL(`#language=${hymn.language}`)}>
-                     {book.languages[hymn.language]?.name ?? hymn.language}
-                  </Link>
-               </span>
-            )}
-
-            {hymn.tunes.length > 0 && (
-               <span className="Hymn-link">
-                  <h3>Tune{hymn.tunes.length > 1 && "s"}</h3>
-                  {hymn.tunes.map(id => (
-                     <Link key={id} to={getURL(`#tune=${id}`)}>
-                        {book.tunes?.[id]?.name ?? id}
-                     </Link>
+            <div className="-topics">
+               {hymn.topics
+                  .map(id => record.data.topics?.[id] ?? { id, name: id })
+                  .map((topic, i) => (
+                     <React.Fragment key={topic.id}>
+                        <Link
+                           className="-topic"
+                           to={generateURL({
+                              id: record.id,
+                              loc: hymn.id,
+                              search: `#topic=${topic.id}`,
+                           })}
+                        >
+                           <span className="visually-hidden" role="text">
+                              Topic:{" "}
+                           </span>
+                           {topic.name}
+                        </Link>
+                        {i < hymn.topics.length - 1 && " "}
+                     </React.Fragment>
                   ))}
-               </span>
-            )}
+            </div>
 
-            <span className="Hymn-link">
-               <h3>Author{authors.length > 1 && "s"}</h3>
-               {authors.map(({ name, note, year, id }, i) => (
-                  <div key={i}>
-                     <Link to={getURL(`#author=${id}`)}>{name}</Link>
-                     {note && ` (${note})`}
-                     {year && ` (${year})`}
+            <section className="-verses" lang={hymn.language}>
+               <Verses hymn={hymn} />
+            </section>
+
+            <section className="-details">
+               <div className="-row">
+                  <div>Full Title</div>
+                  <div id={htmlId + "title"} lang={hymn.language}>
+                     {hymn.title}
                   </div>
-               ))}
-               {authors.length === 0 && "—"}
-            </span>
-
-            <span className="Hymn-link">
-               <h3>Origin</h3>
-               {hymn.origin ? (
-                  <Link to={getURL(`#origin=${hymn.origin}`)}>
-                     {book.origins?.[hymn.origin]?.name ?? hymn.origin}
-                  </Link>
-               ) : (
-                  "—"
-               )}
-            </span>
-
-            {translators.length > 0 && (
-               <span className="Hymn-link">
-                  <h3>Translator{translators.length > 1 && "s"}</h3>
-                  {translators.map(({ name, note, year, id }, i) => (
-                     <div key={i}>
-                        <Link to={getURL(`#transl=${id}`)}>{name}</Link>
-                        {note && ` (${note})`}
-                        {year && ` (${year})`}
+               </div>
+               {hymn.language !== record.data.language && (
+                  <div className="-row">
+                     <div>Language</div>
+                     <div>
+                        <Link to={getURL(`#lang=${hymn.language}`)}>
+                           {record.data.languages[hymn.language]?.name ?? hymn.language}
+                        </Link>
                      </div>
-                  ))}
-               </span>
-            )}
-
-            {hymn.links.length > 0 && (
-               <span className="Hymn-link">
-                  <h3>Elsewhere</h3>
-                  {hymn.links.map(link => (
-                     //  <Link
-                     //      key={link.edition}
-                     //      to={`/en-${link.edition}?loc=${link.id}`}
-                     //  >
-                     //  </Link>
-                     <span key={link.edition}>
-                        EN-{link.edition} → {link.id}
-                     </span>
-                  ))}
-               </span>
-            )}
-
-            {hymn.days.length > 0 && (
-               <span className="Hymn-link">
-                  <h3>Suggested Use</h3>
-                  {hymn.days.map(id => (
-                     <Link key={id} to={getURL(`#day=${id}`)}>
-                        {book.days?.[id]?.name ?? id}
-                     </Link>
-                  ))}
-               </span>
-            )}
-
-            {hymn.isRestricted && (
-               <span className="Hymn-link">
-                  <h3>Note</h3>
-                  <span>
-                     *<Link to={getURL("#restricted")}>Not for church services</Link>;
-                     may be used for other occasions.
-                  </span>
-               </span>
-            )}
-
-            {hymn.isDeleted && (
-               <span className="Hymn-link">
-                  <h3>Note</h3>
-                  <span>
-                     This hymn was <Link to={getURL("#deleted")}>deleted</Link> in a
-                     later printing
-                  </span>
-               </span>
-            )}
-         </footer>
-      </article>
-   );
-}
+                  </div>
+               )}
+               {hymn.tunes.length > 0 && (
+                  <div className="-row">
+                     <div>Tune{hymn.tunes.length > 1 && "s"}</div>
+                     <div>
+                        {hymn.tunes.map(id => (
+                           <div key={id}>
+                              <Link to={getURL(`#tune=${id}`)}>
+                                 {record.data.tunes?.[id]?.name || id}
+                              </Link>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {authors.length > 0 && (
+                  <div className="-row">
+                     <div>Author{authors.length > 1 && "s"}</div>
+                     <div>
+                        {authors.map(({ name, note, year, id }, i) => (
+                           <div key={i}>
+                              <Link to={getURL(`#author=${id}`)}>{name}</Link>
+                              {note && ` (${note})`}
+                              {year && ` (${year})`}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {hymn.origin && (
+                  <div className="-row">
+                     <div>Origin</div>
+                     <div>
+                        <Link to={getURL(`#origin=${hymn.origin}`)}>
+                           {record.data.origins?.[hymn.origin]?.name ?? hymn.origin}
+                        </Link>
+                     </div>
+                  </div>
+               )}
+               {translators.length > 0 && (
+                  <div className="-row">
+                     <div>Translator{translators.length > 1 && "s"}</div>
+                     <div>
+                        {translators.map(({ name, note, year, id }, i) => (
+                           <div key={i}>
+                              <Link to={getURL(`#transl=${id}`)}>{name}</Link>
+                              {note && ` (${note})`}
+                              {year && ` (${year})`}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {hymn.links.length > 0 && (
+                  <div className="-row">
+                     <div>Elsewhere</div>
+                     <div>
+                        {hymn.links.map(link => (
+                           <div key={link.edition}>
+                              {link.edition} #{link.id}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {hymn.days.length > 0 && (
+                  <div className="-row">
+                     <div>Suggested Use</div>
+                     <div>
+                        {hymn.days.map(id => (
+                           <div key={id}>
+                              <Link to={getURL(`#day=${id}`)}>
+                                 {record.data.days?.[id]?.name ?? id}
+                              </Link>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {hymn.isRestricted && (
+                  <div className="-row">
+                     <div>* Note</div>
+                     <div>
+                        <Link to={getURL("#restricted")}>Not for church services</Link>;
+                        may be used for other occasions.
+                     </div>
+                  </div>
+               )}
+               {hymn.isDeleted && (
+                  <div className="-row">
+                     <div>** Note</div>
+                     <div>
+                        <Link to={getURL("#deleted")}>
+                           This page was removed from a later printing of this book.
+                        </Link>
+                     </div>
+                  </div>
+               )}
+            </section>
+         </article>
+      );
+   }
+);

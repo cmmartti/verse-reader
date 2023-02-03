@@ -1,3 +1,8 @@
+/**
+ * Based on Github's <tab-container> element, with minor modifications.
+ * https://github.com/github/tab-container-element
+ */
+
 type IncrementKeyCode = "ArrowRight" | "ArrowDown";
 type DecrementKeyCode = "ArrowUp" | "ArrowLeft";
 
@@ -21,6 +26,9 @@ function getNavigationKeyCodes(
 }
 
 export default class TabContainerElement extends HTMLElement {
+   static CHANGED_EVENT = "tab-container-changed";
+   static CHANGE_EVENT = "tab-container-change";
+
    constructor() {
       super();
 
@@ -105,7 +113,7 @@ export default class TabContainerElement extends HTMLElement {
       const selectedPanel = panels[index]!;
 
       const cancelled = !this.dispatchEvent(
-         new CustomEvent("tab-container-change", {
+         new CustomEvent(TabContainerElement.CHANGE_EVENT, {
             bubbles: true,
             cancelable: true,
             detail: { relatedTarget: selectedPanel },
@@ -133,7 +141,7 @@ export default class TabContainerElement extends HTMLElement {
       selectedPanel.hidden = false;
 
       this.dispatchEvent(
-         new CustomEvent("tab-container-changed", {
+         new CustomEvent(TabContainerElement.CHANGED_EVENT, {
             bubbles: true,
             detail: { relatedTarget: selectedPanel },
          })
