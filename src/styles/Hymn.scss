@@ -1,89 +1,114 @@
 .Hymn {
-   display: grid;
-   grid-template: 1fr /1fr;
+   height: 100%;
    &:focus {
       outline: none;
    }
 
    display: flex;
    flex-direction: column;
+}
 
-   &.--deleted > .-verses {
-      color: var(--color2);
+.Hymn-topics {
+   text-align: center;
+   font-size: 0.85em;
+
+   & > * {
+      white-space: nowrap;
    }
+}
 
-   & > .-topics {
-      font: inherit;
-      font-size: 0.75em;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5em;
-      padding-block: 1.25rem 1rem;
+.Hymn.--deleted .Hymn-verses {
+   color: var(--TEXT-color--faint);
+}
 
-      & > .-topic {
-         white-space: nowrap;
-         background: var(--background-tinted1);
-         padding: 0.125em 0.375em;
-         border-radius: 4px;
-      }
-   }
+.Hymn-verses {
+   flex: 1;
+   // min-height: 15rem;
+}
 
-   & > .-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      gap: 0.75em 1em;
-      @media (max-width: 29rem) {
-      }
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+.Hymn-details {
+   font-size: 0.75em;
 
-      & > .-id {
+   & > * {
+      & > :first-child {
+         // font-style: italic;
          font-weight: bold;
-         font-size: 1.25em;
-         text-align: center;
-         line-height: 1;
-         @media (min-width: 29rem) {
-            text-align: left;
-         }
+      }
+      & > :last-child {
+         grid-column: 2 / 3;
       }
    }
+}
 
-   & > .-verses {
-      flex: 1;
-      min-height: 15rem;
+@media (max-width: 54.9999em) {
+   .Hymn {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
    }
 
-   & > .-details {
-      font-size: 0.75em;
-      margin-inline: -0.25em;
-      margin-block-start: max(1.5em, var(--OPTION-paragraphSpacing));
-
+   .Hymn-details {
       display: grid;
       grid-template-columns: auto 1fr;
+      align-content: start;
       column-gap: 1em;
+      border-top: 1px solid;
+      padding-top: 1em;
 
-      & > .-row {
-         padding: 0.25em;
-         &:not(:last-child) {
-            border-bottom: 0.5px solid var(--color3);
-         }
-
+      & > * {
          display: grid;
          grid-column: 1 / 3;
          column-gap: 1em;
          grid-template-columns: 5em 1fr; // fallback
          grid-template-columns: subgrid;
 
+         padding: 0.25em;
+         // display: block;
+         &:not(:last-child) {
+            border-bottom: 0.5px solid var(--TEXT-color--light);
+         }
+
          & > :first-child {
             grid-column: 1 / 2;
-            font-style: italic;
+            // font-style: italic;
          }
          & > :last-child {
             grid-column: 2 / 3;
+         }
+      }
+   }
+}
+
+@media (min-width: 55em) {
+   .Hymn {
+      display: grid;
+      grid-template:
+         "topics topics"
+         "verses details" 1fr
+         / 1fr 8em;
+
+      gap: 1em;
+   }
+
+   .Hymn-topics {
+      grid-area: topics;
+   }
+   .Hymn-verses {
+      grid-area: verses;
+   }
+   .Hymn-details {
+      grid-area: details;
+      border-inline-start: 1px solid;
+      padding-inline-start: 1em;
+
+      display: flex;
+      flex-direction: column;
+
+      & > * {
+         padding: 0.25em;
+         // display: block;
+         &:not(:last-child) {
+            border-bottom: 0.5px solid var(--TEXT-color--light);
          }
       }
    }

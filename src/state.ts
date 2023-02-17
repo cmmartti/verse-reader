@@ -1,28 +1,26 @@
 import React from "react";
-import createUseStore from "zustand";
+import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import * as types from "./types";
 
-export type IndexState = {
-   index: types.IndexType;
-   sort: { [context: string]: string | undefined };
-   search: string;
-   expandedCategories: { [context: string]: string[] | "all" };
-};
-
 type AppState = {
    [key: `book/${string}/loc`]: types.HymnId | null;
-   [key: `book/${string}/index`]: IndexState;
+   [key: `book/${string}/search`]: string;
+   [key: `book/${string}/index`]: types.IndexType | null;
+   [key: `book/${string}/index/${string}/sort`]: string;
+   [key: `book/${string}/index/${string}/expandedGroups`]: string[] | "all";
 };
 
-const defaultState: AppState = {};
+const useStore = create<AppState>()(persist(() => ({}), { name: "AppState" }));
 
-export const useStore = createUseStore<AppState>()(
-   persist(() => defaultState, { name: "AppState" })
-);
+export function setAppState<K extends keyof AppState>(key: K, value: AppState[K]) {
+   useStore.setState(state => ({ ...state, [key]: value }));
+}
 
-export const store = useStore;
+export function getAppState<K extends keyof AppState>(key: K) {
+   return useStore.getState()[key];
+}
 
 export function useAppState<K extends keyof AppState>(
    key: K,

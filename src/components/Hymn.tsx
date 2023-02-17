@@ -14,8 +14,6 @@ export let Hymn = React.forwardRef(
       { record, hymn }: { record: db.BookRecord; hymn: types.Hymn },
       ref: React.ForwardedRef<HTMLElement>
    ) => {
-      let htmlId = React.useId();
-
       let contributors = hymn.contributors.map(({ type, id, year, note }) => {
          let name = (id ? record.data.contributors?.[id]?.name : null) ?? id;
          return { type, id, name, year, note };
@@ -35,50 +33,50 @@ export let Hymn = React.forwardRef(
             className={"Hymn" + (hymn.isDeleted ? " --deleted" : "")}
             ref={ref}
             tabIndex={-1}
-            aria-labelledby={htmlId + "title"}
          >
             <h2 className="visually-hidden">
-               {hymn.id}
-               {hymn.isDeleted && " deleted"}
-               {hymn.isRestricted && " restricted"}
+               Page {hymn.id}. {hymn.title}
+               {hymn.isDeleted && ", removed"}
+               {hymn.isRestricted && ", not for church services"}
             </h2>
 
-            <div className="-topics">
-               {hymn.topics
-                  .map(id => record.data.topics?.[id] ?? { id, name: id })
-                  .map((topic, i) => (
-                     <React.Fragment key={topic.id}>
-                        <Link
-                           className="-topic"
-                           to={generateURL({
-                              id: record.id,
-                              loc: hymn.id,
-                              search: `#topic=${topic.id}`,
-                           })}
-                        >
-                           <span className="visually-hidden" role="text">
-                              Topic:{" "}
-                           </span>
-                           {topic.name}
-                        </Link>
-                        {i < hymn.topics.length - 1 && " "}
-                     </React.Fragment>
-                  ))}
-            </div>
+            {hymn.topics.length > 0 && (
+               <div className="Hymn-topics">
+                  {/* {`Topic${hymn.topics.length > 1 ? "s" : ""}: `} */}
+                  {hymn.topics
+                     .map(id => record.data.topics?.[id] ?? { id, name: id })
+                     .map((topic, i) => (
+                        <React.Fragment key={topic.id}>
+                           <Link
+                              to={generateURL({
+                                 id: record.id,
+                                 loc: hymn.id,
+                                 search: `#topic=${topic.id}`,
+                              })}
+                           >
+                              <span className="visually-hidden" role="text">
+                                 Topic:{" "}
+                              </span>
+                              {topic.name}
+                           </Link>
+                           {i < hymn.topics.length - 1 && " + "}
+                        </React.Fragment>
+                     ))}
+               </div>
+            )}
 
-            <section className="-verses" lang={hymn.language}>
+            <section className="Hymn-verses" lang={hymn.language}>
                <Verses hymn={hymn} />
             </section>
 
-            <section className="-details">
-               <div className="-row">
+            <section className="Hymn-details">
+               <div>
                   <div>Full Title</div>
-                  <div id={htmlId + "title"} lang={hymn.language}>
-                     {hymn.title}
-                  </div>
+                  <div lang={hymn.language}>{hymn.title}</div>
                </div>
+
                {hymn.language !== record.data.language && (
-                  <div className="-row">
+                  <div>
                      <div>Language</div>
                      <div>
                         <Link to={getURL(`#lang=${hymn.language}`)}>
@@ -87,8 +85,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.tunes.length > 0 && (
-                  <div className="-row">
+                  <div>
                      <div>Tune{hymn.tunes.length > 1 && "s"}</div>
                      <div>
                         {hymn.tunes.map(id => (
@@ -101,8 +100,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {authors.length > 0 && (
-                  <div className="-row">
+                  <div>
                      <div>Author{authors.length > 1 && "s"}</div>
                      <div>
                         {authors.map(({ name, note, year, id }, i) => (
@@ -115,8 +115,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.origin && (
-                  <div className="-row">
+                  <div>
                      <div>Origin</div>
                      <div>
                         <Link to={getURL(`#origin=${hymn.origin}`)}>
@@ -125,8 +126,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {translators.length > 0 && (
-                  <div className="-row">
+                  <div>
                      <div>Translator{translators.length > 1 && "s"}</div>
                      <div>
                         {translators.map(({ name, note, year, id }, i) => (
@@ -139,8 +141,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.links.length > 0 && (
-                  <div className="-row">
+                  <div>
                      <div>Elsewhere</div>
                      <div>
                         {hymn.links.map(link => (
@@ -151,8 +154,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.days.length > 0 && (
-                  <div className="-row">
+                  <div>
                      <div>Suggested Use</div>
                      <div>
                         {hymn.days.map(id => (
@@ -165,8 +169,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.isRestricted && (
-                  <div className="-row">
+                  <div>
                      <div>* Note</div>
                      <div>
                         <Link to={getURL("#restricted")}>Not for church services</Link>;
@@ -174,8 +179,9 @@ export let Hymn = React.forwardRef(
                      </div>
                   </div>
                )}
+
                {hymn.isDeleted && (
-                  <div className="-row">
+                  <div>
                      <div>** Note</div>
                      <div>
                         <Link to={getURL("#deleted")}>

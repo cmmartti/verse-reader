@@ -1,0 +1,81 @@
+.IndexEntry {
+   font-variant-numeric: tabular-nums;
+   padding-block: 0.25em;
+
+   position: relative;
+
+   &.--current::before {
+      content: "";
+      position: absolute;
+      inset: 0 -0.35em;
+      border-radius: 4px;
+      border: 1px solid red;
+      background: hsla(0, 100%, 50%, 0.05);
+   }
+}
+
+.IndexEntry.--deleted .IndexEntry-title {
+   text-decoration: line-through;
+}
+
+.IndexEntry-title {
+   color: var(--LINK-color);
+   &[lang] {
+      font-style: italic;
+   }
+}
+
+.IndexEntry-link {
+   line-height: 1.2;
+   &:focus {
+      outline: none;
+   }
+
+   // focus ring
+   &:focus-visible::before {
+      content: "";
+      position: absolute;
+      inset: 0 -0.35em;
+      border-radius: 4px;
+      border: var(--focus-outline);
+   }
+
+   display: grid;
+   grid-template-columns: 1fr max-content;
+   align-items: end; // fallback
+   align-items: last baseline;
+   gap: 0.25em;
+}
+
+.IndexEntry-leaders {
+   padding-inline-start: 1em;
+   text-indent: -1em;
+   position: relative;
+   overflow: hidden;
+
+   & > .-dots {
+      position: absolute;
+      margin-inline-start: 1em;
+      text-align: end;
+      font-weight: normal;
+
+      &::after {
+         content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .";
+      }
+   }
+}
+
+.IndexEntry-lines {
+   padding-inline-start: 1em;
+   color: var(--TEXT-color--light);
+   list-style: disc;
+
+   & > * {
+      display: list-item;
+      font-size: 0.85em;
+   }
+}

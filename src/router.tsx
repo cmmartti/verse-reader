@@ -1,34 +1,19 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import * as home from "./routes/home";
-import * as draft from "./routes/draft";
-import * as draft_new from "./routes/draft_.new";
-import * as draft_id from "./routes/draft_.$id";
-import * as book from "./routes/book.$id.$loc";
-import * as bookIndex from "./routes/book.$id";
-import * as book_new from "./routes/book_.new";
-import * as search from "./routes/book.$id.$loc_.search";
-// import * as options from "./routes/book.$id.options";
+import * as library from "./routes/library";
+import * as page from "./routes/page";
+import * as bookIndex from "./routes/book";
+import * as book_new from "./routes/book_new";
+import * as search from "./routes/search";
 
 import { ErrorPage } from "./components/ErrorPage";
 
 export default createBrowserRouter([
    {
       path: "/",
-      loader: home.loader,
-      element: <home.Component />,
+      loader: library.loader,
+      element: <library.Component />,
       errorElement: <ErrorPage />,
-   },
-   {
-      path: "/draft",
-      loader: draft.loader,
-      action: draft.action,
-      errorElement: <ErrorPage />,
-      element: <draft.Component />,
-      children: [
-         { path: "new", action: draft_new.action },
-         { path: ":id", action: draft_id.action },
-      ],
    },
    {
       path: "/book",
@@ -37,17 +22,14 @@ export default createBrowserRouter([
          { path: "new", action: book_new.action },
          {
             path: ":id",
-            loader: bookIndex.loader,
             action: bookIndex.action,
-            element: <bookIndex.Component />,
-            children: [
-               {
-                  id: "page",
-                  path: ":loc",
-                  loader: book.loader,
-                  element: <book.Component />,
-               },
-            ],
+            loader: bookIndex.loader,
+         },
+         {
+            id: "page",
+            path: ":id/:loc",
+            loader: page.loader,
+            element: <page.Component />,
          },
          {
             path: ":id/search",

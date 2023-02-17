@@ -6,7 +6,6 @@ import * as types from "./types";
 
 export type BookRecord = {
    id: number;
-   draft: 0 | 1;
    data: types.Hymnal;
    file: Blob;
    lunrIndex: object;
@@ -14,43 +13,35 @@ export type BookRecord = {
 };
 
 interface AppDB extends DBSchema {
-   Book: {
-      value: BookRecord;
-      key: number;
-      indexes: { draft: 0 | 1 };
-   };
+   Book: { value: BookRecord; key: number };
 }
 
 const DATABASE_VERSION = 7;
 
 export const db = openDB<AppDB>("hymnalreader", DATABASE_VERSION, {
-   upgrade: async (db, oldVersion, newVersion, tx) => {
+   upgrade: async (db, oldVersion, _newVersion, _tx) => {
       switch (oldVersion) {
          // If the DB does not exist yet, oldVersion will be 0
          case 0:
          case 7: {
-            let store = db.createObjectStore("Book", {
-               keyPath: "id",
-               autoIncrement: true,
-            });
-            store.createIndex("draft", "draft", { unique: false });
+            db.createObjectStore("Book", { keyPath: "id", autoIncrement: true });
             break;
          }
       }
    },
 });
 
-export async function createBookFromURL(url: string, draft: boolean) {
+export async function createBookFromURL(url: string) {
    let response = await fetch(url);
    if (response.status !== 200)
       throw new Response(
          `Failed to download resource ${url}: ${response.status} ${response.statusText}`,
          { status: response.status }
       );
-   return createBookFromFile(await response.blob(), draft);
+   return createBookFromFile(await response.blob());
 }
 
-export async function createBookFromFile(file: Blob, draft: boolean) {
+export async function createBookFromFile(file: Blob) {
    if (file.type !== "text/xml" && file.type !== "application/xml") {
       throw new Response(`Invalid file type: "${file.type}" should be "text/xml".`, {
          status: 400,
@@ -68,7 +59,6 @@ export async function createBookFromFile(file: Blob, draft: boolean) {
 
    let record = {
       // id will be auto-generated
-      draft: draft ? 1 : 0,
       data: book,
       file,
       lunrIndex,
@@ -84,19 +74,7 @@ export async function createBookFromFile(file: Blob, draft: boolean) {
 }
 
 export async function getAllBooks(): Promise<BookRecord[]> {
-   return (await db).getAllFromIndex("Book", "draft", 0);
-}
-
-export async function getAllDraftBooks(): Promise<BookRecord[]> {
-   return (await db).getAllFromIndex("Book", "draft", 1);
-}
-
-export async function deleteAllDraftBooks(): Promise<void> {
-   let tx = (await db).transaction("Book", "readwrite");
-
-   for await (let cursor of tx.store.index("draft").iterate(1)) {
-      tx.store.delete(cursor.value.id);
-   }
+   return (await db).getAll("Book");
 }
 
 export async function getBook(id: number): Promise<BookRecord> {
@@ -107,22 +85,4 @@ export async function getBook(id: number): Promise<BookRecord> {
 
 export async function deleteBook(id: number): Promise<void> {
    (await db).delete("Book", id);
-}
-
-export async function saveDraftBook(id: number): Promise<void> {
-   let tx = (await db).transaction("Book", "readwrite");
-   let book = await tx.store.get(id);
-
-   if (!book) throw new Error(`Book "${id}" does not exist.`);
-
-   book.draft = 0;
-   await tx.store.put(book);
-}
-
-export async function saveAllDraftBooks(): Promise<void> {
-   let tx = (await db).transaction("Book", "readwrite");
-
-   for await (let cursor of tx.store.index("draft").iterate(1)) {
-      tx.store.put({ ...cursor.value, draft: 0 });
-   }
 }

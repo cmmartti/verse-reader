@@ -19,21 +19,31 @@ let fonts = [
       name: "Charter",
       value: "Charter",
    },
-   {
-      id: "georgia",
-      name: "Georgia",
-      value: "Georgia",
-   },
+   // {
+   //    id: "georgia",
+   //    name: "Georgia",
+   //    value: "Georgia",
+   // },
    {
       id: "lato",
       name: "Lato",
       value: "Lato",
+   },
+   {
+      id: "literata",
+      name: "Literata",
+      value: "Literata",
    },
    // {
    //    id: "merriweather",
    //    name: "Merriweather",
    //    value: "Merriweather",
    // },
+   {
+      id: "quattrocento-sans",
+      name: "Quattrocento Sans",
+      value: "Quattrocento Sans",
+   },
    {
       id: "raleway",
       name: "Raleway",

@@ -1,0 +1,46 @@
+.IndexGroup {
+   // margin-top: 0.5em;
+}
+
+.IndexGroup-button {
+   cursor: default;
+   padding-block: 0.25em;
+   color: var(--LINK-color);
+   border-bottom: 0.75px solid var(--TEXT-color);
+   &:focus {
+      outline: none;
+   }
+
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+
+   position: relative;
+
+   // focus ring
+   &:focus-visible::before {
+      content: "";
+      position: absolute;
+      inset: -1px -0.35em;
+      border-radius: 4px;
+      pointer-events: none;
+      border: var(--focus-outline);
+   }
+}
+
+.IndexGroup-title {
+   color: var(--TEXT-color);
+   font-weight: 600;
+   // text-transform: uppercase;
+}
+
+.IndexGroup-arrow {
+   transition: transform ease-in-out 150ms;
+   &.--rotate {
+      transform: rotateX(180deg);
+   }
+}
+
+.IndexGroup-contents {
+   padding-top: 0.25em;
+}

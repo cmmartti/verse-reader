@@ -1,46 +1,52 @@
 .SearchBar {
-    padding-inline-start: 0.325em;
-    border-radius: 0.5em;
-    background: var(--input-background);
-    color: var(--color);
+   border-radius: 8px;
+   background: var(--input-background);
+   color: var(--TEXT-color);
+   &:focus-within {
+      outline: var(--focus-outline);
+      outline-offset: -2px;
+   }
+   display: flex;
+}
 
-    display: flex;
-    align-items: center;
+.SearchBar-input {
+   flex: 1;
+   width: 0;
+   border: none;
+   padding: 6px 0;
+   background: none;
+   outline-offset: -4px;
+   &:focus {
+      outline: none;
+   }
+}
 
-    & input {
-        flex: 1;
-        width: 0;
-        border: none;
-        background: none;
-        &:focus {
-            outline: none;
-        }
-    }
-    & button {
-        color: inherit;
-        border: none;
-        background: none;
-        background: none;
-        font: inherit;
-        padding-inline: 0.5em;
-        &:focus-visible {
-            outline-offset: -0.325em;
-            outline: none;
-        }
-        &:focus-visible svg {
-            border-radius: 0.15em;
-            outline: var(--focus-outline);
-        }
+.SearchBar-icon {
+   height: 1em;
+   width: auto;
+   border-radius: 2px;
+}
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.SearchBar-label {
+   color: var(--TEXT-color--light);
+   padding-inline: 0.325rem 0.15rem;
 
-    & svg {
-        height: 1.2em;
-        width: 1.2em;
-        flex-shrink: 0;
-        color: var(--color3);
-    }
+   display: flex;
+   align-items: center;
+}
+
+.SearchBar-reset {
+   color: var(--LINK-color);
+   padding-inline: 0.15rem 0.325rem;
+   &[hidden] {
+      display: none;
+   }
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.SearchBar-reset:focus-visible .SearchBar-icon {
+   outline: var(--focus-outline);
 }

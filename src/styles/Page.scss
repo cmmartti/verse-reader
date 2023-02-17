@@ -1,114 +1,98 @@
 .Page {
-   // min-height: 100vh;
-   // min-height: 100dvh;
+   min-height: var(--PAGE-height);
    background: var(--PAGE-background-color);
+}
 
-   --padding-block: calc(0.675 * var(--OPTION-pageMargins));
-   --padding-block: var(--OPTION-pageMargins);
-   --padding-inline: var(--OPTION-pageMargins);
-   @media (min-width: 29rem) {
-      --padding-block: calc(0.675 * (var(--OPTION-pageMargins) + 40px));
-      // --padding-block: calc((var(--OPTION-pageMargins) + 20px));
+.Page-contents {
+   padding-block: 0 var(--PAGE-margin-block);
+   padding-inline: var(--PAGE-margin-inline);
 
-      --padding-inline: 10px;
-      --w: calc(var(--OPTION-pageMargins) + 30px);
-      --article-height: calc(100vh - var(--TOOLBAR-height));
+   line-height: var(--OPTION-lineHeight, 1.4);
+   font-weight: var(--PAGE-font-weight);
+   font-size: var(--OPTION-fontSize, 1rem);
+   font-family: var(--OPTION-fontFamily);
+   font-size-adjust: 0.5;
 
-      display: grid;
-      grid-template:
-         "prev contents next" var(--article-height)
-         ".    contents ."
-         / var(--w) 1fr var(--w);
-   }
+   display: flex;
+   flex-direction: column;
+   gap: 1em;
+}
 
-   & > .-contents {
-      grid-area: contents;
-      padding: var(--padding-block) var(--padding-inline);
-      line-height: var(--OPTION-lineHeight, 1.4);
-      font-weight: var(--PAGE-font-weight);
-      font-size: var(--OPTION-fontSize, 1rem);
-      font-family: var(--OPTION-fontFamily);
-      font-size-adjust: 0.5;
-
-      display: grid;
-      grid-template-rows: auto 1fr;
-
-      & > .-goTo {
-         display: flex;
-         justify-content: center;
-
-         & > input {
-            flex: 1;
-
-            font: inherit;
-            font-weight: 600;
-            font-size: 1.25em;
-            min-width: 0;
-            width: 100%;
-            max-width: 15em;
-            min-height: 1.375em;
-            line-height: 1;
-            text-align: center;
-            padding: 0 12px;
-            border: none;
-            background: var(--input-background);
-            border-radius: 8px;
-            // box-shadow: inset 0 0 3px -1px;
-            &:focus {
-               outline: none;
-            }
-         }
-      }
-   }
-
-   & > .-nav {
-      &.--prev {
-         grid-area: prev;
-         & > a {
-            padding-inline-start: 10px;
-         }
-      }
-      &.--next {
-         grid-area: next;
-         & > a {
-            padding-inline-end: 10px;
-         }
-      }
-
-      color: var(--BUTTON-color);
-      position: sticky;
-      top: var(--TOOLBAR-height);
-
+@media (max-width: 44.9999em) {
+   .Page {
       display: flex;
       flex-direction: column;
+   }
+   .Page-contents {
+      flex: 1;
+   }
+}
 
+@media (min-width: 45em) {
+   .Page {
+      display: grid;
+      --w: calc(var(--PAGE-margin-inline) - 10px);
+      grid-template:
+         "prev contents next"
+         / var(--w) 1fr var(--w);
+   }
+   .Page-contents {
+      grid-area: contents;
+      padding-inline: 10px;
+   }
+}
+
+.Page-nav {
+   color: var(--LINK-color);
+   &.--prev {
+      grid-area: prev;
       & > a {
-         color: inherit;
-         flex: 1;
-         &:focus {
-            outline: none;
-         }
-         @media (hover: hover) {
-            &:hover > svg {
-               background-color: var(--background-tinted1);
-            }
-         }
+         padding-inline-start: 10px;
+      }
+   }
+   &.--next {
+      grid-area: next;
+      & > a {
+         padding-inline-end: 10px;
+      }
+   }
 
-         display: flex;
-         align-items: center;
-         justify-content: center;
+   position: sticky;
+   top: 0;
 
-         &:focus-visible > * {
-            outline: 2px solid var(--focus-color);
+   display: flex;
+   flex-direction: column;
+
+   & > a {
+      color: inherit;
+      flex: 1;
+      &:focus {
+         outline: none;
+      }
+      @media (hover: hover) {
+         &:hover > svg {
+            background-color: var(--LINK-color--faint);
          }
-         overflow: hidden;
-         & > svg {
-            flex: 0 0 32px;
-            padding: 6px;
-            height: 32px;
-            width: 32px;
-            border-radius: 16px;
-         }
+      }
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:focus-visible > * {
+         outline: var(--focus-outline);
+      }
+      overflow: hidden;
+      & > svg {
+         flex: 0 0 32px;
+         padding: 6px;
+         height: 32px;
+         width: 32px;
+         border-radius: 16px;
+
+         position: fixed;
+         top: 50%;
+         transform: translateY(-50%);
       }
    }
 }

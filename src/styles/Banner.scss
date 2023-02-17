@@ -1,0 +1,62 @@
+.Banner {
+   padding-block: var(--PAGE-margin-block) 0.75em;
+   border-bottom: 1px solid;
+
+   & :first-child {
+      justify-self: start;
+   }
+   & :last-child {
+      justify-self: end;
+   }
+}
+
+.Banner-title {
+   display: block;
+   text-align: center;
+   line-height: 1.2;
+   font-weight: bold;
+   text-transform: uppercase;
+}
+
+@media (max-width: 49.999em) {
+   .Banner {
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-auto-flow: dense;
+      gap: 0.5em;
+   }
+   .Banner-title→ {
+      grid-column: span 2;
+      grid-row: 2;
+   }
+}
+
+@media (min-width: 50em) {
+   .Banner {
+      display: grid;
+      gap: 1em;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: baseline;
+      height: var(--BANNER-height);
+   }
+   .Banner-title→ {
+      grid-column: 2;
+   }
+}
+
+@media (min-height: 35em) {
+   .Banner--sticky {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+
+      &::after {
+         content: "";
+         position: absolute;
+         z-index: -1;
+         inset: 0 -0.5em;
+         background: var(--TOOLBAR-background-color);
+         backdrop-filter: blur(4px);
+      }
+   }
+}

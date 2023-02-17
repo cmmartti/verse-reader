@@ -1,3 +1,103 @@
+.ImportDialog {
+   position: fixed;
+   z-index: 10;
+   overflow: auto;
+   user-select: contain;
+   font-size: 18px;
+
+   &:not([open]) {
+      display: none;
+   }
+   &.--over {
+      background: rgb(239, 221, 175);
+   }
+
+   padding: 0;
+   border: none;
+   color: inherit;
+   background: var(--DIALOG-background-color);
+   // background: none;
+   backdrop-filter: blur(12px);
+
+   border-radius: 16px;
+   box-shadow: 0 0 80px hsla(210, 19%, 11%, 0.25), 0 0 50px -10px hsla(0, 0%, 0%, 0.5),
+      0 0 1px;
+
+   margin: auto;
+   height: 750px;
+   width: 550px;
+   max-height: calc(100% - 2 * 12px);
+   max-width: calc(100% - 2 * 12px);
+   inset: 12px;
+   @media (max-width: 35em) {
+      height: 500px;
+      top: auto;
+   }
+
+   &::backdrop {
+      display: none;
+   }
+
+   display: grid;
+   grid-template-rows: auto 1fr auto;
+}
+
+.ImportDialog-header {
+   padding: 0.75em;
+   display: flex;
+   gap: 0.75em;
+   justify-content: center;
+   font-size: 1.25em;
+   font-weight: 600;
+}
+
+.ImportDialog-contents {
+   padding: 1em;
+   display: flex;
+   flex-direction: column;
+   gap: 1em;
+   overflow: auto;
+}
+
+.ImportDialog-entries {
+   border-block: 1px solid;
+   padding-block: 1em;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5em;
+}
+
+.ImportDialog-entry {
+   display: flex;
+   gap: 0.5em;
+}
+
+.ImportDialog-entryLabel {
+   flex: 1;
+   padding-inline-start: 0.75rem;
+   text-indent: -0.75rem;
+}
+
+.ImportDialog-footer {
+   position: sticky;
+   bottom: 0;
+   background: var(--DIALOG-background-color);
+   backdrop-filter: blur(4px);
+   padding: 12px;
+   display: flex;
+   gap: 12px;
+
+   & > button {
+      flex: 1;
+      min-height: 36px;
+      border-radius: 8px;
+      font: inherit;
+      border: 1px solid var(--LINK-color--light);
+      background: var(--LINK-color--faint);
+      color: var(--BUTTON-color);
+   }
+}
+
 .AddDialog {
    position: fixed;
    z-index: 100;
@@ -29,7 +129,7 @@
       z-index: -1;
       position: fixed;
       inset: 0;
-      background: var(--color);
+      background: var(--TEXT-color);
       opacity: 0.15;
    }
 
@@ -93,7 +193,7 @@
          & > .dropMessage {
             padding-inline: 0.9rem;
             font-size: 0.9rem;
-            color: var(--color3);
+            color: var(--TEXT-color--light);
             p {
                margin-top: 8px;
             }
@@ -107,7 +207,7 @@
 
 .ImportItem {
    border-radius: 8px;
-   background: var(--background3);
+   background: var(--PAGE-background-color);
 
    display: flex;
    flex-direction: column;
@@ -124,7 +224,7 @@
    //     position: absolute;
    //     inset-inline: 0;
    //     inset-block: 0;
-   //     border-bottom: 0.5px solid var(--color2);
+   //     border-bottom: 0.5px solid var(--TEXT-color--faint);
    // }
 
    & > .-stats {
@@ -132,11 +232,11 @@
       display: flex;
       flex-direction: column;
       font-size: 0.9rem;
-      border-bottom: 0.5px solid var(--color2);
+      border-bottom: 0.5px solid var(--TEXT-color--faint);
 
       & > * {
          padding: 4px 0;
-         color: var(--color);
+         color: var(--TEXT-color);
 
          position: relative;
          display: flex;
@@ -149,7 +249,7 @@
          justify-content: space-between;
 
          & > *:first-child {
-            color: var(--color3);
+            color: var(--TEXT-color--light);
          }
          & > *:last-child {
             text-align: right;
@@ -161,7 +261,7 @@
          content: "";
          position: absolute;
          inset: 0;
-         border-bottom: 0.5px dashed var(--color2);
+         border-bottom: 0.5px dashed var(--TEXT-color--faint);
       }
    }
 }

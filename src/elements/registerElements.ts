@@ -1,14 +1,15 @@
 import "element-internals-polyfill";
 
-import MenuElement, { MenuElementAttributes } from "./MenuElement";
-import MenuItemElement, { MenuItemElementAttributes } from "./MenuItemElement";
-import ListBoxElement, { ListBoxElementAttributes } from "./ListBoxElement";
-import OptionElement, { ListBoxOptionElementAttributes } from "./OptionElement";
-import SelectElement, { SelectElementAttributes } from "./SelectElement";
-import MenuButtonElement, { MenuButtonElementAttributes } from "./MenuButtonElement";
-import DialogElement, { DialogElementAttributes } from "./DialogElement";
-import SwitchElement, { SwitchElementAttributes } from "./SwitchElement";
-import TabContainerElement from "./TabContainerElement";
+import MenuElement, { MenuElementAttributes } from "./Menu";
+import MenuItemElement, { MenuItemElementAttributes } from "./MenuItem";
+import ListBoxElement, { ListBoxElementAttributes } from "./ListBox";
+import OptionElement, { OptionElementAttributes } from "./Option";
+import SelectElement, { SelectElementAttributes } from "./Select";
+import SelectLabelElement, { SelectLabelElementAttributes } from "./SelectLabel";
+import MenuButtonElement, { MenuButtonElementAttributes } from "./MenuButton";
+import DialogElement, { DialogElementAttributes } from "./Dialog";
+import SwitchElement, { SwitchElementAttributes } from "./Switch";
+import TabContainerElement from "./TabContainer";
 
 export default function registerElements() {
    customElements.define("h-dialog", DialogElement);
@@ -17,6 +18,7 @@ export default function registerElements() {
    customElements.define("h-listbox", ListBoxElement);
    customElements.define("h-option", OptionElement);
    customElements.define("h-select", SelectElement);
+   customElements.define("h-selectlabel", SelectLabelElement);
    customElements.define("h-menubutton", MenuButtonElement);
    customElements.define("h-switch", SwitchElement);
 
@@ -57,13 +59,19 @@ declare global {
             React.HTMLAttributes<HTMLElement>,
             OptionElement
          > &
-            ListBoxOptionElementAttributes & { class?: string; className?: never };
+            OptionElementAttributes & { class?: string; className?: never };
 
          "h-select": React.DetailedHTMLProps<
             React.HTMLAttributes<HTMLElement>,
             SelectElement
          > &
             SelectElementAttributes & { class?: string; className?: never };
+
+         "h-selectlabel": React.DetailedHTMLProps<
+            React.HTMLAttributes<HTMLElement>,
+            SelectLabelElement
+         > &
+            SelectLabelElementAttributes & { class?: string; className?: never };
 
          "h-menubutton": React.DetailedHTMLProps<
             React.HTMLAttributes<HTMLElement>,

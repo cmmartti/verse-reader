@@ -1,0 +1,17 @@
+.Select {
+   color: var(--LINK-color);
+   cursor: default;
+   user-select: none;
+   border-radius: 2px;
+   &:focus-visible {
+      outline: var(--focus-outline);
+   }
+
+   display: inline-flex;
+   align-items: center;
+}
+
+.Select-icon {
+   height: 1em;
+   width: auto;
+}

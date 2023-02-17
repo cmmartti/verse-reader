@@ -2,13 +2,13 @@ import React from "react";
 
 export function useScrollRestoration(
    elementOrDocument: HTMLElement | Document,
-   id: string
+   key: string
 ) {
    let scrollPositions = React.useRef(new Map<string, number>());
 
-   let idRef = React.useRef(id);
+   let idRef = React.useRef(key);
    React.useEffect(() => {
-      idRef.current = id;
+      idRef.current = key;
    });
 
    let element =
@@ -16,7 +16,7 @@ export function useScrollRestoration(
          ? elementOrDocument.documentElement
          : elementOrDocument;
 
-   // Store the scroll position ratio of this id on each scroll event
+   // Store the scroll position ratio of this key on each scroll event
    React.useEffect(() => {
       function fn() {
          let position = element.scrollTop / element.clientHeight; // scroll ratio 0..1
@@ -27,8 +27,9 @@ export function useScrollRestoration(
       return () => elementOrDocument.removeEventListener("scroll", fn);
    }, [elementOrDocument, element]);
 
-   // When the id changes, revert the previously-stored scroll position, if it exists
+   // When the key changes, revert the previously-stored scroll position, if it exists
    React.useLayoutEffect(() => {
-      element.scrollTop = (scrollPositions.current.get(id!) ?? 0) * element.clientHeight;
-   }, [id, element]);
+      element.scrollTop =
+         (scrollPositions.current.get(key!) ?? 0) * element.clientHeight;
+   }, [key, element]);
 }

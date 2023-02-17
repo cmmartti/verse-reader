@@ -12,9 +12,10 @@
    transform-origin: top right;
 
    box-shadow: 0 0 80px hsla(210, 19%, 11%, 0.375);
-   border-radius: 12px;
-   background: var(--background5);
    user-select: none;
+   border: 1px solid var(--LINK-color--light);
+   border-radius: 8px;
+   background: var(--PAGE-background-color);
    &:focus {
       outline: none;
    }
@@ -31,8 +32,7 @@
    }
 
    & > [role="separator"] {
-      background: var(--background4);
-      border-top: 6px solid var(--background4);
+      border-top: 3px solid;
    }
 
    & > h-menuitem,
@@ -47,7 +47,7 @@
       text-align: start;
       &:focus {
          background: hsla(0, 0%, 0%, 0.1);
-         background: var(--background-tinted1);
+         background: var(--LINK-color--faint);
          outline: none;
       }
       &[disabled],
@@ -80,6 +80,6 @@
 
    & > h-menuitem + h-menuitem,
    & > [role="group"] > h-menuitem + h-menuitem {
-      border-top: 0.5px solid var(--color2);
+      border-top: 0.5px solid var(--TEXT-color--faint);
    }
 }

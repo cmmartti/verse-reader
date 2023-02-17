@@ -5,7 +5,7 @@
    }
    &.--deleted {
       text-decoration: line-through;
-      color: var(--color2);
+      color: var(--TEXT-color--faint);
    }
    &.--chorus {
       margin-inline-start: 0.75em;
@@ -31,7 +31,7 @@
 }
 
 .Verse-lineGroup {
-   border-bottom: 0.5px solid var(--color2);
+   border-bottom: 0.5px solid var(--TEXT-color--faint);
 }
 
 .Verse-lineSeparator {

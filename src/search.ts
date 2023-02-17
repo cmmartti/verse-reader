@@ -87,7 +87,7 @@ export function searchIndex(
       let resultsList = linesByPage[hymnId] ?? [];
       linesByPage[hymnId] = resultsList;
 
-      resultsList.push(line);
+      if (resultsList.findIndex(_line => line === _line) === -1) resultsList.push(line);
    }
 
    return Object.entries(linesByPage).map(([id, lines]) => ({ id, lines }));

@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/aria-role */ // role="text" has not yet been standardised.
-
 import React from "react";
 
 import * as types from "../types";
@@ -39,7 +37,7 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
 
       let verseNode: VerseNode = {
          label: `${verseNumber}.`,
-         ariaLabel: `Verse ${verseNumber}.`,
+         ariaLabel: `Verse ${verseNumber}.\n`,
          childNodes: parseRepeats(verse.nodes, condenseRepeatedLines),
          isDeleted: verse.isDeleted,
          isChorus: false,
@@ -53,14 +51,14 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
             verseNodes.push({
                childNodes,
                isDeleted: hymn.chorus.isDeleted,
-               ariaLabel: "Chorus:",
+               ariaLabel: "Chorus: \n",
                isChorus: true,
             });
          } else if (verseNumber === 1) {
             verseNodes.push({
                childNodes,
                isDeleted: hymn.chorus.isDeleted,
-               label: "Chorus:",
+               label: "Chorus: \n",
                isChorus: true,
             });
          } else {
@@ -94,7 +92,7 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
             verseNodes.push({
                childNodes,
                isDeleted: hymn.refrain.isDeleted,
-               label: "Refrain:",
+               label: "Refrain:\n",
                isChorus: true,
             });
          } else {
@@ -192,7 +190,7 @@ function RenderInlineNodes({
             let _isLast = isLast && i === nodes.length - 1;
             return (
                <React.Fragment key={i}>
-                  {node.kind === "line" && node.text.trim()}
+                  {node.kind === "line" && <Line line={node} />}
                   {node.kind === "repeat" && <RepeatLines repeat={node} />}
                   {node.kind === "group" && <Group node={node} isLast={_isLast} />}
                   {node.kind === "pointer" && <Pointer pointer={node} />}
@@ -202,6 +200,15 @@ function RenderInlineNodes({
          })}
       </React.Fragment>
    );
+}
+
+function Line({ line }: { line: types.Line }) {
+   let text = line.text.trim();
+
+   // let start = line.text.slice(0, 6).replaceAll(" ", " ");
+   // let end = line.text.slice(6);
+   // text = start + end;
+   return <>{text}</>;
 }
 
 function RepeatLines({ repeat }: { repeat: types.RepeatLines }) {

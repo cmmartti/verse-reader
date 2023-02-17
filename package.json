@@ -42,7 +42,9 @@
          "@typescript-eslint/no-unused-vars": "off",
          "jsx-a11y/no-access-key": "off",
          "no-unused-vars": "off",
-         "no-unreachable": "off"
+         "no-unreachable": "off",
+         "jsx-a11y/aria-role": "off",
+         "jsx-a11y/no-redundant-roles": "off"
       }
    },
    "browserslist": {

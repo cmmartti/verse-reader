@@ -1,29 +1,32 @@
 .ListBox {
+   z-index: 100;
    max-width: 100%;
    position: relative;
-   border: 1px solid var(--background-tinted2);
+   border: 1px solid var(--LINK-color--light);
+   border: 1px solid var(--LINK-color);
    border-radius: 8px;
-   background: var(--background5);
-   color: var(--color);
+   background: var(--PAGE-background-color);
+   color: var(--TEXT-color);
    user-select: none;
    &:focus {
       outline: none;
+   }
+   &:has(:focus-visible) {
+      outline: var(--focus-outline);
    }
 
    overflow: auto;
    overscroll-behavior: contain;
 
-   & > optgroup {
+   & optgroup {
       display: flex;
       flex-direction: column;
-      border-top: 6px solid var(--background4);
+      border-top: 3px solid;
    }
 
-   & > h-option,
-   & > optgroup > h-option {
-      min-height: 36px;
-      padding-block: 2px;
-      padding-inline: calc(16px + 0.75rem) 16px;
+   & h-option {
+      padding-block: 0.25em;
+      padding-inline: 1.75em 0.25em;
       border: none;
       font: inherit;
       background: none;
@@ -31,16 +34,16 @@
       text-align: start;
       &:focus-visible {
          background: hsla(0, 0%, 0%, 0.1);
-         background: var(--background-tinted1);
+         background: var(--LINK-color--faint);
          outline: none;
       }
       @media (hover: hover) {
          &:hover {
-            background: var(--background-tinted1);
+            background: var(--LINK-color--faint);
          }
       }
-      &[disabled],
-      &[aria-disabled] {
+      &:disabled,
+      &[disabled] {
          color: var(--BUTTON-color--disabled);
          text-decoration: line-through;
          &:focus {
@@ -48,10 +51,17 @@
          }
       }
 
+      &[selected]::before {
+         content: "✓";
+         font-weight: bold;
+         position: absolute;
+         inset-inline-start: 0.5em;
+      }
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 4px;
+      gap: 0.25em;
 
       & svg {
          display: inline-block;
@@ -59,16 +69,9 @@
          width: 1.2em;
          flex-shrink: 0;
       }
-
-      & > .-marker {
-         font-weight: bold;
-         position: absolute;
-         left: 8px;
-      }
    }
 
-   & > h-option + h-option,
-   & > optgroup > h-option + h-option {
-      border-top: 0.5px solid var(--color2);
+   & h-option + h-option {
+      border-top: 0.5px solid var(--TEXT-color--faint);
    }
 }

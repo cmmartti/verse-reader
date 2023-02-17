@@ -8,7 +8,7 @@ const DEFAULT_OPTIONS = {
    repeatRefrain: true,
    repeatChorus: false,
    colorScheme: "light",
-   fontSize: 20,
+   fontSize: 22,
    fontFamily: "charter",
    pageMargins: 25,
    lineHeight: 1.4,
@@ -76,9 +76,9 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
       setVar(
          "--OPTION-separatorColor",
          options.separatorColor === "red"
-            ? "red"
+            ? "var(--red)"
             : options.separatorColor === "gray"
-            ? "var(--color2)"
+            ? "var(--TEXT-color--faint)"
             : "transparent"
       );
    }, [options.separatorColor]);

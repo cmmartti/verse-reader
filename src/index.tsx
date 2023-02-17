@@ -4,7 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
-import "./styles/index.scss";
+import "./styles/_index.scss";
 
 import queryClient from "./queryClient";
 import router from "./router";
@@ -16,7 +16,8 @@ import { OptionsProvider } from "./options";
 
 registerElements();
 
-const root = createRoot(document.getElementById("react-root")!);
+// const root = createRoot(document.getElementById("react-root")!);
+const root = createRoot(document.body);
 
 root.render(
    <React.StrictMode>

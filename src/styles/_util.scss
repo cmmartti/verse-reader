@@ -1,0 +1,85 @@
+.reset {
+   display: inline;
+   appearance: none;
+   font: inherit;
+   border: none;
+   border-radius: 0;
+   margin: 0;
+   padding: 0;
+   color: inherit;
+   background: none;
+   list-style: none;
+   text-align: inherit;
+   // cursor: auto;
+   user-select: inherit;
+}
+
+.hide-focus:focus {
+   outline: none;
+}
+
+// Visually hidden, still accessible to screen readers.
+// Parent element may need `position: relative` to avoid breaking nested scrolling layouts.
+.visually-hidden {
+   position: absolute;
+   overflow: hidden;
+   width: 1px;
+   height: 1px;
+   clip: rect(0 0 0 0);
+   user-select: none;
+
+   // Keep leading and trailing white-space so that screen reader prompts can be
+   // inserted anywhere without being munged together with adjacent text
+   white-space: pre;
+}
+
+.nowrap {
+   white-space: nowrap;
+}
+.display-contents,
+.contents {
+   display: contents;
+}
+.block {
+   display: block;
+}
+.inline {
+   display: inline;
+}
+.red {
+   color: var(--red);
+}
+.subdued {
+   color: var(--TEXT-color--light);
+}
+.flex-1 {
+   flex: 1;
+}
+.display-flex {
+   display: flex;
+}
+
+.bold {
+   font-weight: 700;
+}
+.semibold {
+   font-weight: 600;
+}
+.small {
+   font-size: 0.85em;
+}
+.italic {
+   font-style: italic;
+}
+.underline {
+   text-decoration: underline;
+}
+.text-align-end {
+   text-align: end;
+}
+.text-align-center {
+   text-align: center;
+}
+.text-align-start {
+   text-align: start;
+}
