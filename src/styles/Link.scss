@@ -1,0 +1,29 @@
+a,
+.Link {
+   font: inherit;
+   padding: 0;
+   color: var(--LINK-color);
+   text-decoration: none;
+   background: none;
+   border: none;
+   user-select: auto;
+   border-radius: 4px;
+   cursor: pointer;
+   &:focus {
+      outline: var(--focus-outline);
+   }
+   &:focus:not(:focus-visible) {
+      outline: none;
+   }
+   @media (hover: hover) {
+      &:hover {
+         text-decoration: underline;
+      }
+   }
+   &:disabled {
+      color: var(--TEXT-color--light);
+   }
+   &:active {
+      text-decoration: underline;
+   }
+}

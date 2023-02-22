@@ -1,20 +1,20 @@
 .Hymn {
+   flex: 1;
    height: 100%;
-   &:focus {
-      outline: none;
-   }
 
    display: flex;
    flex-direction: column;
+}
+.Hymn:focus {
+   outline: none;
 }
 
 .Hymn-topics {
    text-align: center;
    font-size: 0.85em;
-
-   & > * {
-      white-space: nowrap;
-   }
+}
+.Hymn-topics > * {
+   white-space: nowrap;
 }
 
 .Hymn.--deleted .Hymn-verses {
@@ -23,21 +23,17 @@
 
 .Hymn-verses {
    flex: 1;
-   // min-height: 15rem;
 }
 
 .Hymn-details {
    font-size: 0.75em;
+}
 
-   & > * {
-      & > :first-child {
-         // font-style: italic;
-         font-weight: bold;
-      }
-      & > :last-child {
-         grid-column: 2 / 3;
-      }
-   }
+.Hymn-details > * > :first-child {
+   font-weight: bold;
+}
+.Hymn-details > *:not(:last-child) {
+   border-bottom: 0.5px solid var(--TEXT-color--light);
 }
 
 @media (max-width: 54.9999em) {
@@ -54,28 +50,23 @@
       column-gap: 1em;
       border-top: 1px solid;
       padding-top: 1em;
+   }
 
-      & > * {
-         display: grid;
-         grid-column: 1 / 3;
-         column-gap: 1em;
-         grid-template-columns: 5em 1fr; // fallback
-         grid-template-columns: subgrid;
+   .Hymn-details > * {
+      display: grid;
+      grid-column: 1 / 3;
+      column-gap: 1em;
+      grid-template-columns: 5em 1fr;
+      /* fallback */
+      grid-template-columns: subgrid;
 
-         padding: 0.25em;
-         // display: block;
-         &:not(:last-child) {
-            border-bottom: 0.5px solid var(--TEXT-color--light);
-         }
-
-         & > :first-child {
-            grid-column: 1 / 2;
-            // font-style: italic;
-         }
-         & > :last-child {
-            grid-column: 2 / 3;
-         }
-      }
+      padding: 0.25em;
+   }
+   .Hymn-details > * > :first-child {
+      grid-column: 1 / 2;
+   }
+   .Hymn-details > * > :last-child {
+      grid-column: 2 / 3;
    }
 }
 
@@ -103,13 +94,9 @@
 
       display: flex;
       flex-direction: column;
+   }
 
-      & > * {
-         padding: 0.25em;
-         // display: block;
-         &:not(:last-child) {
-            border-bottom: 0.5px solid var(--TEXT-color--light);
-         }
-      }
+   .Hymn-details > * {
+      padding: 0.25em;
    }
 }

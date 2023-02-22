@@ -1,26 +1,25 @@
 @import-normalize; // bring in normalize.css styles
 
-@import "_util.scss";
+@import "_util.css";
 @import "_main.scss";
-@import "fonts.scss";
+@import "_fonts.css";
 
 // Namespaced styles:
-@import "ImportDialog.scss";
-@import "Banner.scss";
-@import "BookEntry.scss";
-@import "Hymn.scss";
+@import "ImportDialog.css";
+@import "Banner.css";
+@import "Hymn.css";
 @import "IndexEntry.scss";
 @import "IndexGroup.scss";
 @import "Library.scss";
-@import "ListBox.scss";
+@import "Link.scss";
+@import "ListBox.css";
 @import "Menu.scss";
 @import "OptionsDialog.scss";
 @import "Page.scss";
-@import "PageToolbar.scss";
-@import "Search.scss";
+@import "PageToolbar.css";
+@import "Search.css";
 @import "SearchBar.scss";
-@import "SearchResults.scss";
-@import "Select.scss";
-@import "Switch.scss";
+@import "SearchResults.css";
+@import "Select.css";
 @import "Spinner.scss";
-@import "Verse.scss";
+@import "Verse.css";

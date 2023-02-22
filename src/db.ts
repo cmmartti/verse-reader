@@ -18,7 +18,7 @@ interface AppDB extends DBSchema {
 
 const DATABASE_VERSION = 7;
 
-export const db = openDB<AppDB>("hymnalreader", DATABASE_VERSION, {
+export const db = openDB<AppDB>("verse-reader", DATABASE_VERSION, {
    upgrade: async (db, oldVersion, _newVersion, _tx) => {
       switch (oldVersion) {
          // If the DB does not exist yet, oldVersion will be 0

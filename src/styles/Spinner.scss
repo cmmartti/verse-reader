@@ -1,57 +1,57 @@
 .Spinner {
-    position: relative;
-    width: 3.375em;
-    height: 1em;
-    color: var(--BUTTON-color);
+   position: relative;
+   width: 3.375em;
+   height: 1em;
+   color: var(--LINK-color);
 
-    & > * {
-        position: absolute;
-        top: 0.325em;
-        width: 0.375em;
-        height: 0.375em;
-        border-radius: 50%;
-        background: currentColor;
-        animation-timing-function: cubic-bezier(0, 1, 1, 0);
-    }
-    & > *:nth-child(1) {
-        left: 0.75em;
-        animation: Spinner1 375ms infinite;
-    }
-    & > *:nth-child(2) {
-        left: 0.75em;
-        animation: Spinner2 375ms infinite;
-    }
-    & > *:nth-child(3) {
-        left: 1.5em;
-        animation: Spinner2 375ms infinite;
-    }
-    & > *:nth-child(4) {
-        left: 2.25em;
-        animation: Spinner3 375ms infinite;
-    }
+   & > * {
+      position: absolute;
+      top: 0.325em;
+      width: 0.375em;
+      height: 0.375em;
+      border-radius: 50%;
+      background: currentColor;
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+   }
+   & > *:nth-child(1) {
+      left: 0.75em;
+      animation: Spinner1 375ms infinite;
+   }
+   & > *:nth-child(2) {
+      left: 0.75em;
+      animation: Spinner2 375ms infinite;
+   }
+   & > *:nth-child(3) {
+      left: 1.5em;
+      animation: Spinner2 375ms infinite;
+   }
+   & > *:nth-child(4) {
+      left: 2.25em;
+      animation: Spinner3 375ms infinite;
+   }
 }
 
 @keyframes Spinner1 {
-    0% {
-        transform: scale(0);
-    }
-    100% {
-        transform: scale(1);
-    }
+   0% {
+      transform: scale(0);
+   }
+   100% {
+      transform: scale(1);
+   }
 }
 @keyframes Spinner2 {
-    0% {
-        transform: translate(0);
-    }
-    100% {
-        transform: translate(0.75em, 0);
-    }
+   0% {
+      transform: translate(0);
+   }
+   100% {
+      transform: translate(0.75em, 0);
+   }
 }
 @keyframes Spinner3 {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(0);
-    }
+   0% {
+      transform: scale(1);
+   }
+   100% {
+      transform: scale(0);
+   }
 }

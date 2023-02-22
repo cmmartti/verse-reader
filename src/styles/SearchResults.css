@@ -1,23 +1,7 @@
-.SearchResults-sidebar {
-   // font-size: 0.85rem;
-}
-
 .SearchResults-main {
-   padding-top: 0.5rem;
    display: flex;
    flex-direction: column;
    gap: 1rem;
-}
-
-.SearchResults-results {
-   font-size: 0.85rem;
-   flex: 1;
-}
-
-.SearchResults-categories {
-   display: flex;
-   flex-direction: column;
-   gap: 0.5em;
 }
 
 .SearchResults-search {
@@ -25,26 +9,37 @@
    position: sticky;
    bottom: 0;
    padding-bottom: 0.5em;
+}
 
-   &::after {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: -0.5em;
-      bottom: 0;
-      background: var(--TOOLBAR-background-color);
-      backdrop-filter: blur(4px);
-   }
+/* background */
+.SearchResults-search::after {
+   content: "";
+   position: absolute;
+   z-index: -1;
+   inset: -0.5em;
+   bottom: 0;
+   background: var(--TOOLBAR-background-color);
+   backdrop-filter: blur(4px);
+}
+
+.SearchResults-sidebarGroup + .SearchResults-sidebarGroup {
+   border-top: 1px solid;
 }
 
 @media (min-width: 50em) {
    .SearchResults {
       display: grid;
-      grid-template: "sidebar main" 1fr / 10em 1fr;
-      column-gap: 1rem;
+      grid-template: "sidebar main" / 10em 1fr;
+   }
+
+   .SearchResults-main {
+      grid-area: main;
+      padding-top: 0.5em;
+      padding-inline-start: 1em;
    }
 
    .SearchResults-sidebar {
+      grid-area: sidebar;
       align-self: start;
       position: sticky;
       top: calc(var(--BANNER-height));
@@ -64,12 +59,7 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 0.5em;
-
-      & + & {
-         border-top: 1px solid;
-      }
    }
-
    .SearchResults-sidebarPair {
       display: flex;
       flex-direction: column;
@@ -89,21 +79,17 @@
       flex-direction: column;
       line-height: 1.2;
       border-bottom: 1px solid;
+      font-size: 0.85rem;
    }
 
    .SearchResults-sidebarGroup {
-      padding-block: 0.75rem;
+      padding-block: 0.5rem;
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
       align-items: center;
       text-align: center;
-      // justify-content: center;
-      gap: 0.75rem 0.75rem;
-
-      & + & {
-         border-top: 1px solid;
-      }
+      gap: 0.25rem;
    }
 
    .SearchResults-sidebarPair {
@@ -113,6 +99,7 @@
    }
 
    .SearchResults-main {
+      padding-top: 0.5rem;
       flex: 1;
    }
 }

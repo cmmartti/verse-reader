@@ -6,7 +6,6 @@ import {
    useLoaderData,
    Form,
    useSubmit,
-   useNavigation,
    ScrollRestoration,
 } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -16,7 +15,7 @@ import * as db from "../db";
 import queryClient from "../queryClient";
 import { getAppState, setAppState } from "../state";
 import * as types from "../types";
-import { searchIndex } from "../search";
+import { queryIndex } from "../search";
 
 import { ReactComponent as CloseIcon } from "../icons/close.svg";
 import { ReactComponent as SearchIcon } from "../icons/search.svg";
@@ -103,9 +102,8 @@ export function Component() {
       index: Index | null;
    };
 
-   // let [searchParams] = useSearchParams();
-   // let currentLoc = searchParams.get("loc");
-   let currentLoc = null;
+   let [searchParams] = useSearchParams();
+   let currentLoc = searchParams.get("loc");
 
    let htmlId = React.useId();
 
@@ -132,77 +130,11 @@ export function Component() {
    if (currentLoc) resetSearchParams.set("loc", currentLoc);
    let resetSearchURL = `/book/${record.id}/search?${resetSearchParams}`;
 
-   let searchInputRef = React.useRef<HTMLInputElement>(null);
-   let searchFormRef = React.useRef<HTMLFormElement>(null);
-
-   let navigation = useNavigation();
-
-   // Clear the search input whenever the search is cleared
-   React.useEffect(() => {
-      if (navigation.state === "loading") {
-         let searchParams = new URLSearchParams(navigation.location.search);
-         if (!searchParams.get("q")) {
-            if (searchInputRef.current) searchInputRef.current.value = "";
-            // document.documentElement.scrollTo({ top: 0 });
-         }
-      }
-   }, [navigation]);
-
    let clearSearchLink = search ? (
       <Link replace to={resetSearchURL} className="Link">
          Clear search
       </Link>
    ) : null;
-
-   let searchBar = (
-      <Form
-         className="SearchBar"
-         ref={searchFormRef}
-         onSubmit={() => {
-            // statusRef.current.focus({ preventScroll: true });
-            document.documentElement.scrollTo({ top: 0 });
-         }}
-         onChange={e => submit(e.currentTarget)}
-         replace
-      >
-         <label
-            className="SearchBar-label SearchBar-label→icon"
-            htmlFor={htmlId + "search"}
-         >
-            <SearchIcon className="SearchBar-icon" aria-label="Search icon" />
-         </label>
-
-         <input
-            className="SearchBar-input"
-            type="text"
-            id={htmlId + "search"}
-            ref={searchInputRef}
-            name="q"
-            defaultValue={search}
-            aria-label="search"
-            placeholder="Search"
-            autoComplete="off"
-            inputMode="search"
-            enterKeyHint="search"
-            onFocus={e => e.target.select()}
-            onChange={() => submit(searchFormRef.current)}
-         />
-
-         {index && <input type="hidden" name="group" value={index.type} />}
-         {index && <input type="hidden" name="sort" value={index.sort.id} />}
-         {currentLoc && <input type="hidden" name="loc" value={currentLoc} />}
-
-         <Link
-            replace
-            to={resetSearchURL}
-            className="reset hide-focus SearchBar-reset SearchBar-reset→icon"
-            hidden={searchInputRef.current?.value.length === 0}
-            aria-label="Clear search"
-         >
-            <CloseIcon aria-hidden className="SearchBar-icon" />
-         </Link>
-      </Form>
-   );
 
    return (
       <main className="Search">
@@ -214,10 +146,10 @@ export function Component() {
 
          <ScrollRestoration getKey={location => location.pathname} />
 
-         <header className="Banner Banner--sticky">
-            <nav>
+         <nav className="Banner Banner--sticky">
+            <div className="Banner-link">
                <Link to={`/book/${record.id}`}>Back</Link>
-            </nav>
+            </div>
 
             {indexOptions.length === 0 ? (
                <h1 className="reset Banner-title Banner-title→">Contents</h1>
@@ -252,8 +184,10 @@ export function Component() {
                </Form>
             )}
 
-            <Link to={`/book/${record.id}`}>Help</Link>
-         </header>
+            <div className="Banner-link">
+               <Link to={`/book/${record.id}`}>Help</Link>
+            </div>
+         </nav>
 
          {!index ? (
             <SearchResults
@@ -262,7 +196,6 @@ export function Component() {
                currentLoc={currentLoc}
                search={search}
                clearSearchLink={clearSearchLink}
-               searchInput={searchBar}
             />
          ) : (
             <SearchResultsGrouped
@@ -271,11 +204,94 @@ export function Component() {
                currentLoc={currentLoc}
                search={search}
                clearSearchLink={clearSearchLink}
-               searchInput={searchBar}
                index={index}
             />
          )}
       </main>
+   );
+}
+
+export function SearchBar({
+   defaultValue,
+   onSubmit,
+   group,
+   sort,
+   loc,
+}: {
+   defaultValue: string;
+   onSubmit?: () => void;
+   group?: string | null;
+   sort?: string | null;
+   loc: string | null;
+}) {
+   let htmlId = React.useId();
+
+   let submit = useSubmit();
+   let inputRef = React.useRef<HTMLInputElement>(null);
+
+   // Clear the input whenever the defaultValue is reset
+   React.useEffect(() => {
+      if (!defaultValue && inputRef.current) inputRef.current.value = "";
+   }, [defaultValue]);
+
+   return (
+      <div className="SearchBar">
+         <Form
+            replace
+            className="display-contents"
+            onSubmit={() => onSubmit?.()}
+            onChange={e => submit(e.currentTarget)}
+         >
+            <label
+               className="SearchBar-label"
+               htmlFor={htmlId + "search"}
+               aria-label="Search"
+            >
+               <SearchIcon className="SearchBar-icon" aria-label="Search icon" />
+            </label>
+
+            <input
+               className="SearchBar-input"
+               type="text"
+               id={htmlId + "search"}
+               ref={inputRef}
+               name="q"
+               defaultValue={defaultValue}
+               placeholder="Search"
+               autoComplete="off"
+               inputMode="search"
+               enterKeyHint="search"
+               onFocus={e => e.target.select()}
+               onChange={e => submit(e.target.form)}
+            />
+            {group && <input type="hidden" name="group" value={group} />}
+            {sort && <input type="hidden" name="sort" value={sort} />}
+            {loc && <input type="hidden" name="loc" value={loc} />}
+         </Form>
+
+         {(defaultValue || inputRef.current?.value) && (
+            <Form
+               replace
+               className="display-contents"
+               onSubmit={() => {
+                  // statusRef.current.focus({ preventScroll: true });
+                  document.documentElement.scrollTo({ top: 0 });
+                  if (inputRef.current) inputRef.current.value = "";
+               }}
+            >
+               {group && <input type="hidden" name="group" value={group} />}
+               {sort && <input type="hidden" name="sort" value={sort} />}
+               {loc && <input type="hidden" name="loc" value={loc} />}
+               <button
+                  type="submit"
+                  className="reset hide-focus SearchBar-reset"
+                  aria-label="Clear search"
+               >
+                  <CloseIcon aria-hidden className="SearchBar-icon" />
+               </button>
+            </Form>
+         )}
+      </div>
    );
 }
 
@@ -299,7 +315,7 @@ function searchBook(book: types.Hymnal, indexOfLines: lunr.Index, search: string
    let results = [] as { id: string; lines: string[] }[];
 
    if (searchTerms.length > 0) {
-      results = searchIndex(indexOfLines, book, searchTerms);
+      results = queryIndex(indexOfLines, book, searchTerms);
    } else {
       results = Object.keys(book.pages).map(id => ({ id, lines: [] }));
    }

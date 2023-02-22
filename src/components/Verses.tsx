@@ -24,7 +24,7 @@ type GroupNode = {
    childNodes: InlineNode[];
 };
 
-export function Verses({ hymn }: { hymn: types.Hymn }) {
+export function Verses({ page }: { page: types.Hymn }) {
    let [condenseRepeatedLines] = useOption("condenseRepeatedLines");
    let [repeatRefrain] = useOption("repeatRefrain");
    let [repeatChorus] = useOption("repeatChorus");
@@ -32,7 +32,7 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
    let verseNodes: VerseNode[] = [];
    let currentVerseNumber = 1;
 
-   for (let verse of hymn.verses) {
+   for (let verse of page.verses) {
       let verseNumber = currentVerseNumber++;
 
       let verseNode: VerseNode = {
@@ -45,19 +45,19 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
 
       verseNodes.push(verseNode);
 
-      if (hymn.chorus) {
-         let childNodes = parseRepeats(hymn.chorus.nodes, condenseRepeatedLines);
+      if (page.chorus) {
+         let childNodes = parseRepeats(page.chorus.nodes, condenseRepeatedLines);
          if (repeatChorus) {
             verseNodes.push({
                childNodes,
-               isDeleted: hymn.chorus.isDeleted,
+               isDeleted: page.chorus.isDeleted,
                ariaLabel: "Chorus: \n",
                isChorus: true,
             });
          } else if (verseNumber === 1) {
             verseNodes.push({
                childNodes,
-               isDeleted: hymn.chorus.isDeleted,
+               isDeleted: page.chorus.isDeleted,
                label: "Chorus: \n",
                isChorus: true,
             });
@@ -81,8 +81,8 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
          }
       }
 
-      if (hymn.refrain) {
-         let childNodes = parseRepeats(hymn.refrain.nodes, condenseRepeatedLines);
+      if (page.refrain) {
+         let childNodes = parseRepeats(page.refrain.nodes, condenseRepeatedLines);
          if (repeatRefrain) {
             verseNode.childNodes.push({
                kind: "group",
@@ -91,7 +91,7 @@ export function Verses({ hymn }: { hymn: types.Hymn }) {
          } else if (verseNumber === 1) {
             verseNodes.push({
                childNodes,
-               isDeleted: hymn.refrain.isDeleted,
+               isDeleted: page.refrain.isDeleted,
                label: "Refrain:\n",
                isChorus: true,
             });
@@ -164,7 +164,7 @@ function Verse({ node }: { node: VerseNode }) {
       >
          {node.isDeleted && <span className="visually-hidden">Deleted </span>}
          {node.label && (
-            <span className="-label" aria-hidden={Boolean(node.ariaLabel)}>
+            <span className="Verse-label" aria-hidden={Boolean(node.ariaLabel)}>
                {node.label}{" "}
             </span>
          )}
@@ -205,9 +205,11 @@ function RenderInlineNodes({
 function Line({ line }: { line: types.Line }) {
    let text = line.text.trim();
 
-   // let start = line.text.slice(0, 6).replaceAll(" ", " ");
-   // let end = line.text.slice(6);
-   // text = start + end;
+   // If a short word like "Oh" starts a line, keep with next.
+   let start = line.text.slice(0, 5).replaceAll(" ", "\u00a0"); // non-breaking space
+   let end = line.text.slice(5);
+   text = start + end;
+
    return <>{text}</>;
 }
 

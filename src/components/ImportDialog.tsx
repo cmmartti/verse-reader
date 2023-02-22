@@ -95,62 +95,59 @@ export function ImportDialog({
          }}
       >
          <div className="ImportDialog-header">
-            <h1 className="reset">Manage Books</h1>
+            <h1 className="reset">
+               Manage Books <small>(BETA)</small>
+            </h1>
          </div>
 
          <div className="ImportDialog-contents">
-            <p>
-               Files should conform to the{" "}
-               <a href="/schema.xsd" target="_blank" className="underline">
-                  XML schema
-               </a>
-               .
-            </p>
+            <div className="ImportDialog-entries">
+               <ul className="reset display-contents" role="list">
+                  {records.map(record => (
+                     <li key={"record:" + record.id} className="ImportDialog-entry">
+                        <span className="ImportDialog-entryLabel">
+                           <span className="semibold">{record.data.title}</span> (
+                           {Math.round(record.file.size / 1000)} kB)
+                        </span>
 
-            <ul className="reset ImportDialog-entries" role="list">
-               {records.map(record => (
-                  <li key={"record:" + record.id} className="ImportDialog-entry">
-                     <span className="ImportDialog-entryLabel">
-                        <span className="semibold">{record.data.title}</span> (
-                        {Math.round(record.file.size / 1000)} kB)
-                     </span>
+                        <button
+                           type="button"
+                           className="red"
+                           onClick={() => {
+                              if (
+                                 window.confirm(
+                                    `Are you sure you want to delete "${record.data.title}"?`
+                                 )
+                              ) {
+                                 fetcher.submit(null, {
+                                    method: "delete",
+                                    action: `/book/${record.id}`,
+                                 });
+                              }
+                           }}
+                        >
+                           Delete
+                        </button>
+                     </li>
+                  ))}
 
-                     <button
-                        type="button"
-                        className="red"
-                        onClick={() => {
-                           if (
-                              window.confirm(
-                                 `Are you sure you want to delete "${record.data.title}"?`
-                              )
-                           ) {
-                              fetcher.submit(null, {
-                                 method: "delete",
-                                 action: `/book/${record.id}`,
-                              });
-                           }
-                        }}
-                     >
-                        Delete
-                     </button>
-                  </li>
-               ))}
+                  {inflight.map((source, i) => (
+                     <li key={"inflight:" + i} className="ImportDialog-entry">
+                        <span className="ImportDialog-entryLabel">
+                           {source.type === "file" &&
+                              `${source.file.name} (${Math.round(
+                                 source.file.size / 1000
+                              )} kB)`}
 
-               {inflight.map((source, i) => (
-                  <li key={"inflight:" + i} className="ImportDialog-entry">
-                     {source.type === "file" &&
-                        `${source.file.name} (${Math.round(
-                           source.file.size / 1000
-                        )} kB)`}
+                           {source.type === "url" && source.url}
+                        </span>
+                        <Spinner />
+                     </li>
+                  ))}
+               </ul>
 
-                     {source.type === "url" && source.url}
-
-                     <Spinner />
-                  </li>
-               ))}
-            </ul>
-
-            {records.length === 0 && inflight.length === 0 && <div>No books yet</div>}
+               {records.length === 0 && inflight.length === 0 && <div>No books yet</div>}
+            </div>
 
             <div className="">
                <input
@@ -174,17 +171,33 @@ export function ImportDialog({
                <input
                   type="text"
                   name="url"
-                  className="section-input"
                   placeholder="https://example.com/book.xml"
                />
                <button type="submit">Download</button>
             </fetcher.Form>
 
             <fetcher.Form method="post" action="/book/new">
-               <button type="submit" name="url" value="/sample.xml">
-                  Re-download sample books
-               </button>
+               <input type="hidden" name="url" value="/sample.xml" />
+               <input
+                  type="hidden"
+                  name="url"
+                  value="https://388f63.netlify.app/en-1994.xml"
+               />
+               <input
+                  type="hidden"
+                  name="url"
+                  value="https://388f63.netlify.app/en-2021.xml"
+               />
+               <button type="submit">Re-download sample books</button>
             </fetcher.Form>
+
+            <p>
+               Files should conform to the{" "}
+               <a href="/schema.xsd" target="_blank" className="underline">
+                  XML schema
+               </a>
+               .
+            </p>
 
             <p>
                <strong>Caution:</strong> This feature is still in active development.

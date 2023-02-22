@@ -10,7 +10,6 @@
    background: none;
    list-style: none;
    text-align: inherit;
-   // cursor: auto;
    user-select: inherit;
 }
 
@@ -18,8 +17,9 @@
    outline: none;
 }
 
-// Visually hidden, still accessible to screen readers.
-// Parent element may need `position: relative` to avoid breaking nested scrolling layouts.
+/* Visually hidden, still accessible to screen readers. Parent element may need
+* `position: relative` to avoid breaking nested scrolling layouts.
+*/
 .visually-hidden {
    position: absolute;
    overflow: hidden;
@@ -28,16 +28,15 @@
    clip: rect(0 0 0 0);
    user-select: none;
 
-   // Keep leading and trailing white-space so that screen reader prompts can be
-   // inserted anywhere without being munged together with adjacent text
+   /* Keep leading and trailing white-space so that screen reader prompts can be
+    inserted anywhere without being munged together with adjacent text */
    white-space: pre;
 }
 
 .nowrap {
    white-space: nowrap;
 }
-.display-contents,
-.contents {
+.display-contents {
    display: contents;
 }
 .block {
@@ -51,12 +50,6 @@
 }
 .subdued {
    color: var(--TEXT-color--light);
-}
-.flex-1 {
-   flex: 1;
-}
-.display-flex {
-   display: flex;
 }
 
 .bold {
@@ -74,12 +67,31 @@
 .underline {
    text-decoration: underline;
 }
-.text-align-end {
-   text-align: end;
+
+.text-align-start {
+   text-align: start;
 }
 .text-align-center {
    text-align: center;
 }
-.text-align-start {
-   text-align: start;
+.text-align-end {
+   text-align: end;
+}
+
+.stack {
+   display: flex;
+   flex-direction: column;
+}
+.h-stack {
+   display: flex;
+   flex-direction: row;
+}
+.gap--half {
+   gap: 0.5em;
+}
+.gap--quarter {
+   gap: 0.25em;
+}
+.expand {
+   flex: 1;
 }

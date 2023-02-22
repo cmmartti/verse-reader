@@ -1,0 +1,72 @@
+.ListBox {
+   z-index: 100;
+   max-width: 100%;
+   position: relative;
+   border: 1px solid var(--LINK-color--light);
+   border-radius: 8px;
+   background: var(--PAGE-background-color);
+   color: var(--TEXT-color);
+   user-select: none;
+
+   overflow: auto;
+   overscroll-behavior: contain;
+   display: flex;
+   flex-direction: column;
+}
+.ListBox:focus {
+   outline: none;
+}
+.ListBox:has(:focus-visible) {
+   outline: var(--focus-outline);
+}
+.ListBox[hidden] {
+   display: none;
+}
+
+.ListBox h-option + h-option {
+   border-top: 0.5px solid var(--TEXT-color--faint);
+}
+
+.ListBox h-option {
+   padding-block: 0.25em;
+   padding-inline: 1.75em 0.25em;
+   border: none;
+   font: inherit;
+   background: none;
+   text-decoration: none;
+   text-align: start;
+
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 0.25em;
+}
+.ListBox h-option:focus-visible {
+   background: hsla(0, 0%, 0%, 0.1);
+   background: var(--LINK-color--faint);
+   outline: none;
+}
+@media (hover: hover) {
+   .ListBox h-option:hover {
+      background: var(--LINK-color--faint);
+   }
+}
+.ListBox h-option:disabled,
+.ListBox h-option[disabled] {
+   color: var(--LINK-color--light);
+   text-decoration: line-through;
+}
+
+.ListBox h-option[selected]::before {
+   content: "✓";
+   font-weight: bold;
+   position: absolute;
+   inset-inline-start: 0.5em;
+}
+
+.ListBox h-option svg {
+   display: inline-block;
+   height: 1.2em;
+   width: 1.2em;
+   flex-shrink: 0;
+}

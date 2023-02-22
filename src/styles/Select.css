@@ -3,12 +3,13 @@
    cursor: default;
    user-select: none;
    border-radius: 2px;
-   &:focus-visible {
-      outline: var(--focus-outline);
-   }
 
    display: inline-flex;
    align-items: center;
+}
+
+.Select:focus-visible {
+   outline: var(--focus-outline);
 }
 
 .Select-icon {

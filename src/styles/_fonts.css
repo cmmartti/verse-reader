@@ -58,7 +58,7 @@
    font-weight: 400;
    text-rendering: optimizeLegibility;
    font-display: swap;
-   src: local("Charter"), url("/fonts/charter-regular.woff") format("woff");
+   src: url("/fonts/charter-regular.woff") format("woff");
 }
 @font-face {
    font-family: "Charter";
@@ -66,7 +66,7 @@
    font-weight: 400;
    text-rendering: optimizeLegibility;
    font-display: swap;
-   src: local("Charter"), url("/fonts/charter-italic.woff") format("woff");
+   src: url("/fonts/charter-italic.woff") format("woff");
 }
 @font-face {
    font-family: "Charter";
@@ -74,7 +74,7 @@
    font-weight: 700;
    text-rendering: optimizeLegibility;
    font-display: swap;
-   src: local("Charter"), url("/fonts/charter-bold.woff") format("woff");
+   src: url("/fonts/charter-bold.woff") format("woff");
 }
 @font-face {
    font-family: "Charter";
@@ -82,7 +82,7 @@
    font-weight: 700;
    text-rendering: optimizeLegibility;
    font-display: swap;
-   src: local("Charter"), url("/fonts/charter-bold-italic.woff") format("woff");
+   src: url("/fonts/charter-bold-italic.woff") format("woff");
 }
 
 @font-face {

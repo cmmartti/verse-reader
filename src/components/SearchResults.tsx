@@ -1,7 +1,8 @@
 import * as db from "../db";
-import { Result } from "../routes/search";
+import { Result, SearchBar } from "../routes/search";
 import { IndexEntry } from "./IndexEntry";
 import { pluralize } from "../util/pluralize";
+import React from "react";
 
 export function SearchResults({
    results,
@@ -9,21 +10,27 @@ export function SearchResults({
    currentLoc,
    search,
    clearSearchLink,
-   searchInput,
 }: {
    results: Result[];
    record: db.BookRecord;
    currentLoc: string | null;
    search: string;
    clearSearchLink: React.ReactNode;
-   searchInput: React.ReactNode;
 }) {
+   let statusRef = React.useRef<HTMLElement>(null);
+
    return (
       <div className="SearchResults">
          <div className="SearchResults-sidebar">
             <div className="SearchResults-sidebarGroup">
                {record.data.title}{" "}
-               <b role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
+               <b
+                  ref={statusRef}
+                  tabIndex={-1}
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+               >
                   {results.length} {pluralize(search ? "match" : "page", results.length)}
                   {search && ` for “${search}”`}
                </b>
@@ -32,7 +39,7 @@ export function SearchResults({
          </div>
 
          <div className="SearchResults-main">
-            <ol className="reset SearchResults-results" role="list">
+            <ol className="reset small expand" role="list">
                {results.map(result => (
                   <li key={result.id}>
                      <IndexEntry
@@ -46,7 +53,16 @@ export function SearchResults({
                ))}
             </ol>
 
-            <div className="SearchResults-search">{searchInput}</div>
+            <div className="SearchResults-search">
+               <SearchBar
+                  defaultValue={search}
+                  onSubmit={() => {
+                     statusRef.current?.focus({ preventScroll: true });
+                     document.documentElement.scrollTo({ top: 0 });
+                  }}
+                  loc={currentLoc}
+               />
+            </div>
          </div>
       </div>
    );

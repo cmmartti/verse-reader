@@ -22,28 +22,28 @@ export function buildIndex(book: types.Hymnal) {
    builder.pipeline.add(stripPunctuation);
    builder.searchPipeline.add(stripPunctuation);
 
-   // Add each line of each verse of each hymn to the search index.
+   // Add each line of each verse of each page to the search index.
    // Label each line with a decipherable reference ID.
-   for (let hymn of Object.values(book.pages)) {
-      hymn.verses.forEach((verse, verseIndex) => {
+   for (let page of Object.values(book.pages)) {
+      page.verses.forEach((verse, verseIndex) => {
          extractLines(verse).forEach((line, i) =>
-            builder.add({ id: `${hymn.id}/${verseIndex}/${i}`, line })
+            builder.add({ id: `${page.id}/${verseIndex}/${i}`, line })
          );
       });
-      if (hymn.refrain)
-         extractLines(hymn.refrain).forEach((line, i) =>
-            builder.add({ id: `${hymn.id}/r/${i}`, line })
+      if (page.refrain)
+         extractLines(page.refrain).forEach((line, i) =>
+            builder.add({ id: `${page.id}/r/${i}`, line })
          );
-      if (hymn.chorus)
-         extractLines(hymn.chorus).forEach((line, i) =>
-            builder.add({ id: `${hymn.id}/c/${i}`, line })
+      if (page.chorus)
+         extractLines(page.chorus).forEach((line, i) =>
+            builder.add({ id: `${page.id}/c/${i}`, line })
          );
    }
 
    return builder.build();
 }
 
-export function searchIndex(
+export function queryIndex(
    indexOfLines: lunr.Index,
    book: types.Hymnal,
    search: string[]
@@ -63,14 +63,14 @@ export function searchIndex(
    let linesByPage = {} as Record<string, string[]>;
 
    for (let result of results) {
-      // Break apart the ref string into its component parts to find which hymn and
+      // Break apart the ref string into its component parts to find which page and
       // verse this line belongs to
-      let [hymnId, verseId, lineId] = result.ref.split("/");
+      let [pageId, verseId, lineId] = result.ref.split("/");
 
       // Skip this result if the ref string is invalid for some reason
-      if (!hymnId || !verseId || !lineId) break;
+      if (!pageId || !verseId || !lineId) break;
 
-      let page = book.pages[hymnId];
+      let page = book.pages[pageId];
       if (!page) break;
 
       // Extract the matching line from this verse
@@ -83,9 +83,13 @@ export function searchIndex(
       }
       let line = verseLines[Number(lineId)] ?? `?? ${result.ref.split}`;
 
-      // Initialize this hymn's results list if it doesn't exist yet
-      let resultsList = linesByPage[hymnId] ?? [];
-      linesByPage[hymnId] = resultsList;
+      let resultsList = linesByPage[pageId];
+
+      // Initialize this page's results list if it doesn't exist yet
+      if (!resultsList) {
+         resultsList = [];
+         linesByPage[pageId] = resultsList;
+      }
 
       if (resultsList.findIndex(_line => line === _line) === -1) resultsList.push(line);
    }

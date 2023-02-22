@@ -1,5 +1,5 @@
 .SearchBar {
-   border-radius: 8px;
+   border-radius: 4px;
    background: var(--input-background);
    color: var(--TEXT-color);
    &:focus-within {
@@ -13,9 +13,8 @@
    flex: 1;
    width: 0;
    border: none;
-   padding: 6px 0;
+   padding: 0.25rem 0;
    background: none;
-   outline-offset: -4px;
    &:focus {
       outline: none;
    }
@@ -29,7 +28,7 @@
 
 .SearchBar-label {
    color: var(--TEXT-color--light);
-   padding-inline: 0.325rem 0.15rem;
+   padding-inline: 0.5rem 0.325rem;
 
    display: flex;
    align-items: center;
@@ -37,14 +36,13 @@
 
 .SearchBar-reset {
    color: var(--LINK-color);
-   padding-inline: 0.15rem 0.325rem;
+   padding-inline: 0.325rem 0.5rem;
    &[hidden] {
       display: none;
    }
 
    display: flex;
-   align-items: center;
-   justify-content: center;
+   place-items: center;
 }
 
 .SearchBar-reset:focus-visible .SearchBar-icon {

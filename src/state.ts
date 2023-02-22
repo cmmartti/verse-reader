@@ -28,10 +28,15 @@ export function useAppState<K extends keyof AppState>(
 ): [AppState[K], React.Dispatch<React.SetStateAction<AppState[K]>>] {
    let state = useStore(state => state[key]);
 
+   let keyRef = React.useRef(key);
+   React.useEffect(() => {
+      keyRef.current = key;
+   }, [key]);
+
    let setState = React.useCallback(
       (newValue: React.SetStateAction<AppState[K]>) =>
-         useStore.setState(state => ({ ...state, [key]: newValue })),
-      [key]
+         useStore.setState(state => ({ ...state, [keyRef.current]: newValue })),
+      []
    );
 
    let stateRef = React.useRef(state);

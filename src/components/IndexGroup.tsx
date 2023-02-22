@@ -21,11 +21,11 @@ function _IndexGroup({
    children?: React.ReactNode;
 }) {
    return (
-      <div className="IndexGroup">
-         <h2 className="reset display-flex">
+      <div className="stack gap--quarter">
+         <h2 className="reset h-stack">
             <button
                type="button"
-               className="reset flex-1 IndexGroup-button"
+               className="reset expand IndexGroup-button"
                onClick={() => onToggle(!open)}
                aria-expanded={open}
                aria-label={`${title}, contains ${length} ${pluralize("match", length)}`}
@@ -50,9 +50,7 @@ function _IndexGroup({
             </button>
          </h2>
 
-         <div className="IndexGroup-contents" hidden={!open}>
-            {children}
-         </div>
+         {open && <div>{children}</div>}
       </div>
    );
 }

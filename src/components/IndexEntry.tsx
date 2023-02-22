@@ -8,21 +8,18 @@ export let IndexEntry = React.memo(_IndexEntry);
 function _IndexEntry({
    url,
    page,
-   lines = [],
+   lines,
    isCurrent = false,
    book,
 }: {
    url: string;
    page: types.Hymn;
-   lines?: string[];
+   lines: string[];
    isCurrent?: boolean;
    book: types.Hymnal;
 }) {
-   let ref = React.useRef<HTMLDivElement>(null);
-
    return (
       <div
-         ref={ref}
          className={
             "IndexEntry" +
             (isCurrent ? " --current" : "") +
@@ -32,9 +29,7 @@ function _IndexEntry({
          <Link
             to={url}
             className="IndexEntry-link"
-            onFocus={() => {
-               ref.current?.scrollIntoView({ block: "nearest" });
-            }}
+            onFocus={e => e.target.parentElement?.scrollIntoView({ block: "nearest" })}
          >
             <span className="IndexEntry-leaders">
                <span
@@ -48,21 +43,16 @@ function _IndexEntry({
                <span aria-hidden className="-dots" />
             </span>
 
-            <span aria-hidden>{page.id}</span>
+            <span aria-hidden> {page.id}</span>
             <span className="visually-hidden" role="text">{`Page ${page.id}`}</span>
          </Link>
 
          {lines.length > 0 && (
-            <>
-               {/* <div className="visually-hidden">
-                  {lines.length} matching line{lines.length > 1 && "s"}:
-               </div> */}
-               <ul className="reset block IndexEntry-lines">
-                  {lines.map((line, i) => (
-                     <li key={i}>{line}</li>
-                  ))}
-               </ul>
-            </>
+            <ul className="reset block IndexEntry-lines">
+               {lines.map((line, i) => (
+                  <li key={i}>{line}</li>
+               ))}
+            </ul>
          )}
       </div>
    );

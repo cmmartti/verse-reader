@@ -1,6 +1,5 @@
 .Page {
    min-height: var(--PAGE-height);
-   background: var(--PAGE-background-color);
 }
 
 .Page-contents {
@@ -26,6 +25,9 @@
    .Page-contents {
       flex: 1;
    }
+   .Page-nav {
+      display: flex;
+   }
 }
 
 @media (min-width: 45em) {
@@ -40,59 +42,59 @@
       grid-area: contents;
       padding-inline: 10px;
    }
-}
 
-.Page-nav {
-   color: var(--LINK-color);
-   &.--prev {
-      grid-area: prev;
-      & > a {
-         padding-inline-start: 10px;
-      }
-   }
-   &.--next {
-      grid-area: next;
-      & > a {
-         padding-inline-end: 10px;
-      }
-   }
-
-   position: sticky;
-   top: 0;
-
-   display: flex;
-   flex-direction: column;
-
-   & > a {
-      color: inherit;
-      flex: 1;
-      &:focus {
-         outline: none;
-      }
-      @media (hover: hover) {
-         &:hover > svg {
-            background-color: var(--LINK-color--faint);
-         }
-      }
+   .Page-nav {
+      position: sticky;
+      top: 0;
+      color: var(--LINK-color);
 
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+   }
+   .Page-nav.--prev {
+      grid-area: prev;
+   }
+   .Page-nav.--prev .Page-nav-link {
+      padding-inline-start: 10px;
+   }
+   .Page-nav.--next {
+      grid-area: next;
+   }
+   .Page-nav.--next .Page-nav-link {
+      padding-inline-end: 10px;
+   }
+   .Page-nav-link > svg {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+   }
+}
 
-      &:focus-visible > * {
-         outline: var(--focus-outline);
+.Page-nav-link {
+   color: inherit;
+   flex: 1;
+   &:focus {
+      outline: none;
+   }
+   @media (hover: hover) {
+      &:hover > svg {
+         background-color: var(--LINK-color--faint);
       }
-      overflow: hidden;
-      & > svg {
-         flex: 0 0 32px;
-         padding: 6px;
-         height: 32px;
-         width: 32px;
-         border-radius: 16px;
+   }
 
-         position: fixed;
-         top: 50%;
-         transform: translateY(-50%);
-      }
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   &:focus-visible > * {
+      outline: var(--focus-outline);
+   }
+   overflow: hidden;
+   & > svg {
+      flex: 0 0 32px;
+      padding: 6px;
+      height: 32px;
+      width: 32px;
+      border-radius: 16px;
    }
 }

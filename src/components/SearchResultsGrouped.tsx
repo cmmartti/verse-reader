@@ -3,7 +3,7 @@ import { Form, useSubmit } from "react-router-dom";
 
 import * as db from "../db";
 import * as types from "../types";
-import { Index, Result } from "../routes/search";
+import { Index, Result, SearchBar } from "../routes/search";
 import { IndexEntry } from "./IndexEntry";
 import { IndexGroup } from "./IndexGroup";
 import { ReactComponent as ExpandMoreIcon } from "../icons/expand_more.svg";
@@ -19,7 +19,6 @@ export function SearchResultsGrouped({
    currentLoc,
    search,
    clearSearchLink,
-   searchInput,
    index,
 }: {
    results: Result[];
@@ -27,7 +26,6 @@ export function SearchResultsGrouped({
    currentLoc: string | null;
    search: string;
    clearSearchLink: React.ReactNode;
-   searchInput: React.ReactNode;
    index: Index;
 }) {
    let submit = useSubmit();
@@ -36,13 +34,12 @@ export function SearchResultsGrouped({
    let categories = React.useMemo(() => {
       // An orphan category is one without a definition (no name, etc.)
       let orphanCategoriesMap: Record<string, ResultCategory> = {};
+
       let uncategorized: Result[] = [];
-      let categoriesMap = Object.fromEntries(
-         getCategories(record.data, index.type).map(({ id, name }) => [
-            id,
-            { id, name, results: [] as Result[] },
-         ])
-      );
+
+      let categoriesMap: Record<string, ResultCategory> = {};
+      for (let { id, name } of getCategories(record.data, index.type))
+         categoriesMap[id] = { id, name, results: [] };
 
       // Determine to which categories each result belongs
       for (let result of results) {
@@ -106,7 +103,6 @@ export function SearchResultsGrouped({
    }, [submit]);
 
    let context = search ? `${index.type}+search` : index.type;
-
    let [expandedGroups, _setExpandedGroups] = useAppState(
       `book/${record.id}/index/${context}/expandedGroups`,
       "all"
@@ -128,12 +124,20 @@ export function SearchResultsGrouped({
       [selectionReducer, _setExpandedGroups]
    );
 
+   let statusRef = React.useRef<HTMLElement>(null);
+
    return (
       <div className="SearchResults">
          <Form className="SearchResults-sidebar" replace ref={formRef}>
             <div className="SearchResults-sidebarGroup">
                {record.data.title}{" "}
-               <b role="status" aria-live="polite" aria-atomic="true">
+               <b
+                  ref={statusRef}
+                  tabIndex={-1}
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+               >
                   {results.length} {pluralize(search ? "match" : "page", results.length)}
                   {search && ` for “${search}”`}
                </b>
@@ -141,19 +145,19 @@ export function SearchResultsGrouped({
             </div>
 
             <div className="SearchResults-sidebarGroup">
-               <b role="status" aria-live="polite" aria-atomic="true">
+               <b>
                   {categories.length} {pluralize("category", categories.length)}
                </b>
 
                <label>
                   Sort By:{" "}
-                  {/* <select className="reset Select" name="sort">
+                  {/* <select
+                     className="reset Select"
+                     name="sort"
+                     defaultValue={index.sort.id}
+                  >
                      {index.sortOptions.map(option => (
-                        <option
-                           key={option.id}
-                           value={option.id}
-                           selected={index.sort.id === option.id}
-                        >
+                        <option key={option.id} value={option.id}>
                            {option.name}
                         </option>
                      ))}
@@ -210,10 +214,7 @@ export function SearchResultsGrouped({
          </Form>
 
          <div className="SearchResults-main">
-            <ol
-               className="reset SearchResults-categories SearchResults-results"
-               role="list"
-            >
+            <ol className="reset stack gap--half small expand" role="list">
                {categories.map(category => (
                   <li key={category.id}>
                      <IndexGroup
@@ -233,7 +234,7 @@ export function SearchResultsGrouped({
                         }}
                         length={category.results.length}
                      >
-                        <ol className="reset">
+                        <ol className="reset" role="list">
                            {category.results.map(result => (
                               <li key={result.id}>
                                  <IndexEntry
@@ -251,7 +252,18 @@ export function SearchResultsGrouped({
                ))}
             </ol>
 
-            <div className="SearchResults-search">{searchInput}</div>
+            <div className="SearchResults-search">
+               <SearchBar
+                  defaultValue={search}
+                  onSubmit={() => {
+                     statusRef.current?.focus({ preventScroll: true });
+                     document.documentElement.scrollTo({ top: 0 });
+                  }}
+                  group={index.type}
+                  sort={index.sort.id}
+                  loc={currentLoc}
+               />
+            </div>
          </div>
       </div>
    );
@@ -259,9 +271,9 @@ export function SearchResultsGrouped({
 
 function getCategories(
    book: types.Hymnal,
-   index: types.IndexType
+   indexType: types.IndexType
 ): Array<{ id: string; name: string | null }> {
-   switch (index) {
+   switch (indexType) {
       case "topic":
          if (!book.topics) return [];
          return Object.values(book.topics);
@@ -289,8 +301,8 @@ function getCategories(
    }
 }
 
-function getPageCategories(index: types.IndexType, page: types.Hymn): Array<string> {
-   switch (index) {
+function getPageCategories(indexType: types.IndexType, page: types.Hymn): Array<string> {
+   switch (indexType) {
       case "topic":
          return page.topics;
       case "tune":

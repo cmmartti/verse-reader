@@ -66,7 +66,7 @@ export let Hymn = React.forwardRef(
             )}
 
             <section className="Hymn-verses" lang={hymn.language}>
-               <Verses hymn={hymn} />
+               <Verses page={hymn} />
             </section>
 
             <section className="Hymn-details">

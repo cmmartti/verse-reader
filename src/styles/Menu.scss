@@ -52,9 +52,9 @@
       }
       &[disabled],
       &[aria-disabled="true"] {
-         color: var(--BUTTON-color--disabled);
+         color: var(--LINK-color--light);
          &:focus {
-            background: var(--BUTTON-background--disabled);
+            background: none;
          }
       }
 

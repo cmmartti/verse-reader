@@ -1,7 +1,3 @@
-.IndexGroup {
-   // margin-top: 0.5em;
-}
-
 .IndexGroup-button {
    cursor: default;
    padding-block: 0.25em;
@@ -31,7 +27,6 @@
 .IndexGroup-title {
    color: var(--TEXT-color);
    font-weight: 600;
-   // text-transform: uppercase;
 }
 
 .IndexGroup-arrow {
@@ -39,8 +34,4 @@
    &.--rotate {
       transform: rotateX(180deg);
    }
-}
-
-.IndexGroup-contents {
-   padding-top: 0.25em;
 }

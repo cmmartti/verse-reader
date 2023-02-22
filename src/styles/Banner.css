@@ -1,13 +1,13 @@
 .Banner {
    padding-block: var(--PAGE-margin-block) 0.75em;
    border-bottom: 1px solid;
+}
 
-   & :first-child {
-      justify-self: start;
-   }
-   & :last-child {
-      justify-self: end;
-   }
+.Banner-link:first-child {
+   text-align: start;
+}
+.Banner-link:last-child {
+   text-align: end;
 }
 
 .Banner-title {
@@ -49,14 +49,13 @@
       position: sticky;
       top: 0;
       z-index: 20;
-
-      &::after {
-         content: "";
-         position: absolute;
-         z-index: -1;
-         inset: 0 -0.5em;
-         background: var(--TOOLBAR-background-color);
-         backdrop-filter: blur(4px);
-      }
+   }
+   .Banner--sticky::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0 -0.5em;
+      background: var(--TOOLBAR-background-color);
+      backdrop-filter: blur(4px);
    }
 }

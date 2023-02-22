@@ -1,6 +1,5 @@
 .Search {
    min-height: var(--PAGE-height);
-   background: var(--PAGE-background-color);
    padding: 0 var(--PAGE-margin-inline);
    line-height: var(--OPTION-lineHeight, 1.4);
 

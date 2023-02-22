@@ -30,7 +30,6 @@ import { ReactComponent as CloseIcon } from "../icons/close.svg";
 import { Hymn } from "../components/Hymn";
 import { OptionsDialog } from "../components/OptionsDialog";
 import { Helmet } from "react-helmet-async";
-import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
 
 export async function loader({ params }: LoaderFunctionArgs) {
    let id = Number(params.id!);
@@ -172,7 +171,29 @@ export function Component() {
 
    let searchRef = React.useRef<HTMLInputElement>(null);
 
-   let { isPromptable, promptToInstall, isInstalled } = useAddToHomeScreenPrompt();
+   let nextLink = nextLoc ? (
+      <Link
+         to={generateURL({ id: record.id, loc: nextLoc })}
+         aria-label="Next page"
+         onClick={focusHymn}
+         replace
+         className="Page-nav-link"
+      >
+         <ArrowForward aria-hidden />
+      </Link>
+   ) : null;
+
+   let prevLink = prevLoc ? (
+      <Link
+         to={generateURL({ id: record.id, loc: prevLoc })}
+         aria-label="Previous page"
+         onClick={focusHymn}
+         replace
+         className="Page-nav-link"
+      >
+         <ArrowBack aria-hidden />
+      </Link>
+   ) : null;
 
    return (
       <div className="Page">
@@ -189,28 +210,22 @@ export function Component() {
 
          <div className="Page-contents">
             <header className="Banner">
-               <nav>
-                  <div>
-                     <Link to="/" title="Home">
-                        Back
-                     </Link>
-                  </div>
+               <nav className="Banner-link">
+                  <Link to="/" title="Home">
+                     Back
+                  </Link>
                </nav>
 
                <h1 className="reset Banner-title Banner-title→">{record.data.title}</h1>
-
-               <div>
-                  {!isInstalled && (
-                     <button
-                        className="Link"
-                        onClick={promptToInstall}
-                        disabled={!isPromptable}
-                     >
-                        Install
-                     </button>
-                  )}
-               </div>
             </header>
+
+            {isMobile && (
+               <nav className="Page-nav">
+                  {prevLink}
+                  <span className="expand"></span>
+                  {nextLink}
+               </nav>
+            )}
 
             <nav className="PageToolbar">
                <Link
@@ -271,8 +286,12 @@ export function Component() {
             <Hymn ref={hymnRef} record={record} hymn={hymn} />
 
             <Form className="SearchBar" action={`/book/${record.id}/search`}>
-               <label htmlFor={htmlId + "search"} className="SearchBar-label ">
-                  <SearchIcon className="SearchBar-icon" aria-label="Search icon" />
+               <label
+                  htmlFor={htmlId + "search"}
+                  className="SearchBar-label"
+                  aria-hidden
+               >
+                  <SearchIcon className="SearchBar-icon" />
                </label>
 
                <input
@@ -305,30 +324,8 @@ export function Component() {
             </Form>
          </div>
 
-         {!isMobile && nextLoc && (
-            <nav className="Page-nav --next">
-               <Link
-                  to={generateURL({ id: record.id, loc: nextLoc })}
-                  aria-label="Next page"
-                  onClick={focusHymn}
-                  replace
-               >
-                  <ArrowForward aria-hidden />
-               </Link>
-            </nav>
-         )}
-         {!isMobile && prevLoc && (
-            <nav className="Page-nav --prev">
-               <Link
-                  to={generateURL({ id: record.id, loc: prevLoc })}
-                  aria-label="Previous page"
-                  onClick={focusHymn}
-                  replace
-               >
-                  <ArrowBack aria-hidden />
-               </Link>
-            </nav>
-         )}
+         {!isMobile && <nav className="Page-nav --next">{nextLink}</nav>}
+         {!isMobile && <nav className="Page-nav --prev">{prevLink}</nav>}
       </div>
    );
 }

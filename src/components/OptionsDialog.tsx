@@ -1,11 +1,9 @@
 import React from "react";
 
-import { Options, useOption } from "../options";
+import { useOption } from "../options";
 import fonts from "../fonts";
 import TabContainerElement from "../elements/TabContainer";
 import ListBoxElement from "../elements/ListBox";
-import SwitchElement, { SwitchElementAttributes } from "../elements/Switch";
-import { RadioButtons } from "./RadioButtons";
 import { ReactComponent as AddIcon } from "../icons/add.svg";
 import { ReactComponent as RemoveIcon } from "../icons/remove.svg";
 
@@ -18,7 +16,6 @@ export function OptionsDialog({
 }) {
    let [fontSize, setFontSize] = useOption("fontSize");
    let [fontFamily, setFontFamily] = useOption("fontFamily");
-   let currentFont = fonts.find(font => font.id === fontFamily);
    let [colorScheme, setColorScheme] = useOption("colorScheme");
    let [repeatRefrain, setRepeatRefrain] = useOption("repeatRefrain");
    let [repeatChorus, setRepeatChorus] = useOption("repeatChorus");
@@ -140,8 +137,28 @@ export function OptionsDialog({
                   aria-labelledby={htmlId + "font"}
                   hidden={currentTab !== "font"}
                   data-tab-container-no-tabstop
+                  className="OptionsDialog-page"
                >
-                  <RangeInput
+                  <h-listbox
+                     id={htmlId + "fontFamily"}
+                     // auto-select=""
+                     class="ListBox"
+                     ref={listboxRef}
+                     aria-label="Font"
+                  >
+                     {fonts.map(font => (
+                        <h-option
+                           key={font.id}
+                           value={font.id}
+                           selected={fontFamily === font.id ? "" : undefined}
+                        >
+                           <span style={{ fontFamily: font.value }}>{font.name}</span>
+                        </h-option>
+                     ))}
+                  </h-listbox>
+
+                  <Range
+                     id={htmlId + "fontSize"}
                      value={fontSize}
                      step={2}
                      min={12}
@@ -164,25 +181,6 @@ export function OptionsDialog({
                         { value: 36 },
                      ]}
                   />
-
-                  <h-listbox
-                     id={htmlId + "fontFamily"}
-                     // auto-select=""
-                     class="ListBox"
-                     ref={listboxRef}
-                     aria-label="Font"
-                     // role="listbox"
-                  >
-                     {fonts.map(font => (
-                        <h-option
-                           key={font.id}
-                           value={font.id}
-                           selected={fontFamily === font.id ? "" : undefined}
-                        >
-                           <span style={{ fontFamily: font.value }}>{font.name}</span>
-                        </h-option>
-                     ))}
-                  </h-listbox>
                </div>
 
                <div
@@ -191,82 +189,126 @@ export function OptionsDialog({
                   aria-labelledby={htmlId + "format"}
                   hidden={currentTab !== "format"}
                   data-tab-container-no-tabstop
+                  className="OptionsDialog-page"
                >
-                  <div className="-stack">
-                     <div className="-row">
-                        <label htmlFor={htmlId + "colorScheme"}>Color Scheme</label>
-                        <fieldset className="-radioSet" title="Color Scheme">
-                           <RadioButtons
-                              name="colorScheme"
-                              value={colorScheme}
-                              options={[
-                                 { value: "light", children: "Light" },
-                                 { value: "system", children: "Auto" },
-                                 { value: "dark", children: "Dark" },
-                              ]}
-                              onChange={setColorScheme}
-                           />
-                        </fieldset>
-                     </div>
-
-                     <div className="-row">
-                        <label htmlFor={htmlId + "repeatRefrain"}>Repeat refrain</label>
-
+                  <div id={htmlId + "background"}>Background:</div>
+                  <div
+                     className="OptionsDialog-radiogroup"
+                     role="radiogroup"
+                     aria-labelledby={htmlId + "background"}
+                  >
+                     <label>
                         <input
-                           type="checkbox"
-                           id={htmlId + "repeatRefrain"}
-                           checked={repeatRefrain}
-                           onChange={e => setRepeatRefrain(e.target.checked)}
+                           type="radio"
+                           name="colorScheme"
+                           value="light"
+                           checked={"light" === colorScheme}
+                           onChange={() => setColorScheme("light")}
                         />
-                     </div>
-                     <div className="-row">
-                        <label htmlFor={htmlId + "repeatChorus"}>Repeat chorus</label>
+                        Light
+                     </label>
+                     <label>
                         <input
-                           type="checkbox"
-                           id={htmlId + "repeatChorus"}
-                           checked={repeatChorus}
-                           onChange={e => setRepeatChorus(e.target.checked)}
+                           type="radio"
+                           name="colorScheme"
+                           value="system"
+                           checked={"system" === colorScheme}
+                           onChange={() => setColorScheme("system")}
                         />
-                     </div>
-                     <div className="-row">
-                        <label htmlFor={htmlId + "condenseRepeated"}>
-                           Condense repeated lines
-                        </label>
+                        Auto
+                     </label>
+                     <label>
                         <input
-                           type="checkbox"
-                           aria-label="Condense repeated lines. Does not affect screen readers."
-                           id={htmlId + "condenseRepeated"}
-                           checked={condenseRepeated}
-                           onChange={e => setCondenseRepeated(e.target.checked)}
+                           type="radio"
+                           name="colorScheme"
+                           value="dark"
+                           checked={"dark" === colorScheme}
+                           onChange={() => setColorScheme("dark")}
                         />
-                     </div>
-                     <div className="-row">
-                        <label htmlFor={htmlId + "hyphenation"}>Hyphenation</label>
-                        <input
-                           type="checkbox"
-                           id={htmlId + "hyphenation"}
-                           checked={hyphenation}
-                           onChange={e => setHyphenation(e.target.checked)}
-                        />
-                     </div>
-                     <div className="-row">
-                        <label htmlFor={htmlId + "separatorColor"}>Line Marker</label>
-                        <fieldset className="-radioSet" title="Color Scheme">
-                           <RadioButtons
-                              name="separatorColor"
-                              value={separatorColor}
-                              options={[
-                                 { value: "red", children: "Red" },
-                                 { value: "gray", children: "Grey" },
-                                 { value: "off", children: "Off" },
-                              ]}
-                              onChange={value =>
-                                 setSeparatorColor(value as Options["separatorColor"])
-                              }
-                           />
-                        </fieldset>
-                     </div>
+                        Dark
+                     </label>
                   </div>
+
+                  <hr />
+
+                  <div id={htmlId + "line-marker"}>Line Marker:</div>
+                  <div
+                     className="OptionsDialog-radiogroup"
+                     role="radiogroup"
+                     aria-labelledby={htmlId + "line-marker"}
+                  >
+                     <label>
+                        <input
+                           type="radio"
+                           name="separatorColor"
+                           value="gray"
+                           checked={"gray" === separatorColor}
+                           onChange={() => setSeparatorColor("gray")}
+                        />
+                        Gray
+                     </label>
+                     <label>
+                        <input
+                           type="radio"
+                           name="separatorColor"
+                           value="red"
+                           checked={"red" === separatorColor}
+                           onChange={() => setSeparatorColor("red")}
+                        />
+                        Red
+                     </label>
+                     <label>
+                        <input
+                           type="radio"
+                           name="separatorColor"
+                           value="off"
+                           checked={"off" === separatorColor}
+                           onChange={() => setSeparatorColor("off")}
+                        />
+                        Off
+                     </label>
+                  </div>
+
+                  <hr />
+
+                  <label className="-checkbox">
+                     <input
+                        type="checkbox"
+                        checked={repeatRefrain}
+                        onChange={e => setRepeatRefrain(e.target.checked)}
+                     />
+                     Repeat refrain
+                  </label>
+
+                  <label className="-checkbox">
+                     <input
+                        type="checkbox"
+                        checked={repeatChorus}
+                        onChange={e => setRepeatChorus(e.target.checked)}
+                     />
+                     Repeat chorus
+                  </label>
+
+                  <label className="-checkbox">
+                     <input
+                        type="checkbox"
+                        aria-label="Condense repeated lines. Does not affect screen readers."
+                        checked={condenseRepeated}
+                        onChange={e => setCondenseRepeated(e.target.checked)}
+                     />
+                     Condense repeated lines
+                  </label>
+
+                  <hr />
+
+                  <label className="-checkbox">
+                     <input
+                        type="checkbox"
+                        checked={hyphenation}
+                        onChange={e => setHyphenation(e.target.checked)}
+                     />
+                     Hyphenation
+                  </label>
                </div>
 
                <div
@@ -275,9 +317,11 @@ export function OptionsDialog({
                   aria-labelledby={htmlId + "layout"}
                   hidden={currentTab !== "layout"}
                   data-tab-container-no-tabstop
+                  className="OptionsDialog-page"
                >
-                  <RangeInput
-                     label={`Margins (${pageMargins})`}
+                  <label htmlFor={htmlId + "pageMargins"}>Margins ({pageMargins})</label>
+                  <Range
+                     id={htmlId + "pageMargins"}
                      min={15}
                      max={65}
                      step={10}
@@ -293,8 +337,12 @@ export function OptionsDialog({
                      value={pageMargins}
                      onChange={value => setPageMargins(+value.toFixed(1))}
                   />
-                  <RangeInput
-                     label={`Leading (${lineHeight})`}
+
+                  <hr />
+
+                  <label htmlFor={htmlId + "leading"}>Leading ({lineHeight})</label>
+                  <Range
+                     id={htmlId + "leading"}
                      min={1}
                      max={2}
                      step={0.1}
@@ -309,8 +357,14 @@ export function OptionsDialog({
                      value={lineHeight}
                      onChange={value => setLineHeight(+value.toFixed(1))}
                   />
-                  <RangeInput
-                     label={`Verse Spacing (${paragraphSpacing})`}
+
+                  <hr />
+
+                  <label htmlFor={htmlId + "paragraphSpacing"}>
+                     Verse Spacing ({paragraphSpacing})
+                  </label>
+                  <Range
+                     id={htmlId + "paragraphSpacing"}
                      min={0}
                      max={1}
                      step={0.1}
@@ -347,69 +401,14 @@ export function OptionsDialog({
                </button>
             </div>
          </form>
-
-         {/* <div
-            className="-backdrop"
-            onClick={() => dialogRef.current.close()}
-            style={{ zIndex: -1, position: "fixed", inset: 0 }}
-         /> */}
       </dialog>
    );
 }
 
-function Switch2(
-   props: React.DetailedHTMLProps<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      HTMLInputElement
-   >
-) {
-   return (
-      <div className="Switch" data-checked={props.checked}>
-         <input type="checkbox" role="switch" {...props} />
-         {props.checked ? "On" : "Off"}
-      </div>
-   );
-}
-
-function Switch(
-   props: Omit<
-      React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, SwitchElement>,
-      "onChange"
-   > &
-      SwitchElementAttributes & {
-         onChange: (event: Event) => void;
-         class?: string;
-         className?: never;
-      }
-) {
-   let ref = React.useRef<SwitchElement>(null);
-   let { onChange, ...attributes } = props;
-
-   React.useEffect(() => {
-      let element = ref.current;
-      let fn = (event: Event) => onChange?.(event);
-      element?.addEventListener("change", fn);
-      return () => element?.removeEventListener("change", fn);
-   }, [onChange]);
-
-   let checked = typeof props.checked === "string";
-
-   return (
-      <h-switch ref={ref} {...attributes} class="Switch" tabIndex={0}>
-         <span aria-hidden className={"-option" + (!checked ? " --checked" : "")}>
-            No
-         </span>
-         <span aria-hidden className={"-option" + (checked ? " --checked" : "")}>
-            Yes
-         </span>
-      </h-switch>
-   );
-}
-
-function RangeInput({
+function Range({
+   id,
    plusLabel = <AddIcon />,
    minusLabel = <RemoveIcon />,
-   label,
    ticks,
    inputProps,
    onChange,
@@ -418,9 +417,9 @@ function RangeInput({
    max,
    step,
 }: {
+   id: string;
    plusLabel?: React.ReactNode;
    minusLabel?: React.ReactNode;
-   label?: React.ReactNode;
    onChange?: (value: number) => void;
    value: number;
    min: number;
@@ -438,48 +437,45 @@ function RangeInput({
    let htmlId = React.useId();
 
    return (
-      <div className="RangeInput">
-         {label && <label htmlFor={htmlId}>{label}</label>}
-         <div className="-contents">
-            <button
-               type="button"
-               className="-button"
-               aria-hidden
-               tabIndex={-1}
-               onClick={() => onChange?.(Math.max(min, Math.min(max, value) - step))}
-            >
-               {minusLabel}
-            </button>
+      <div className="OptionsDialog-range">
+         <button
+            type="button"
+            className="-button"
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => onChange?.(Math.max(min, Math.min(max, value) - step))}
+         >
+            {minusLabel}
+         </button>
 
-            <input
-               {...inputProps}
-               id={htmlId}
-               list={ticks ? htmlId + "datalist" : undefined}
-               type="range"
-               value={value}
-               onChange={event => onChange?.(Number(event.target.value))}
-               min={min}
-               max={max}
-               step={step}
-            />
-            {ticks && (
-               <datalist id={htmlId + "datalist"}>
-                  {ticks.map(tick => (
-                     <option key={tick.value} value={tick.value} label={tick.label} />
-                  ))}
-               </datalist>
-            )}
+         <input
+            {...inputProps}
+            id={id}
+            list={ticks ? htmlId + "datalist" : undefined}
+            type="range"
+            value={value}
+            onChange={event => onChange?.(Number(event.target.value))}
+            min={min}
+            max={max}
+            step={step}
+         />
+         {ticks && (
+            <datalist id={htmlId + "datalist"}>
+               {ticks.map(tick => (
+                  <option key={tick.value} value={tick.value} label={tick.label} />
+               ))}
+            </datalist>
+         )}
 
-            <button
-               type="button"
-               className="-button"
-               aria-hidden
-               tabIndex={-1}
-               onClick={() => onChange?.(Math.min(max, Math.max(min, value) + step))}
-            >
-               {plusLabel}
-            </button>
-         </div>
+         <button
+            type="button"
+            className="-button"
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => onChange?.(Math.min(max, Math.max(min, value) + step))}
+         >
+            {plusLabel}
+         </button>
       </div>
    );
 }

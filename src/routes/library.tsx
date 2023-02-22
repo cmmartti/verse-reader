@@ -6,8 +6,8 @@ import * as db from "../db";
 import { useAppState } from "../state";
 import { ImportDialog } from "../components/ImportDialog";
 import { OptionsDialog } from "../components/OptionsDialog";
-
-const SAMPLE_URL = "/sample.xml";
+import { Spinner } from "../components/Spinner";
+import { useAddToHomeScreenPrompt } from "../util/useAddToHomeScreenPrompt";
 
 export let loader = db.getAllBooks;
 
@@ -20,11 +20,12 @@ export function Component() {
 
    let [isImportDialogOpen, setIsImportDialogOpen] = React.useState(false);
    let [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
+   let { isPromptable, promptToInstall, isInstalled } = useAddToHomeScreenPrompt();
 
    return (
       <main className="Library">
          <Helmet>
-            <title>Verse Reader</title>
+            <title>Verse - Library</title>
          </Helmet>
 
          <ImportDialog
@@ -39,9 +40,10 @@ export function Component() {
          />
 
          <div className="Banner">
-            <div></div>
+            <div className="Banner-link">
+               <Link to="/about">About</Link>
+            </div>
             <h1 className="reset Banner-title Banner-title→">Verse: Library</h1>
-            <Link to="/about">About</Link>
          </div>
 
          <div className="Library-contents">
@@ -58,17 +60,29 @@ export function Component() {
                   ))}
 
                   {bookRecords.length === 0 && (
-                     <fetcher.Form method="post" action="/book/new" className="">
-                        <button
-                           type="submit"
-                           className="Button"
-                           name="url"
-                           value={SAMPLE_URL}
-                        >
-                           Download Sample
-                        </button>
-                        {fetcher.state === "submitting" && "Loading…"}
-                     </fetcher.Form>
+                     <li>
+                        {fetcher.state === "submitting" ? (
+                           <div>
+                              Downloading Books…
+                              <Spinner />
+                           </div>
+                        ) : (
+                           <fetcher.Form method="post" action="/book/new" className="">
+                              <input type="hidden" name="url" value="/sample.xml" />
+                              <input
+                                 type="hidden"
+                                 name="url"
+                                 value="https://388f63.netlify.app/en-1994.xml"
+                              />
+                              <input
+                                 type="hidden"
+                                 name="url"
+                                 value="https://388f63.netlify.app/en-2021.xml"
+                              />
+                              <button type="submit">Download Sample Books</button>
+                           </fetcher.Form>
+                        )}
+                     </li>
                   )}
                </ul>
             </div>
@@ -82,6 +96,7 @@ export function Component() {
                      Add/Remove Books
                   </button>
                </div>
+
                <div className="Library-sidebarGroup">
                   <button
                      className="reset Link"
@@ -90,6 +105,18 @@ export function Component() {
                      Display Options
                   </button>
                </div>
+
+               {!isInstalled && (
+                  <div className="Library-sidebarGroup">
+                     <button
+                        className="Link"
+                        onClick={promptToInstall}
+                        disabled={!isPromptable}
+                     >
+                        Install to Home Screen
+                     </button>
+                  </div>
+               )}
             </div>
          </div>
       </main>
@@ -103,12 +130,12 @@ function BookEntry({ record }: { record: db.BookRecord }) {
    let [lastViewedLoc] = useAppState(`book/${record.id}/loc`);
 
    return (
-      <section className="BookEntry">
+      <section className="Library-entry">
          <Link
             to={`/book/${record.id}/${lastViewedLoc ?? initialLoc}`}
-            className="BookEntry-link"
+            className="Library-entry-link"
          >
-            <span className="BookEntry-leaders">
+            <span className="Library-entry-leaders">
                <h2 className="reset semibold">
                   {record.data.title}
                   {record.data.subtitle && `: ${record.data.subtitle}`}
@@ -122,7 +149,7 @@ function BookEntry({ record }: { record: db.BookRecord }) {
             </span>
          </Link>
 
-         <div className="BookEntry-details">
+         <div className="Library-entry-details">
             {record.data.publisher && (
                <div className="small italic">{record.data.publisher}</div>
             )}

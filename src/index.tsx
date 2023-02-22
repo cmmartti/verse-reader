@@ -27,7 +27,7 @@ root.render(
                <OptionsProvider>
                   <Helmet>
                      <meta name="theme-color" content="#f4f4f4" />
-                     <title>Hymnal</title>
+                     <title>Verse Reader</title>
                   </Helmet>
 
                   <RouterProvider router={router} />

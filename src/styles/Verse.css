@@ -1,0 +1,54 @@
+.Verse {
+   hyphens: var(--OPTION-hyphenation, "none");
+}
+.Verse:not(:last-child) {
+   margin-bottom: var(--OPTION-paragraphSpacing);
+}
+.Verse.--deleted {
+   text-decoration: line-through;
+   color: var(--TEXT-color--faint);
+}
+.Verse.--chorus {
+   margin-inline-start: 0.75em;
+   text-indent: 0;
+}
+
+.Verse-label {
+   hyphens: none;
+   margin-inline: 0.75em 0.25em;
+}
+
+.Verse.--chorus .Verse-label {
+   font-style: italic;
+   margin-inline-start: 0;
+}
+
+.Verse-repeat {
+   font-weight: 600;
+}
+
+.Verse-pointer {
+   hyphens: none;
+}
+
+.Verse-lineGroup {
+   border-bottom: 0.5px solid var(--TEXT-color--faint);
+}
+
+.Verse-lineSeparator {
+   white-space: nowrap;
+}
+.Verse-lineSeparator > .-bullet {
+   vertical-align: middle;
+   display: inline-flex;
+   justify-content: center;
+   align-items: center;
+   color: var(--OPTION-separatorColor);
+}
+.Verse-lineSeparator > .-bullet::before {
+   content: "";
+   height: 0.25em;
+   width: 0.25em;
+   border-radius: 0.075em;
+   background: currentColor;
+}
