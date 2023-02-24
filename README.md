@@ -1,36 +1,43 @@
 # Verse
 
+> Metrical or rhymed composition as distinct from prose; poetry.
+
 [versereader.netlify.app](https://versereader.netlify.app)
+
+A web application for viewing collections of verse. It is currently geared towards song books, but the goal is to eventually support other types of verse, including poetry. It imports VerseXML files (see below) that contain a structured collection of pages of verse.
+
+Offers rapid navigation, page display customization, and intuitive search and find features.
 
 ![Alt text](screenshots/showcase.png)
 
-A web application for viewing collections of verse. Right now it's mainly geared at song hymnals, but the goal is to eventually support other types of verse, including poetry. It imports VerseXML files (see below) that contain a structured collection of pages of verse.
+---
 
 <details>
-<summary>Screenshots</summary>
+<summary>More screenshots:</summary>
 
-![Library](screenshots/library_1080x2019.png)
+Mobile flow (library/read/search):
+![Mobile](screenshots/mobile_3252x2025.png)
+
+Options dialog (mobile):
+![Options dialog](screenshots/options_3252x2025.png)
+
+Library page:
 ![Library](screenshots/library_2880x1800.png)
 
-![Font options](screenshots/options-font_1080x2019.png)
-![Format options](screenshots/options-format_1080x2019.png)
-![Layout options](screenshots/options-layout_1080x2019.png)
-
-![Page](screenshots/page_1080x2019.png)
+Reading page:
 ![Page](screenshots/page_2880x1800.png)
-![Page](screenshots/page-input_1080x2019.png)
 
-![Contents](screenshots/search-contents_1080x2019.png)
+Table of Contents/search:
 ![Contents](screenshots/search-contents_2880x1800.png)
 
-![Index of Origin](screenshots/search-origin_1080x2019.png)
-![Index of Origin](screenshots/search-origin_2880x1800.png)
+Grouping by origin:
+![Index of Origins](screenshots/search-origin_2880x1800.png)
 
 </details>
 
 ---
 
-From the beginning, the goal of this app has been a dynamic book. My personal use-case is as a digital version of a paper hymnal, with rapid page selection, page display options (font, whether to repeat choruses, etc.), and searchable indexes.
+From the beginning, the goal of this app has been to create a dynamic book. My personal use-case is as a digital version of a paper church hymnal.
 
 As a personal project that I started in order to gain programming experience, I made a number of development decisions that would not be optimal in normal circumstances. These include not maintaining a clean Git history, experimenting heavily with different approaches (such as using Custom Elements for listboxes and select components; and a failed attempt at using a horizontally scrolling `body`, CSS scroll-snapping, and an [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to get highly performant swipeable pages), completely re-structuring my code numerous times, spending agonizing amounts of time trying to make a particular bit of code easily understandable in an effort to make easily-read code come more naturally, designing the visual style on-the-fly, and ignoring some things like internationalization entirely. And these experiments have given me experience in way more ways than I bargained for when I started out.
 
@@ -42,7 +49,7 @@ But even though this is a personal project, I have very much tried to make it as
 
 -  It uses minimal dependencies, but I avoided recreating the wheel when there was no need to. For example, I use [React Router](https://reactrouter.com/en/main/start/overview) for a client-side router and [Lunr](https://github.com/olivernn/lunr.js) for search indexing because those are both complex libraries that I couldn't realisticalyy replicate or improve, but I wrote my own CSS styles from scratch because existing CSS frameworks are far too inflexible. I also avoided using CSS libraries like [Tailwind](https://tailwindcss.com/) because it just wasn't necessary and would only add more complexity. One dependency that I would like to get away from is Create React App in favor of a more lightweight bundler, but that's a task for another day.
 
--  It is fully-functional offline, requiring no Internet access beyond the initial page load. This also means that it can cheaply and easily be served from any basic webserver.
+-  It is fully-functional offline, requiring no Internet access beyond the initial page load. Furthermore, it stores all data locally in the browser using LocalStorage and IndexedDB. Together, this means that the app can cheaply and easily be served from any basic webserver.
 
 -  It smoothly scales to all screen sizes, from large 30" monitors to small phones like the original Apple iPhone SE.
 

@@ -219,14 +219,6 @@ export function Component() {
                <h1 className="reset Banner-title Banner-title→">{record.data.title}</h1>
             </header>
 
-            {isMobile && (
-               <nav className="Page-nav">
-                  {prevLink}
-                  <span className="expand"></span>
-                  {nextLink}
-               </nav>
-            )}
-
             <nav className="PageToolbar">
                <Link
                   to={{
@@ -323,6 +315,13 @@ export function Component() {
                </button>
             </Form>
          </div>
+
+         {isMobile && (
+            <nav className="visually-hidden">
+               {nextLink}
+               {prevLink}
+            </nav>
+         )}
 
          {!isMobile && <nav className="Page-nav --next">{nextLink}</nav>}
          {!isMobile && <nav className="Page-nav --prev">{prevLink}</nav>}

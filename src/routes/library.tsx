@@ -41,7 +41,7 @@ export function Component() {
 
          <div className="Banner">
             <div className="Banner-link">
-               <Link to="/about">About</Link>
+               <a href="https://github.com/cmmartti/verse-reader">About</a>
             </div>
             <h1 className="reset Banner-title Banner-title→">Verse: Library</h1>
          </div>
