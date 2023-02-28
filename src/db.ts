@@ -66,10 +66,6 @@ export async function createBookFromFile(file: Blob) {
    } as BookRecord;
 
    let id = await (await db).put("Book", record);
-
-   // artificial delay
-   await new Promise(res => setTimeout(res, 500));
-
    return id;
 }
 
