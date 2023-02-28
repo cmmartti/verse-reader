@@ -1,6 +1,6 @@
 # Verse
 
-> Metrical or rhymed composition as distinct from prose; poetry.
+> *Verse:* Metrical or rhymed composition as distinct from prose; poetry.
 
 [versereader.netlify.app](https://versereader.netlify.app)
 
@@ -47,13 +47,11 @@ But even though this is a personal project, I have very much tried to make it as
 
 -  It is fully-typed in TypeScript, as much as I could do so.
 
--  It uses minimal dependencies, but I avoided recreating the wheel when there was no need to. For example, I use [React Router](https://reactrouter.com/en/main/start/overview) for a client-side router and [Lunr](https://github.com/olivernn/lunr.js) for search indexing because those are both complex libraries that I couldn't realisticalyy replicate or improve, but I wrote my own CSS styles from scratch because existing CSS frameworks are far too inflexible. I also avoided using CSS libraries like [Tailwind](https://tailwindcss.com/) because it just wasn't necessary and would only add more complexity. One dependency that I would like to get away from is Create React App in favor of a more lightweight bundler, but that's a task for another day.
+-  It uses minimal dependencies, but I avoided recreating the wheel when there was no need to. For example, I use [React Router](https://reactrouter.com/en/main/start/overview) for a client-side router and [Lunr](https://github.com/olivernn/lunr.js) for search indexing because those are both complex libraries that I couldn't realisticaly replicate or improve, but I wrote my own CSS styles from scratch because existing CSS frameworks didn't suit my needs. I also avoided using CSS libraries like [Tailwind](https://tailwindcss.com/) because it just wasn't necessary and would only add more complexity. One dependency that I would like to get away from is Create React App in favor of a more lightweight bundler, but that's a task for another day.
 
 -  It is fully-functional offline, requiring no Internet access beyond the initial page load. Furthermore, it stores all data locally in the browser using LocalStorage and IndexedDB. Together, this means that the app can cheaply and easily be served from any basic webserver.
 
 -  It smoothly scales to all screen sizes, from large 30" monitors to small phones like the original Apple iPhone SE.
-
-## Features
 
 ## Project Status: Early BETA
 
@@ -63,17 +61,19 @@ But even though this is a personal project, I have very much tried to make it as
 
 ☐ Bug fixing: Mostly complete, but there are a few minor things to fix
 
-☐ The "Manage Books" dialogue is still in BETA, but that is not required for basic usage of the app.
+☐ The "Manage Books" dialogue is still in development, but it is not required for basic usage of the app.
 
 ### Wish List
 
+-  If the `beforeinstallprompt` is not supported in a browser, change the "Install to Home Screen" button to a link that shows how manually install the app to the home screen.
+
 -  Performance improvements:
 
-   -  The Contents (search index) page loads rather slowly if there are too many page entries. This is a React problem that is hard to get around: too many DOM elements and it sort of just falls down. I'd like to switch to a different rendering library like SolidJS.
+   -  The Contents (search index) page loads rather slowly if there are too many page entries. This is a React problem that is hard to get around: too many DOM elements and it sort-of just falls down. I'd like to switch to a different rendering library like SolidJS, or investigate using scroll virtualization to limit the number of DOM elements on screen.
 
    -  Improve Library loading times by pre-saving critical page data at time of import rather than opening every file in the library on-the-fly.
 
--  Swipe to next/previous page: This one is very tricky. I have no idea how to make this work with scroll restoration AND an auto-hiding header, unless I make an inner element scrollable and make the body fixed—but that comes with many downsides, including scrollbar position, and breaking scroll-to-hide of mobile browser toolbars. The only way I can think of is to make the header also swipe away, and a new duplicate header slides in with the new page.
+-  Swipe to next/previous page: This one is very tricky. I don't know how to make this work with scroll restoration AND an auto-hiding header, unless I make an inner element scrollable and make the body fixed—but that comes with many downsides, including scrollbar position, and breaking scroll-to-hide of mobile browser toolbars. The only way I can think of is to make the header also swipe away with the rest of the page, and have a new duplicate header slide in with the new page.
 
 -  Dialog exit and entry animations
 
@@ -91,7 +91,7 @@ But even though this is a personal project, I have very much tried to make it as
 
 ## VerseXML
 
-VerseXML is a custom XML document type that contains a structured collection of verses in book form. It is described by the [linked XML Schema](/schema.xsd). It is currently very experimental and will change significantly in the future.
+VerseXML is a custom XML document type that contains a structured collection of verses in book form. It is described by the [linked XML Schema](https://versereader.netlify.app/schema.xsd). It is currently experimental and will likely change significantly in the future.
 
 A basic VerseXML file looks like this:
 
@@ -156,11 +156,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 #### CSS
 
--  Global CSS variables start with uppercase letters. These are defined in `:root` and may be referenced anywhere, including in JavaScript.
+-  Global CSS variables start with uppercase letters. These are defined in `:root` and may be referenced anywhere, including in JavaScript. Example: `--LINK-color`, `--BANNER-height`.
 
--  Lower-case CSS class names are utility classes. Located in `src/styles/_util.scss`.
+-  Lower-case CSS class names are utility classes. Located in `src/styles/_util.scss`. Example: `italic`, `text-align-start`.
 
--  CSS class names that start with an uppercase letter are _namespaced_ classes. These are related collections of classes located in a single file (`src/styles/MyNamespace.scss`). Rules in namespaced CSS files do not reference other namespaces.
+-  CSS class names that start with an uppercase letter are _namespaced_ classes. These are related collections of classes located in a single file (`src/styles/MyNamespace.css`). Rules in namespaced CSS files do not reference other namespaces. Example: `Banner.css`.
 
 -  Classes that start with a hyphen are direct children of a namespaced class. Rules that reference these classes must not do so with the general descendant (space) CSS combinator, but must directly reference it by some other means (paired with a class, with the child (`>`) combinator, etc.) to avoid conflicts with rules in other files. These are either used for small classes that are tightly linked with the parent element, or for states (using a double hyphen --). Avoid using them too heavily.
 
