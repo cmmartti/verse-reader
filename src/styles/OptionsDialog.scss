@@ -15,8 +15,7 @@
    backdrop-filter: blur(12px);
 
    border-radius: 16px;
-   box-shadow: 0 0 80px hsla(210, 19%, 11%, 0.25), 0 0 50px -10px hsla(0, 0%, 0%, 0.5),
-      0 0 1px;
+   box-shadow: var(--DIALOG-box-shadow);
 
    margin: auto;
    height: 420px;
@@ -43,17 +42,17 @@
    overflow: auto;
 
    & > [role="tablist"] {
-      gap: 0.25em;
-      padding-block: 0.5em;
-      padding-inline: 0.5em;
+      padding-block: 8px;
+      padding-inline: 8px;
       border-bottom: 0.5px solid var(--TEXT-color--light);
-      overflow-x: auto;
 
       display: flex;
+      gap: 4px;
+      overflow: auto;
 
       & > [role="tab"] {
          user-select: none;
-         flex: 1;
+         flex: 1 0 max-content;
          border: none;
          border-radius: 8px;
          background: none;
@@ -75,8 +74,8 @@
          }
 
          white-space: nowrap;
-         // overflow: hidden;
-         // text-overflow: ellipsis;
+         overflow: hidden;
+         text-overflow: ellipsis;
       }
    }
 
@@ -86,7 +85,7 @@
 }
 
 .OptionsDialog-page {
-   padding: 0.75em;
+   padding: 12px;
    display: flex;
    flex-direction: column;
    gap: 0.5em;
@@ -121,7 +120,7 @@
 }
 
 .OptionsDialog-footer {
-   padding: 0.75em;
+   padding: 12px;
    border-top: 0.5px solid var(--TEXT-color--light);
    display: flex;
    gap: 12px;
@@ -144,8 +143,6 @@
    padding-inline: 0.25em;
 
    & > .-button {
-      // height: 1.25em;
-      // aspect-ratio: 1;
       padding: 0;
       background: none;
       border: none;

@@ -10,8 +10,11 @@
    --BANNER-height: calc(var(--PAGE-margin-block) + 2rem);
 
    --PAGE-background-color: white;
-   --DIALOG-background-color: hsla(240, 18%, 96%, 0.75);
    --TOOLBAR-background-color: hsla(0, 0%, 100%, 0.75);
+
+   --DIALOG-background-color: hsla(240, 18%, 96%, 0.75);
+   --DIALOG-box-shadow: 0 0 80px hsla(0, 0%, 0%, 0.25),
+      0 0 50px -10px hsla(0, 0%, 0%, 0.5), 0 0 1px;
 
    --TEXT-color: black;
    --TEXT-color--inverted: white;
@@ -41,8 +44,10 @@
    font-weight: 350;
 
    --PAGE-background-color: black;
-   --DIALOG-background-color: hsla(0, 0%, 0%, 0.5);
    --TOOLBAR-background-color: hsla(0, 0%, 0%, 0.75);
+
+   --DIALOG-background-color: hsla(0, 0%, 0%, 0.5);
+   --DIALOG-box-shadow: 0 0 200px 10px hsla(0, 0%, 100%, 0.25), 0 0 0 1px var(--LINK-color);
 
    --TEXT-color: hsl(0, 0%, 90%);
    --TEXT-color--inverted: black;
