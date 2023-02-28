@@ -205,7 +205,17 @@ export function OptionsDialog({
                            checked={"light" === colorScheme}
                            onChange={() => setColorScheme("light")}
                         />
-                        Light
+                        White
+                     </label>
+                     <label>
+                        <input
+                           type="radio"
+                           name="colorScheme"
+                           value="dark"
+                           checked={"dark" === colorScheme}
+                           onChange={() => setColorScheme("dark")}
+                        />
+                        Black
                      </label>
                      <label>
                         <input
@@ -216,16 +226,6 @@ export function OptionsDialog({
                            onChange={() => setColorScheme("system")}
                         />
                         Auto
-                     </label>
-                     <label>
-                        <input
-                           type="radio"
-                           name="colorScheme"
-                           value="dark"
-                           checked={"dark" === colorScheme}
-                           onChange={() => setColorScheme("dark")}
-                        />
-                        Dark
                      </label>
                   </div>
 
