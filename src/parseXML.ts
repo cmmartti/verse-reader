@@ -123,14 +123,10 @@ let getLines = (selector: string, verse: Node): (Line | RepeatLines)[] =>
                kind: "line",
                text: (line as Node).textContent ?? "",
             })),
-            // lines: toNodes("line", lineOrRepeat).map(
-            //    line => (line as Node).textContent ?? ""
-            // ),
             before: toString("@before", lineOrRepeat),
             after: toString("@after", lineOrRepeat),
          };
       }
-      // return (lineOrRepeat as Node).textContent ?? "";
       return {
          kind: "line",
          text: (lineOrRepeat as Node).textContent ?? "",

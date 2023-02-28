@@ -35,8 +35,6 @@
    align-items: center;
    justify-content: center;
    gap: 0.1em;
-   /* border: 1px solid; */
-   /* padding: 0.25em; */
 }
 .PageToolbar-button:focus-visible {
    outline: var(--focus-outline);

@@ -1,6 +1,3 @@
-// role="text" has not yet been standardised.
-/* eslint-disable jsx-a11y/aria-role */
-
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -42,18 +39,11 @@ export let Hymn = React.forwardRef(
 
             {hymn.topics.length > 0 && (
                <div className="Hymn-topics">
-                  {/* {`Topic${hymn.topics.length > 1 ? "s" : ""}: `} */}
                   {hymn.topics
                      .map(id => record.data.topics?.[id] ?? { id, name: id })
                      .map((topic, i) => (
                         <React.Fragment key={topic.id}>
-                           <Link
-                              to={generateURL({
-                                 id: record.id,
-                                 loc: hymn.id,
-                                 search: `#topic=${topic.id}`,
-                              })}
-                           >
+                           <Link to={getURL(`#topic=${topic.id}`)}>
                               <span className="visually-hidden" role="text">
                                  Topic:{" "}
                               </span>
@@ -72,7 +62,7 @@ export let Hymn = React.forwardRef(
             <section className="Hymn-details">
                <div>
                   <div>Full Title</div>
-                  <div lang={hymn.language}>{hymn.title}</div>
+                  <div lang={hymn.language}>{hymn.title || "(no title)"}</div>
                </div>
 
                {hymn.language !== record.data.language && (

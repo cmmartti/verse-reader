@@ -13,7 +13,7 @@
 
    position: relative;
 
-   // focus ring
+   /* focus ring */
    &:focus-visible::before {
       content: "";
       position: absolute;

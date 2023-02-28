@@ -1,6 +1,3 @@
-// role="text" has not yet been standardised.
-/* eslint-disable jsx-a11y/aria-role */
-
 import React from "react";
 import {
    Link,

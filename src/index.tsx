@@ -16,7 +16,6 @@ import { OptionsProvider } from "./options";
 
 registerElements();
 
-// const root = createRoot(document.getElementById("react-root")!);
 const root = createRoot(document.body);
 
 root.render(

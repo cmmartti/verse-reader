@@ -19,11 +19,6 @@ let fonts = [
       name: "Charter",
       value: "Charter",
    },
-   // {
-   //    id: "georgia",
-   //    name: "Georgia",
-   //    value: "Georgia",
-   // },
    {
       id: "lato",
       name: "Lato",
@@ -34,11 +29,6 @@ let fonts = [
       name: "Literata",
       value: "Literata",
    },
-   // {
-   //    id: "merriweather",
-   //    name: "Merriweather",
-   //    value: "Merriweather",
-   // },
    {
       id: "quattrocento-sans",
       name: "Quattrocento Sans",
